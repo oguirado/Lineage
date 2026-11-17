@@ -68,6 +68,8 @@ class PruneTests(unittest.TestCase):
 
 
 @unittest.skipUnless(BROWSER, 'Chrome binary unavailable')
+@unittest.skipUnless((ROOT / 'node_modules' / '.bin' / 'vite').exists(),
+                     'UI toolchain (node_modules/.bin/vite) unavailable')
 class ViewPointBrowserTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -1,0 +1,1147 @@
+{
+  "roles": [
+    {
+      "capabilities": [
+        "create_agents",
+        "memory_write",
+        "read",
+        "schedule"
+      ],
+      "id": "agent_creator"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "repository_code_write"
+      ],
+      "id": "author"
+    },
+    {
+      "capabilities": [
+        "live_check",
+        "memory_write",
+        "read"
+      ],
+      "id": "capsule_tester"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "review"
+      ],
+      "id": "cross_reviewer"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "repository_test_write"
+      ],
+      "id": "oracle_writer"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "review",
+        "schedule"
+      ],
+      "id": "orchestrator"
+    },
+    {
+      "capabilities": [
+        "measure",
+        "memory_write",
+        "read",
+        "review"
+      ],
+      "id": "performance_auditor"
+    },
+    {
+      "capabilities": [
+        "live_check",
+        "memory_write",
+        "read"
+      ],
+      "id": "persona"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "review"
+      ],
+      "id": "privacy_verifier"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "repository_code_write",
+        "repository_test_write"
+      ],
+      "id": "repairer"
+    },
+    {
+      "capabilities": [
+        "memory_write",
+        "read",
+        "review"
+      ],
+      "id": "researcher"
+    }
+  ],
+  "rules": [
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-1",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-2",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-3",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-4",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-5",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-6",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-7",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.1-8",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-1",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-2",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-3",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-4",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-5",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-6",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-7",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.2-8",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-1",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-2",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-3",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-4",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-5",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-6",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-7",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-8",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-9",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-10",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-11",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-12",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-2.4-13",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-1",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-2",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-3",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-4",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-5",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-6",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-7",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-8",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-9",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-10",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-11",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-12",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-13",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-14",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-15",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-16",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-17",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-18",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-19",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-20",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-21",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-22",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-23",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-24",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-25",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-26",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-27",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.1-28",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-1",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-2",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-3",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-4",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-5",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-6",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-7",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-8",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-9",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "typescript"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-10",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-11",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-12",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-13",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-14",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-15",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-16",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-17",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-18",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-19",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-20",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-21",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-22",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-23",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-24",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-25",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-26",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-27",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-28",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-29",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-30",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-31",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-32",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-33",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-34",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-35",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-36",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-37",
+      "verbatim": true
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-38",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-4.2-39",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-1",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-2",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-3",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-4",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-5",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-6",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-7",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-8",
+      "verbatim": false
+    },
+    {
+      "languages": [
+        "python",
+        "typescript",
+        "general"
+      ],
+      "requires": [],
+      "rule_id": "GS-5-9",
+      "verbatim": false
+    }
+  ],
+  "schema": "lineage.constitution.roles/v1"
+}

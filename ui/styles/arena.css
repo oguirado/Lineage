@@ -1,0 +1,27 @@
+/* Arena is a measurement notebook: identities, declared conditions, then observations. */
+.arena-workbench { max-width: var(--lin-content-max); min-width: 0; margin-inline: auto; color: var(--lin-text); }
+.arena-workbench h1 { letter-spacing: -.035em; font-weight: 650; line-height: 1.2; margin-bottom: var(--lin-space-md); }
+.arena-workbench :is(p, h1, h2, h3, label, a, button, span), .arena-form { overflow-wrap: anywhere; min-width: 0; }
+.arena-panel { border: 1px solid var(--lin-border); border-radius: var(--lin-radius-md); background: var(--lin-surface); padding: clamp(.8rem, 2.5vw, 2rem); margin-block: var(--lin-space-lg); }
+.arena-panel > h2 { margin-top: 0; border-bottom: 2px solid var(--lin-link); padding-bottom: .65rem; font-size: 1.2rem; }
+.arena-filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: var(--lin-space-sm); align-items: end; margin-block: var(--lin-space-lg); }
+.arena-filters label, .arena-form label { display: grid; gap: .35rem; }
+.arena-benchmarks { padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 23rem), 1fr)); gap: var(--lin-space-md); }
+.arena-benchmarks > li { padding: var(--lin-space-md); border: 1px solid var(--lin-border); border-inline-start: 4px solid var(--lin-link); border-radius: var(--lin-radius-sm); }
+.arena-benchmarks h3 { margin-top: 0; }
+.arena-task { border-top: 1px solid var(--lin-border); padding-block: var(--lin-space-md); }
+.arena-task > p { margin-block: .35rem; }
+.arena-task > p:first-of-type, .arena-workbench .full-identity { font-family: var(--lin-font-mono); color: var(--lin-text-muted); }
+.arena-workbench button, .arena-form button { margin: .3rem .5rem .3rem 0; max-width: 100%; white-space: normal; }
+.arena-workbench :is(button, a, input, select):focus-visible, .arena-form :is(button, a, input, select):focus-visible { outline: 3px solid var(--lin-focus); outline-offset: 3px; }
+.arena-workbench :is(input, select), .arena-form :is(input, select) { min-width: 0; max-width: 100%; box-sizing: border-box; color: var(--lin-text); background: var(--lin-surface); border: 1px solid var(--lin-border); border-radius: var(--lin-radius-sm); padding: .6rem; }
+.arena-form form { display: grid; gap: .85rem; }
+.arena-form fieldset { min-width: 0; display: grid; gap: .5rem; border: 1px solid var(--lin-border); }
+.arena-form fieldset label { grid-template-columns: auto 1fr; align-items: baseline; }
+.arena-form fieldset label p { grid-column: 2; margin: 0; }
+.arena-error { color: var(--lin-error); }
+.arena-workbench dialog { width: min(42rem, calc(100vw - 3rem)); max-height: 85vh; overflow-y: auto; background: var(--lin-surface); color: var(--lin-text); border: 1px solid var(--lin-border); border-radius: var(--lin-radius-md); padding: var(--lin-space-md); }
+.arena-workbench dialog::backdrop { background: rgb(0 0 0 / .5); }
+@media (max-width: 48rem) { .arena-filters { grid-template-columns: 1fr 1fr; } .arena-filters label:first-child { grid-column: 1 / -1; } }
+@media (max-width: 30rem) { .arena-filters { grid-template-columns: 1fr; } .arena-panel { margin-block: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .arena-workbench *, .arena-form * { animation: none; transition: none; scroll-behavior: auto; } }

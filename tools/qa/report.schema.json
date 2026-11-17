@@ -1,0 +1,628 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "lineage.qa.report/v1"
+    },
+    "method": {
+      "enum": [
+        "C",
+        "A",
+        "P",
+        "V"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "selftest",
+        "fixture",
+        "live"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "INCONCLUSIVE"
+      ]
+    },
+    "rc": {
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "INCONCLUSIVE"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": {
+            "type": "string"
+          },
+          "expected": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observed": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "requirement",
+          "status",
+          "code",
+          "detail",
+          "expected",
+          "observed"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[A-Za-z0-9_./-]+$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "kind": {
+            "enum": [
+              "dom",
+              "cdp_ax",
+              "atspi_raw",
+              "pruned",
+              "frame",
+              "journal",
+              "capsule"
+            ]
+          },
+          "hash_basis": {
+            "enum": [
+              "file_bytes",
+              "canonical_json",
+              "canonical_pixels"
+            ]
+          }
+        },
+        "required": [
+          "ref",
+          "sha256",
+          "kind",
+          "hash_basis"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "contract_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "inventory_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "fixture_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "scenario": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "frame": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "head": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "viewport": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "width",
+            "height"
+          ],
+          "additionalProperties": false
+        },
+        "theme": {
+          "enum": [
+            "light",
+            "dark",
+            null
+          ]
+        },
+        "reduced_motion": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "zoom_percent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "owner_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "contract_sha256",
+        "inventory_sha256",
+        "fixture_sha256",
+        "scenario",
+        "frame",
+        "head",
+        "viewport",
+        "theme",
+        "reduced_motion",
+        "zoom_percent",
+        "owner_ref"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "method",
+    "scope",
+    "status",
+    "rc",
+    "checks",
+    "artifacts",
+    "context"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lineage.qa.report/v1",
+  "$defs": {
+    "node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "busy",
+              "checked",
+              "current",
+              "disabled",
+              "expanded",
+              "hidden",
+              "pressed",
+              "selected"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "actionable": {
+          "type": "boolean"
+        },
+        "entity": {
+          "enum": [
+            "agent",
+            "run",
+            "bench",
+            "event",
+            "unit",
+            "skill",
+            null
+          ]
+        },
+        "entity_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "action": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "parent",
+        "role",
+        "name",
+        "states",
+        "actionable",
+        "entity",
+        "entity_id",
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "parent": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string"
+              },
+              "states": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "busy",
+                    "checked",
+                    "current",
+                    "disabled",
+                    "expanded",
+                    "hidden",
+                    "pressed",
+                    "selected"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "actionable": {
+                "type": "boolean"
+              },
+              "entity": {
+                "enum": [
+                  "agent",
+                  "run",
+                  "bench",
+                  "event",
+                  "unit",
+                  "skill",
+                  null
+                ]
+              },
+              "entity_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "action": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            },
+            "required": [
+              "id",
+              "parent",
+              "role",
+              "name",
+              "states",
+              "actionable",
+              "entity",
+              "entity_id",
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "document_found": {
+          "type": "boolean"
+        },
+        "owner_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "raw_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "nodes",
+        "complete",
+        "truncated",
+        "document_found",
+        "owner_ref",
+        "raw_ref"
+      ],
+      "additionalProperties": false
+    },
+    "check": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requirement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "INCONCLUSIVE"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": "string"
+        },
+        "expected": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observed": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "requirement",
+        "status",
+        "code",
+        "detail",
+        "expected",
+        "observed"
+      ],
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[A-Za-z0-9_./-]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "kind": {
+          "enum": [
+            "dom",
+            "cdp_ax",
+            "atspi_raw",
+            "pruned",
+            "frame",
+            "journal",
+            "capsule"
+          ]
+        },
+        "hash_basis": {
+          "enum": [
+            "file_bytes",
+            "canonical_json",
+            "canonical_pixels"
+          ]
+        }
+      },
+      "required": [
+        "ref",
+        "sha256",
+        "kind",
+        "hash_basis"
+      ],
+      "additionalProperties": false
+    },
+    "postcondition": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "op_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "kind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "entity_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "run_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "expect": {
+          "enum": [
+            "commit",
+            "refusal",
+            "projection"
+          ]
+        },
+        "code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "operation",
+        "tool",
+        "actor",
+        "op_id",
+        "kind",
+        "entity_id",
+        "run_id",
+        "expect",
+        "code"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "files": {
+    "ui/tests/arena/ORACLE.md": "ee37a854847f25093eb5e76575cb73100407d10679c6365133a21dead6037174",
+    "ui/tests/arena/continuity.test.ts": "e809b3790db7ef343d2942d4c11197b22a57651b8d20b8d983159fb70a9f8aff",
+    "ui/tests/arena/contracts.test.ts": "8ee02488736dc33177f9bd5a799073af4d59c7a033ec4e36f190620d8bc98e16",
+    "ui/tests/arena/evidence.test.ts": "57d82d200359ef754ab0c293e03b451b2c70322c3a5c626e153aaf8211d4f307",
+    "ui/tests/arena/forms.helpers.ts": "a83502e8d452b90a1162bdc8adb862709b1e8e33e1c7aaf2349d605a672b8b1d",
+    "ui/tests/arena/h2.review.test.ts": "f558701127cf30703e1548957dbe1b22749e8b7b1f13ee4d7680afbb1b2f525b",
+    "ui/tests/arena/helpers.ts": "d795fcc0ec3d89d4c98201bdd537dcb11ae27674d32e1be7d65c53a3fd44a07c",
+    "ui/tests/arena/lifecycle.test.ts": "c6a535e1992abcb924467282c2e0fc6c8ef1d19703eecfab683ba8ad8151354f",
+    "ui/tests/arena/mutations.test.ts": "d20c5240d07d1978a3f68fe6782f58fff4a7d1d34cdbeb63372ee22d8fdfd158",
+    "ui/tests/arena/observers.test.ts": "95f9657dfb6823b23a21bf5019328f5d2ba7b0ecda1f575bfc8cc5cf45d7c4b8"
+  },
+  "schema": "lineage.u25.oracle.freeze/v1",
+  "spec_sha256": "af89c3f0379cd00c1a1297d57c84523a4eea33650558e7a94f55d2836882d111"
+}

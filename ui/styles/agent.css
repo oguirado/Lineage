@@ -1,0 +1,28 @@
+main[data-lin-screen='agent'] { min-width:0; overflow-wrap:anywhere; }
+main[data-lin-screen='agent'] .agent-identity { padding-block:var(--lin-space-lg); border-bottom:1px solid var(--lin-border); }
+main[data-lin-screen='agent'] h1 { margin:0; font-size:clamp(1.7rem,4vw,2.6rem); letter-spacing:-.025em; }
+main[data-lin-screen='agent'] h2 { margin-block:1.5rem 1rem; }
+main[data-lin-screen='agent'] .full-identity { font-family:var(--lin-font-mono); color:var(--lin-text-muted); overflow-wrap:anywhere; }
+main[data-lin-screen='agent'] dl { display:grid; grid-template-columns:minmax(7rem,1fr) minmax(0,3fr); gap:.4rem 1rem; }
+main[data-lin-screen='agent'] dt { color:var(--lin-text-muted); }
+main[data-lin-screen='agent'] dd { min-width:0; margin:0; }
+main[data-lin-screen='agent'] .agent-panels, main[data-lin-screen='agent'] .agent-actions { display:flex; flex-wrap:wrap; gap:.6rem; margin-block:1.2rem; }
+main[data-lin-screen='agent'] button { max-width:100%; white-space:normal; overflow-wrap:anywhere; min-height:2.7rem; }
+main[data-lin-screen='agent'] button[aria-pressed='true'] { border-color:var(--lin-link); background:var(--lin-surface-raised); font-weight:700; }
+main[data-lin-screen='agent'] .agent-record { margin-block:1rem; padding:1.2rem; border:1px solid var(--lin-border); border-radius:var(--lin-radius-md); background:var(--lin-surface); min-width:0; }
+main[data-lin-screen='agent'] .agent-record > button { margin:.3rem .5rem .3rem 0; }
+main[data-lin-screen='agent'] pre { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; max-width:100%; padding:1rem; border-radius:var(--lin-radius-sm); background:var(--lin-surface-raised); color:var(--lin-text); font: .9rem/1.6 var(--lin-font-mono); }
+main[data-lin-screen='agent'] label { display:flex; flex-direction:column; min-width:0; gap:.3rem; margin-block:.7rem; color:var(--lin-text); }
+main[data-lin-screen='agent'] .agent-filters { display:flex; flex-wrap:wrap; align-items:end; gap:1rem; }
+main[data-lin-screen='agent'] .agent-filters label { flex:1 1 10rem; }
+main[data-lin-screen='agent'] input,main[data-lin-screen='agent'] select { max-width:100%; min-width:0; color:var(--lin-text); background:var(--lin-surface); }
+main[data-lin-screen='agent'] fieldset { min-width:0; margin-block:1rem; border:1px solid var(--lin-border); border-radius:var(--lin-radius-sm); }
+main[data-lin-screen='agent'] dialog { width:min(44rem,calc(100vw - 2rem)); max-width:calc(100vw - 2rem); max-height:90vh; overflow:auto; box-sizing:border-box; color:var(--lin-text); background:var(--lin-surface); }
+main[data-lin-screen='agent'] .agent-table-scroll { overflow-x:auto; max-width:100%; }
+main[data-lin-screen='agent'] table { border-collapse:collapse; width:100%; }
+main[data-lin-screen='agent'] th, main[data-lin-screen='agent'] td { padding:.75rem; text-align:left; border-bottom:1px solid var(--lin-border); }
+main[data-lin-screen='agent'] :focus-visible { outline:3px solid var(--lin-focus); outline-offset:3px; }
+main[data-lin-screen='agent'] .agent-feedback,main[data-lin-screen='agent'] .agent-feedback-global { color:var(--lin-text); white-space:pre-wrap; }
+@media(max-width:34rem) { main[data-lin-screen='agent'] dl { grid-template-columns:minmax(0,1fr); } main[data-lin-screen='agent'] dd { margin-bottom:.65rem; } }
+@media(prefers-reduced-motion:reduce) { main[data-lin-screen='agent'] *,main[data-lin-screen='agent'] *::before,main[data-lin-screen='agent'] *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+main[data-lin-screen='agent'] [role='alert'] { color:var(--lin-error); }

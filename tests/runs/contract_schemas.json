@@ -1,0 +1,580 @@
+{
+  "run_beat": {
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "maxLength": 64,
+          "minLength": 3,
+          "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+          "type": "string"
+        },
+        "expected_head": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "op_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}(?![\\s\\S])",
+          "type": "string"
+        },
+        "progress": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "progress",
+        "agent",
+        "op_id"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "additionalProperties": false,
+          "properties": {
+            "event_ids": {
+              "items": {
+                "maxLength": 18,
+                "minLength": 18,
+                "pattern": "^e-[0-9a-f]{16}(?![\\s\\S])",
+                "type": "string"
+              },
+              "maxItems": 10000,
+              "minItems": 1,
+              "type": "array"
+            },
+            "head": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sha256": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_ids",
+            "head",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "event": {
+          "$ref": "event.schema.json"
+        }
+      },
+      "required": [
+        "event",
+        "commit"
+      ],
+      "type": "object"
+    }
+  },
+  "run_close": {
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "maxLength": 64,
+          "minLength": 3,
+          "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+          "type": "string"
+        },
+        "cost": {
+          "additionalProperties": false,
+          "properties": {
+            "cost_micro_usd": {
+              "anyOf": [
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "duration_ms": {
+              "anyOf": [
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "tokens_cache": {
+              "anyOf": [
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "tokens_in": {
+              "anyOf": [
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "tokens_out": {
+              "anyOf": [
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "tokens_in",
+            "tokens_out",
+            "tokens_cache",
+            "duration_ms",
+            "cost_micro_usd"
+          ],
+          "type": "object"
+        },
+        "evidence": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "maxLength": 512,
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+(?![\\s\\S])",
+                "type": "string"
+              },
+              "sha256": {
+                "maxLength": 64,
+                "minLength": 64,
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "type": "object"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "expected_head": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "op_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}(?![\\s\\S])",
+          "type": "string"
+        },
+        "outcome": {
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "additionalProperties": false,
+              "properties": {
+                "confirmed": {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "refuted": {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "confirmed",
+                "refuted"
+              ],
+              "type": "object"
+            },
+            "repair_loops": {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "verdict": {
+              "enum": [
+                "ADMIT",
+                "HOLD",
+                "red",
+                "green",
+                "error"
+              ]
+            }
+          },
+          "required": [
+            "verdict",
+            "repair_loops",
+            "findings"
+          ],
+          "type": "object"
+        },
+        "run_id": {
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "outcome",
+        "cost",
+        "agent",
+        "op_id"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "additionalProperties": false,
+          "properties": {
+            "event_ids": {
+              "items": {
+                "maxLength": 18,
+                "minLength": 18,
+                "pattern": "^e-[0-9a-f]{16}(?![\\s\\S])",
+                "type": "string"
+              },
+              "maxItems": 10000,
+              "minItems": 1,
+              "type": "array"
+            },
+            "head": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sha256": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_ids",
+            "head",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "run": {
+          "$ref": "run.schema.json"
+        }
+      },
+      "required": [
+        "run",
+        "commit"
+      ],
+      "type": "object"
+    }
+  },
+  "run_get": {
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "maxLength": 64,
+          "minLength": 3,
+          "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "closed": {
+          "anyOf": [
+            {
+              "$ref": "run.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "opened": {
+          "$ref": "event.schema.json"
+        }
+      },
+      "required": [
+        "opened",
+        "closed",
+        "head"
+      ],
+      "type": "object"
+    }
+  },
+  "run_open": {
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "maxLength": 64,
+          "minLength": 3,
+          "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+          "type": "string"
+        },
+        "agent_id": {
+          "maxLength": 64,
+          "minLength": 3,
+          "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+          "type": "string"
+        },
+        "expected_head": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "memory_arm": {
+          "enum": [
+            "none",
+            "own",
+            "inherited"
+          ]
+        },
+        "op_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}(?![\\s\\S])",
+          "type": "string"
+        },
+        "parents_context": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_id": {
+                "maxLength": 64,
+                "minLength": 3,
+                "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+                "type": "string"
+              },
+              "agent_version": {
+                "maxLength": 64,
+                "minLength": 64,
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+                "type": "string"
+              },
+              "run_id": {
+                "maxLength": 64,
+                "minLength": 8,
+                "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agent_id",
+              "agent_version",
+              "run_id"
+            ],
+            "type": "object"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "run_id": {
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+          "type": "string"
+        },
+        "seat": {
+          "additionalProperties": false,
+          "properties": {
+            "effort": {
+              "maxLength": 32,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+(?![\\s\\S])",
+              "type": "string"
+            },
+            "mode": {
+              "enum": [
+                "headless",
+                "interactive"
+              ]
+            },
+            "model": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "model",
+            "effort",
+            "mode"
+          ],
+          "type": "object"
+        },
+        "task": {
+          "additionalProperties": false,
+          "properties": {
+            "bank_id": {
+              "maxLength": 64,
+              "minLength": 3,
+              "pattern": "^[a-z][a-z0-9-]{2,63}(?![\\s\\S])",
+              "type": "string"
+            },
+            "bench_id": {
+              "maxLength": 64,
+              "minLength": 8,
+              "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+              "type": "string"
+            },
+            "id": {
+              "maxLength": 64,
+              "minLength": 8,
+              "pattern": "^[A-Za-z0-9_-]{8,64}(?![\\s\\S])",
+              "type": "string"
+            },
+            "kind": {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            "language": {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            "split": {
+              "enum": [
+                "select",
+                "heldout"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "kind",
+            "language"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "run_id",
+        "agent_id",
+        "seat",
+        "task",
+        "parents_context",
+        "memory_arm",
+        "agent",
+        "op_id"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "additionalProperties": false,
+          "properties": {
+            "event_ids": {
+              "items": {
+                "maxLength": 18,
+                "minLength": 18,
+                "pattern": "^e-[0-9a-f]{16}(?![\\s\\S])",
+                "type": "string"
+              },
+              "maxItems": 10000,
+              "minItems": 1,
+              "type": "array"
+            },
+            "head": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sha256": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_ids",
+            "head",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "opened": {
+          "$ref": "event.schema.json"
+        }
+      },
+      "required": [
+        "opened",
+        "commit"
+      ],
+      "type": "object"
+    }
+  }
+}

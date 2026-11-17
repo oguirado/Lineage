@@ -1,0 +1,130 @@
+{
+  "clock_ms": 1700000000000,
+  "id": "demo",
+  "page": {
+    "events": [],
+    "has_more": false,
+    "head": 0,
+    "next_after": 0,
+    "resync": false
+  },
+  "panels": [
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "loading",
+      "state": "loading",
+      "title": "Synthetic loading"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "empty",
+      "state": "empty",
+      "title": "Synthetic empty"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "no-match",
+      "state": "no-match",
+      "title": "Synthetic no-match"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "ready",
+      "state": "ready",
+      "title": "Synthetic ready"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "busy",
+      "state": "busy",
+      "title": "Synthetic busy"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "queued",
+      "state": "queued",
+      "title": "Synthetic queued"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "running",
+      "state": "running",
+      "title": "Synthetic running"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "stalled",
+      "state": "stalled",
+      "title": "Synthetic stalled"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "stale",
+      "state": "stale",
+      "title": "Synthetic stale"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "error",
+      "state": "error",
+      "title": "Synthetic error"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "completed",
+      "state": "completed",
+      "title": "Synthetic completed"
+    },
+    {
+      "detail": "Synthetic presentation example; no real operation is asserted.",
+      "id": "not-built",
+      "state": "not-built",
+      "title": "Synthetic not-built"
+    }
+  ],
+  "results": [
+    {
+      "args": {},
+      "reply": {
+        "untrusted": {
+          "agents": [
+            {
+              "cost": null,
+              "display_name": "Synthetic Aurora",
+              "id": "synthetic-alpha",
+              "score": null,
+              "seat": {
+                "effort": "medium",
+                "mode": "headless",
+                "model": "Synthetic seat"
+              }
+            },
+            {
+              "cost": null,
+              "display_name": "Synthetic Aurora",
+              "id": "synthetic-beta",
+              "score": null,
+              "seat": {
+                "effort": "medium",
+                "mode": "headless",
+                "model": "Synthetic seat"
+              }
+            }
+          ],
+          "synthetic": true
+        }
+      },
+      "tool": "agent_list"
+    }
+  ],
+  "schema": "lineage.ui.fixture/v1",
+  "tools": [
+    {
+      "description": "Synthetic agent list (read only)",
+      "inputSchema": {
+        "type": "object"
+      },
+      "name": "agent_list"
+    }
+  ]
+}

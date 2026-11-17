@@ -1,0 +1,30 @@
+[data-lin-screen="lineage"] { overflow-wrap: anywhere; min-width: 0; }
+[data-lin-screen="lineage"] .lineage-content { display: grid; gap: var(--lin-space-md); min-width: 0; }
+[data-lin-screen="lineage"] .lineage-filters { display: flex; flex-wrap: wrap; align-items: end; gap: var(--lin-space-sm); padding: var(--lin-space-md); background: var(--lin-bg); border: 1px solid var(--lin-divider); border-radius: var(--lin-radius-md); }
+[data-lin-screen="lineage"] label { display: grid; gap: var(--lin-space-xs); flex: 1 1 14rem; min-width: 0; max-width: 100%; }
+[data-lin-screen="lineage"] input, [data-lin-screen="lineage"] select { width: 100%; max-width: 100%; min-width: 0; }
+[data-lin-screen="lineage"] .lineage-list, [data-lin-screen="lineage"] .lineage-children { list-style: none; padding: 0; margin: 0; min-width: 0; }
+[data-lin-screen="lineage"] .lineage-children:not(:empty) { border-inline-start: 2px solid var(--lin-border); margin-inline-start: 0.5rem; padding-inline-start: min(1.25rem, 2vw); margin-block-start: var(--lin-space-md); }
+[data-lin-screen="lineage"] .lineage-children .lineage-children .lineage-children .lineage-children { margin-inline-start: 0; padding-inline-start: 0; border-inline-start: 0; }
+[data-lin-screen="lineage"] .lineage-card, [data-lin-screen="lineage"] .lineage-inspector { position: relative; background: var(--lin-surface); color: var(--lin-text); border: 1px solid var(--lin-border); border-radius: var(--lin-radius-md); padding: var(--lin-space-md); margin-block: var(--lin-space-sm); min-width: 0; }
+[data-lin-screen="lineage"] .lineage-list > .lineage-card { box-shadow: var(--lin-shadow); }
+[data-lin-screen="lineage"] .lineage-children > .lineage-card::before { content: ""; position: absolute; inset-inline-start: calc(-1 * min(1.25rem, 2vw)); inset-block-start: 1.5rem; width: min(1.25rem, 2vw); border-block-start: 2px solid var(--lin-border); }
+[data-lin-screen="lineage"] .lineage-children .lineage-children .lineage-children .lineage-children > .lineage-card::before { display: none; }
+[data-lin-screen="lineage"] .lineage-card.lineage-selected { border-color: var(--lin-accent); border-inline-start: 3px solid var(--lin-accent); }
+[data-lin-screen="lineage"] .lineage-card h3 { margin-block: 0 var(--lin-space-xs); font-family: var(--lin-font-mono); font-size: var(--lin-type-md); letter-spacing: -0.03em; }
+[data-lin-screen="lineage"] .lineage-card > p { color: var(--lin-text-muted); font-size: var(--lin-type-sm); max-width: 100ch; }
+[data-lin-screen="lineage"] .lineage-card > button, [data-lin-screen="lineage"] .lineage-card > a { margin-block: var(--lin-space-xs); margin-inline-end: var(--lin-space-sm); }
+[data-lin-screen="lineage"] .lineage-card > a { display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--lin-type-sm); font-weight: 600; }
+[data-lin-screen="lineage"] .lineage-inspector { border-block-start: 3px solid var(--lin-accent); }
+[data-lin-screen="lineage"] .lineage-inspector section + section { border-block-start: 1px solid var(--lin-divider); padding-block-start: var(--lin-space-md); margin-block-start: var(--lin-space-md); }
+[data-lin-screen="lineage"] pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--lin-font-mono); font-size: var(--lin-type-sm); max-width: 100%; padding: var(--lin-space-md); background: var(--lin-surface-raised); border-radius: var(--lin-radius-sm); }
+[data-lin-screen="lineage"] .lineage-drawing { max-height: 22rem; overflow: hidden; padding: var(--lin-space-md); background: var(--lin-bg); border: 1px solid var(--lin-divider); border-radius: var(--lin-radius-md); pointer-events: none; }
+[data-lin-screen="lineage"] svg { max-width: 100%; height: auto; }
+[data-lin-screen="lineage"] svg line { color: var(--lin-border); stroke-width: 1.5; }
+[data-lin-screen="lineage"] svg circle { color: var(--lin-accent); }
+[data-lin-screen="lineage"] .lineage-feedback, [data-lin-screen="lineage"] .lineage-feedback p { color: var(--lin-error); }
+@media (max-width: 34rem) {
+  [data-lin-screen="lineage"] .lineage-filters { display: grid; grid-template-columns: minmax(0, 1fr); padding: var(--lin-space-sm); }
+  [data-lin-screen="lineage"] .lineage-card { padding: var(--lin-space-sm); }
+  [data-lin-screen="lineage"] .lineage-card > button, [data-lin-screen="lineage"] .lineage-card > a { max-width: 100%; margin-inline-end: 0.25rem; }
+}

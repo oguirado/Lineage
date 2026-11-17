@@ -1,0 +1,473 @@
+{
+  "decisions": [
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.family.test_cursors",
+      "original_sha256": "a169409d2e93a764a0bc3ee02a96a61ed8b786edabead3bddaf51f85aaa945b6",
+      "path": "tests/core/regression/family/test_cursors.py",
+      "reason": "Room-scoped family/lifecycle/plan delivery is removed; this is not a Lineage mailbox parity claim.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 6
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.family.test_envelope",
+      "original_sha256": "17c7a29ed868deab52a2f32f112e793c75461d92b1dc3fa1ccfe6c252c217dd6",
+      "path": "tests/core/regression/family/test_envelope.py",
+      "reason": "Room-scoped family/lifecycle/plan delivery is removed; this is not a Lineage mailbox parity claim.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 88
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.family.test_hardening",
+      "original_sha256": "8b53e348ae69dc951a3b85f4e9113e7044874259b1c0c27d113343dce78bd2ae",
+      "path": "tests/core/regression/family/test_hardening.py",
+      "reason": "Room-scoped family/lifecycle/plan delivery is removed; this is not a Lineage mailbox parity claim.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 1
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.family.test_mailbox",
+      "original_sha256": "4b8106a5ba45c6f5b302a23b3ab6add1436416ccd4b584469048821ed03de249",
+      "path": "tests/core/regression/family/test_mailbox.py",
+      "reason": "Room-scoped family/lifecycle/plan delivery is removed; this is not a Lineage mailbox parity claim.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 52
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.family.test_recovery",
+      "original_sha256": "9d90bcd56d95c6fdf119df1156b8e6858615753d135c6616a76bc22cb1a37ad1",
+      "path": "tests/core/regression/family/test_recovery.py",
+      "reason": "Room-scoped family/lifecycle/plan delivery is removed; this is not a Lineage mailbox parity claim.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 23
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.family.test_routing",
+      "original_sha256": "4f315b13b80f2ac9c93aa3560680cf1f97eb757ad632e9e571b934cf5aa52f20",
+      "path": "tests/core/regression/family/test_routing.py",
+      "reason": "Room-scoped family/lifecycle/plan delivery is removed; this is not a Lineage mailbox parity claim.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 27
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.plan.test_u55_conformance_md",
+      "original_sha256": "44b9f763c755a2d0a5d2cafc4ec8f5556206f55f9f14baf6d409afdca17113ad",
+      "path": "tests/core/regression/plan/test_u55_conformance_md.py",
+      "reason": "Pure planning assertions retain their integrated module APIs.",
+      "selected_tests": 21
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.plan.test_u55_ops_fold",
+      "original_sha256": "b98b261b6e3adb71f0a3e82f928316317f7f7894838fce33cc07b07dbfe6412c",
+      "path": "tests/core/regression/plan/test_u55_ops_fold.py",
+      "reason": "Pure planning assertions retain their integrated module APIs.",
+      "selected_tests": 239
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.plan.test_u55_repair1",
+      "original_sha256": "3e41dd2b76f269f981865b86f7e7edff17091294a56ff1bdd88422a49e74dcfb",
+      "path": "tests/core/regression/plan/test_u55_repair1.py",
+      "reason": "Pure planning assertions retain their integrated module APIs.",
+      "selected_tests": 5
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.plan.test_u55_repair2",
+      "original_sha256": "8a6bedb7f1631b575ba48750bf18e75c9becb2ce494da8cc064436d787d76daa",
+      "path": "tests/core/regression/plan/test_u55_repair2.py",
+      "reason": "Pure planning assertions retain their integrated module APIs.",
+      "selected_tests": 2
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.plan.test_u55_template",
+      "original_sha256": "a18cb45cbe815270360d8048397d662e4be936ab9c9ca6776909b0463baf736b",
+      "path": "tests/core/regression/plan/test_u55_template.py",
+      "reason": "Pure planning assertions retain their integrated module APIs.",
+      "selected_tests": 223
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.plan.test_u55_vectors",
+      "original_sha256": "5c77ec3a5803dc64f81bf781a109f06e540a92b769c6be99a24f10c37d514ebf",
+      "path": "tests/core/regression/plan/test_u55_vectors.py",
+      "reason": "Pure planning assertions retain their integrated module APIs.",
+      "selected_tests": 36
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.s0.test_seam",
+      "original_sha256": "8c93ea74485db0bacf7696f1fb6722a7000a88438188478a29b78988141b6ed8",
+      "path": "tests/core/regression/room/s0/test_seam.py",
+      "reason": "Explicit immutable Registry and ToolSpec replace the global extension dispatcher.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/dispatch",
+      "selected_tests": 3
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.test_cli",
+      "original_sha256": "39addfef04e3ff622c2127bd1fc1301ccb2a6186d3368d3d1f9e29d7fd39ba77",
+      "path": "tests/core/regression/room/test_cli.py",
+      "reason": "The call CLI and exits 0/2/3 replace the room verb parser and legacy exits.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/dispatch",
+      "selected_tests": 11
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.test_mcp",
+      "original_sha256": "23826227446b97c997d6c2c5e064a914cc6ff474c2a8c268a724bdb58756cfb6",
+      "path": "tests/core/regression/room/test_mcp.py",
+      "reason": "Explicit MCP registry/context and shared dispatch replace the legacy fixed room tools.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/dispatch",
+      "selected_tests": 18
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.test_post",
+      "original_sha256": "92a6a81c68cf071bcd7e7ed084c1881b152b773581c35938cbe21504c3343bbe",
+      "path": "tests/core/regression/room/test_post.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 31
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.test_read",
+      "original_sha256": "4b3456496fee330eec42f7356fe48cb3beae88b02dfb8a5b4f55019fdd61577c",
+      "path": "tests/core/regression/room/test_read.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 17
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.test_review1",
+      "original_sha256": "5d14c6aef3011a9ae9e3c0da68803dd1c666e23bb1a31dff36b74a97ed6e42b4",
+      "path": "tests/core/regression/room/test_review1.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 8
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.test_review2",
+      "original_sha256": "9914cb498bbb6681086e04e07c6ac18d09430ed748b6bb6cae83cc612bf5563c",
+      "path": "tests/core/regression/room/test_review2.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 22
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u109.test_protocol",
+      "original_sha256": "330d8174278072fb4c52be346f72b85c8c842fb870a80c92cef6f17cdbb144ab",
+      "path": "tests/core/regression/room/u109/test_protocol.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 69
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u110.test_durability",
+      "original_sha256": "9ae36f53798dc06c6907fe6e13d97860b7464512c47d042adc489c8befe67008",
+      "path": "tests/core/regression/room/u110/test_durability.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 12
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u110.test_protocol",
+      "original_sha256": "bef2275fb33928abe845b6d7300189a66bbc61d8c97ded1328070666c0680092",
+      "path": "tests/core/regression/room/u110/test_protocol.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 10
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u110.test_references",
+      "original_sha256": "c3c16fc2adff3996c4f45eac8c6207280f305759b61f1266971bbc927335aebc",
+      "path": "tests/core/regression/room/u110/test_references.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 13
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u110.test_validation",
+      "original_sha256": "10924e81514f89aa37d3246d253a2d1985127674c4a60c7b58b3b5af4f49825f",
+      "path": "tests/core/regression/room/u110/test_validation.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 13
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u119.test_acquire",
+      "original_sha256": "552f9b24199fa669ca14ce2bfdc4f2be84fa0665047f669497aca6e54d5c0c4b",
+      "path": "tests/core/regression/room/u119/test_acquire.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 27
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u119.test_atomicity",
+      "original_sha256": "16fa15bfdb1375f8e9418c98623ca3f9410681ea7b71431db506d66f099576a4",
+      "path": "tests/core/regression/room/u119/test_atomicity.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 13
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u119.test_replay_protocol",
+      "original_sha256": "965c3f026711ab0c95ec91ca982ef9a62dbfe61cd38a7ae083aef1719cf22fe8",
+      "path": "tests/core/regression/room/u119/test_replay_protocol.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 13
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u119.test_report",
+      "original_sha256": "3fc531ff10450bbf2cb285d669d7ba9911f87a7a988d94ca4fe26e1d6d9ccaac",
+      "path": "tests/core/regression/room/u119/test_report.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 32
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u119.test_validation",
+      "original_sha256": "96e0d93a33c7e0746213736a7724f75bf0d65e1121e3dd3b21e2977f5a29a593",
+      "path": "tests/core/regression/room/u119/test_validation.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 83
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u121.test_batch",
+      "original_sha256": "884c3236909702ccb716143768c4ae3ad55b3a307b070e65bbe70e69947d51d8",
+      "path": "tests/core/regression/room/u121/test_batch.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 31
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u121.test_controls",
+      "original_sha256": "492134550b07c03c36c675e0717f4f40e27cfef4c2fc7ae7fcfac5ef7a5de808",
+      "path": "tests/core/regression/room/u121/test_controls.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 4
+    },
+    {
+      "decision": "PORT",
+      "module": "tests.core.regression.room.u121.test_durability",
+      "original_sha256": "6317d3601a227b9f40c9bd2e057521ba7656e487deb06b9857d4a5ce282f1f05",
+      "path": "tests/core/regression/room/u121/test_durability.py",
+      "reason": "Fault-injection assertions use the single-event journal transaction; grouped payload is not a legacy multi-event batch API.",
+      "selected_tests": 16
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u121.test_lock",
+      "original_sha256": "75e5eba601164f55dcac3483b04b400074cc9883299780255dfbccf306da8a8b",
+      "path": "tests/core/regression/room/u121/test_lock.py",
+      "reason": "The new deadline lock returns busy/internal LineageError; legacy Windows and batch APIs are absent.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/journal",
+      "selected_tests": 15
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u121.test_replay",
+      "original_sha256": "5ac47d8dc5888b5aadce64119fd3d8203367ffab4536b214364e57c6204be2a2",
+      "path": "tests/core/regression/room/u121/test_replay.py",
+      "reason": "Content-bound journal transactions replace room/activity/send identity namespaces; room-specific calls are removed.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/journal",
+      "selected_tests": 32
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u121.test_reserve",
+      "original_sha256": "ee2c7a3bf08c3a0a04b74ca69266b6769202fddd52b7f395127829afe1e8a24c",
+      "path": "tests/core/regression/room/u121/test_reserve.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 28
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u69.test_contract",
+      "original_sha256": "019cff417ab761c67bb1aa4dffee5fec2c4e97cfd41b75562074566269049579",
+      "path": "tests/core/regression/room/u69/test_contract.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 6
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u69.test_repair1",
+      "original_sha256": "ff296fe1460a481aeee5cc818f49636ffcddec271132eb7a261aa94829cd77a6",
+      "path": "tests/core/regression/room/u69/test_repair1.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 2
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u71.test_lock",
+      "original_sha256": "27ead36df68ca8564438143446cb399e335bde5c50c5bc281dbc62725775eb2c",
+      "path": "tests/core/regression/room/u71/test_lock.py",
+      "reason": "The fcntl-only lock and structured errors replace the optional Windows backend and raw OS errors.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/journal",
+      "selected_tests": 15
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u76.test_repair1",
+      "original_sha256": "3c0bc6bd3168c15f0d008aaeec4017560e4bf95d65a04656389512d358ce30f5",
+      "path": "tests/core/regression/room/u76/test_repair1.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 5
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u87.test_contract",
+      "original_sha256": "d54df939d92c58c1c07da67504f6425f4787410a42e2b5a70a06b4b893a57f6a",
+      "path": "tests/core/regression/room/u87/test_contract.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 139
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u87.test_repair1",
+      "original_sha256": "5301b867dbde3765e3c4ff25e2c30a18e5765c13a2aa65ed0382622448b1e595",
+      "path": "tests/core/regression/room/u87/test_repair1.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 8
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u89.test_events",
+      "original_sha256": "be3074c6f351bdbad22863970fa5d8baff93caa970d8f4518b24e296df9f0f93",
+      "path": "tests/core/regression/room/u89/test_events.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 119
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u89.test_repair1",
+      "original_sha256": "337f820e8e3b50a21f32c47dd2628436d3ce0cb954fd2bf221a170d2acadb374",
+      "path": "tests/core/regression/room/u89/test_repair1.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 6
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u94.test_contract",
+      "original_sha256": "24f0243e08fa8368a24493342d5db5caa427a6e17b3a4f8cae2954e0d61a7567",
+      "path": "tests/core/regression/room/u94/test_contract.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 26
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u94.test_files",
+      "original_sha256": "c051afcaa61f30cd37c900738744b5f962c0341b7f3ff677b46e99999e1560bc",
+      "path": "tests/core/regression/room/u94/test_files.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 15
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u94.test_repair1",
+      "original_sha256": "a64f9c75a3a07704e9c3994f156c1ffc9a361a10ea06cddfa16d7786c1248762",
+      "path": "tests/core/regression/room/u94/test_repair1.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 9
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u94c.test_cli_export",
+      "original_sha256": "fe778c2f2dac8a2eb15ef4b39f09d6c6d871251aee14b160c9db7038981346c7",
+      "path": "tests/core/regression/room/u94c/test_cli_export.py",
+      "reason": "Room/chat/plan-room operations, projections, and fixed planning prompts are outside the redesigned Lineage core.",
+      "reason_class": "legacy-feature-removed",
+      "replacement": null,
+      "selected_tests": 3
+    },
+    {
+      "decision": "RETIRE",
+      "module": "tests.core.regression.room.u95.test_headless_resource",
+      "original_sha256": "bb677f866701b182e1c09fe673494508aea8c2399426ccf1c2ae556f833f8c15",
+      "path": "tests/core/regression/room/u95/test_headless_resource.py",
+      "reason": "Lineage resources and explicit MCP streams replace the legacy headless resource adapter.",
+      "reason_class": "superseded-by-redesign",
+      "replacement": "tests/core/dispatch",
+      "selected_tests": 7
+    }
+  ],
+  "original_manifest_sha256": "84bdd69c7788578e3a88787f79c530e68dcf703e98f6db715709a97b3ce9a7c7",
+  "schema": "lineage.regression.reconciliation/v1",
+  "selection_sha256": "c7d244d189d571ebb6d72585bebb609934ac67a847af8f568b96a0cda1345659"
+}

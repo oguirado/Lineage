@@ -1,0 +1,236 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "lineage.qa.inventory/v1"
+    },
+    "scope": {
+      "enum": [
+        "selftest",
+        "fixture",
+        "live"
+      ]
+    },
+    "contract_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1
+    },
+    "frame": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string",
+            "minLength": 1
+          },
+          "screen": {
+            "enum": [
+              "agents",
+              "agent",
+              "lineage",
+              "arena",
+              "bench",
+              "ledger"
+            ]
+          },
+          "dialog": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "head": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "entity": {
+                  "enum": [
+                    "agent",
+                    "run",
+                    "bench",
+                    "event",
+                    "unit",
+                    "skill",
+                    null
+                  ]
+                },
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "availability": {
+                  "enum": [
+                    "enabled",
+                    "disabled",
+                    "absent"
+                  ]
+                },
+                "reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "action",
+                "entity",
+                "id",
+                "role",
+                "name",
+                "selector",
+                "availability",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "journey": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "postconditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "operation": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tool": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "actor": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "kind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "entity_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "run_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "expect": {
+                  "enum": [
+                    "commit",
+                    "refusal",
+                    "projection"
+                  ]
+                },
+                "code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "operation",
+                "tool",
+                "actor",
+                "op_id",
+                "kind",
+                "entity_id",
+                "run_id",
+                "expect",
+                "code"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "route",
+          "screen",
+          "dialog",
+          "head",
+          "actions",
+          "journey",
+          "postconditions"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "schema",
+    "scope",
+    "contract_sha256",
+    "scenario",
+    "frame",
+    "contexts"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lineage.qa.inventory/v1"
+}

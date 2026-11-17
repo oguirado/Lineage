@@ -1,0 +1,44 @@
+/* The journal spine connects immutable identity to expandable evidence. */
+[data-lin-screen="ledger"] { min-width: 0; }
+.ledger-intro { max-width: 68ch; color: var(--lin-text-muted); margin-bottom: var(--lin-space-md); }
+.ledger-toolbar { display: grid; gap: var(--lin-space-md); padding: var(--lin-space-md); background: var(--lin-bg); border: 1px solid var(--lin-divider); border-radius: var(--lin-radius-md); }
+.ledger-filters { display: grid; grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); gap: var(--lin-space-sm); align-items: end; }
+.ledger-filters label { display: grid; gap: var(--lin-space-xs); min-width: 0; }
+.ledger-filters input, .ledger-filters select { width: 100%; }
+.ledger-filters > button { justify-self: start; }
+.ledger-actions, .ledger-record-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lin-space-sm); }
+.ledger-progress, .ledger-coverage, .ledger-target { margin-top: var(--lin-space-sm); color: var(--lin-text-muted); font-size: var(--lin-type-sm); font-variant-numeric: tabular-nums; }
+.ledger-warning, .ledger-error { margin-block: var(--lin-space-md); padding: var(--lin-space-md); border: 1px solid var(--lin-error); border-inline-start-width: 3px; border-radius: var(--lin-radius-sm); background: var(--lin-error-bg); }
+.ledger-warning p, .ledger-warning h2, .ledger-error p, .ledger-error h2 { color: var(--lin-error); }
+.ledger-events { position: relative; list-style: none; margin: var(--lin-space-lg) 0; padding: 0 0 0 1.25rem; border-inline-start: 1px solid var(--lin-border); }
+.ledger-event { position: relative; margin: 0 0 var(--lin-space-md); padding: var(--lin-space-md); border: 1px solid var(--lin-border); border-radius: var(--lin-radius-md); background: var(--lin-surface); min-width: 0; }
+.ledger-event::before { content: ""; position: absolute; inset-inline-start: -1.625rem; inset-block-start: 1.5rem; width: 0.625rem; height: 0.625rem; border: 2px solid var(--lin-accent); border-radius: 50%; background: var(--lin-surface); }
+.ledger-event > h2 { font-family: var(--lin-font-mono); font-size: var(--lin-type-md); letter-spacing: -0.035em; }
+.ledger-event > .full-identity { color: var(--lin-text-muted); font-size: var(--lin-type-xs); }
+.ledger-metadata { font-size: var(--lin-type-sm); font-variant-numeric: tabular-nums; }
+.ledger-operation { font-family: var(--lin-font-mono); font-size: var(--lin-type-xs); color: var(--lin-text-muted); }
+.ledger-record-actions { margin-top: var(--lin-space-sm); padding-block-start: var(--lin-space-sm); border-block-start: 1px solid var(--lin-divider); }
+.ledger-record-actions a { display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--lin-type-sm); }
+.ledger-hashes, .ledger-payload { margin-top: var(--lin-space-md); padding: var(--lin-space-md); border: 1px solid var(--lin-border); border-radius: var(--lin-radius-sm); background: var(--lin-surface-raised); min-width: 0; }
+.ledger-digest, .ledger-payload pre, .ledger-payload dd { font-family: var(--lin-font-mono); font-size: var(--lin-type-sm); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; max-width: 100%; }
+.ledger-payload h3 { font-size: var(--lin-type-md); margin: var(--lin-space-sm) 0; }
+.ledger-payload dl { margin-block: 0; }
+.ledger-payload dt { font-size: var(--lin-type-xs); font-weight: 650; color: var(--lin-text-muted); margin-block-start: var(--lin-space-sm); }
+.ledger-payload dd { margin-inline-start: 0; margin-block-start: var(--lin-space-xs); }
+.ledger-pagination { margin-block: var(--lin-space-md); }
+.ledger-verification, .ledger-export { margin-top: var(--lin-space-lg); padding-block: var(--lin-space-md); border-top: 1px solid var(--lin-divider); min-width: 0; }
+.ledger-empty { margin-block: var(--lin-space-lg); }
+[data-lin-screen="ledger"] dialog p { max-width: 60ch; }
+@media (max-width: 48rem) { .ledger-filters { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 30rem) {
+  .ledger-toolbar, .ledger-event, .ledger-hashes, .ledger-payload { padding: var(--lin-space-sm); }
+  .ledger-events { padding-inline-start: 0.875rem; }
+  .ledger-event::before { inset-inline-start: -1.25rem; }
+  .ledger-record-actions button { flex: 1 1 10rem; }
+}
+
+/* A-VIS1 (orchestrator): keep the U26 review-5 wrapping rule after the visual pass */
+.ledger-operation { overflow-wrap: anywhere; }
+.ledger-payload dl { overflow-wrap: anywhere; }
+.ledger-payload dt { overflow-wrap: anywhere; }
+.ledger-payload dd { overflow-wrap: anywhere; }

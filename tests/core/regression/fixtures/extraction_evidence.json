@@ -1,0 +1,33 @@
+{
+  "additional_declarations": {
+    "blocked_by_import": 101,
+    "outside_candidate_discovery": 121
+  },
+  "excluded_measured": {
+    "hook_observer_excluded": 23,
+    "in_flight_unit": 81,
+    "out_of_scope_module": 42,
+    "red_in_seed": 67
+  },
+  "forbidden_identifier_hits": 0,
+  "green_after": 1604,
+  "green_before": 1604,
+  "licence_bytes_preserved": true,
+  "measurement_basis": "MEASURED",
+  "mechanically_equal": {
+    "production_modules": 22,
+    "regression_sources": 78
+  },
+  "missing_ids": [],
+  "negative_controls": {
+    "old_namespace_import_rejected_by_suite": true,
+    "single_byte_manifest_mutant_exit": 1
+  },
+  "private_literal_hits": 0,
+  "rename_map_rules": 67,
+  "schema": "lineage.extraction-evidence/v1",
+  "seed_bytecode_artifacts": false,
+  "seed_manifest_sha256": "f999a63de5b3b797a424d4eb1de78491639ceb875460ab72188f71e48f941f68",
+  "seed_manifest_verified": true,
+  "unexpected_ids": []
+}

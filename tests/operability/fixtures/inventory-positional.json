@@ -1,0 +1,296 @@
+{
+  "schema": "lineage.qa.inventory/v1",
+  "scope": "selftest",
+  "contract_sha256": "06d87b1e36a6a39f7627ed461a4078e1c3162bf3b4ce3ae9b199cc91c0a3b197",
+  "scenario": "positional-selector",
+  "frame": "initial",
+  "contexts": [
+    {
+      "route": "#/agents",
+      "screen": "agents",
+      "dialog": null,
+      "head": 0,
+      "actions": [
+        {
+          "action": "skip-main",
+          "entity": null,
+          "id": null,
+          "role": "link",
+          "name": "Skip to main content",
+          "selector": "[data-lin-action=\"skip-main\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "nav-agents",
+          "entity": null,
+          "id": null,
+          "role": "link",
+          "name": "Agents navigation",
+          "selector": "[data-lin-action=\"nav-agents\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "nav-lineage",
+          "entity": null,
+          "id": null,
+          "role": "link",
+          "name": "Lineage navigation",
+          "selector": "[data-lin-action=\"nav-lineage\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "nav-arena",
+          "entity": null,
+          "id": null,
+          "role": "link",
+          "name": "Arena navigation",
+          "selector": "[data-lin-action=\"nav-arena\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "nav-ledger",
+          "entity": null,
+          "id": null,
+          "role": "link",
+          "name": "Ledger navigation",
+          "selector": "[data-lin-action=\"nav-ledger\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "theme-light",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Use light theme",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"theme-light\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "theme-dark",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Use dark theme",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"theme-dark\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "refresh-screen",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Refresh Agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"refresh-screen\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "retry-panel",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Retry Agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"retry-panel\"]",
+          "availability": "absent",
+          "reason": "No failed panel or notice in this prepared context."
+        },
+        {
+          "action": "dismiss-message",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Dismiss message",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"dismiss-message\"]",
+          "availability": "absent",
+          "reason": "No failed panel or notice in this prepared context."
+        },
+        {
+          "action": "select-actor",
+          "entity": null,
+          "id": null,
+          "role": "combobox",
+          "name": "Acting agent",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"select-actor\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "toggle-fixture-info",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Fixture details",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"toggle-fixture-info\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "filter-agent-query",
+          "entity": null,
+          "id": null,
+          "role": "searchbox",
+          "name": "Find agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"filter-agent-query\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "filter-agent-workflow",
+          "entity": null,
+          "id": null,
+          "role": "combobox",
+          "name": "Filter agents by workflow",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"filter-agent-workflow\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "filter-agent-language",
+          "entity": null,
+          "id": null,
+          "role": "combobox",
+          "name": "Filter agents by language",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"filter-agent-language\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "filter-agent-status",
+          "entity": null,
+          "id": null,
+          "role": "combobox",
+          "name": "Filter agents by status",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"filter-agent-status\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "include-retired",
+          "entity": null,
+          "id": null,
+          "role": "checkbox",
+          "name": "Include retired agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"include-retired\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "sort-agents",
+          "entity": null,
+          "id": null,
+          "role": "combobox",
+          "name": "Sort agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"sort-agents\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "clear-agent-filters",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Clear agent filters",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"clear-agent-filters\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "create-agent",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Create agent",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"create-agent\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "open-agent",
+          "entity": "agent",
+          "id": "alpha-root",
+          "role": "link",
+          "name": "Open agent alpha-root",
+          "selector": "[data-lin-screen=\"agents\"] li:nth-child(1) a",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "open-agent",
+          "entity": "agent",
+          "id": "beta-root",
+          "role": "link",
+          "name": "Open agent alpha-root",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-entity=\"agent\"][data-lin-id=\"beta-root\"] [data-lin-action=\"open-agent\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "compare-agent",
+          "entity": "agent",
+          "id": "alpha-root",
+          "role": "checkbox",
+          "name": "Compare agent alpha-root",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-entity=\"agent\"][data-lin-id=\"alpha-root\"] [data-lin-action=\"compare-agent\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "compare-agent",
+          "entity": "agent",
+          "id": "beta-root",
+          "role": "checkbox",
+          "name": "Compare agent alpha-root",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-entity=\"agent\"][data-lin-id=\"beta-root\"] [data-lin-action=\"compare-agent\"]",
+          "availability": "enabled",
+          "reason": null
+        },
+        {
+          "action": "compare-agents",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Compare selected agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"compare-agents\"]",
+          "availability": "disabled",
+          "reason": "No comparison selected."
+        },
+        {
+          "action": "clear-comparison",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Clear compared agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"clear-comparison\"]",
+          "availability": "disabled",
+          "reason": "No comparison selected."
+        },
+        {
+          "action": "page-agents",
+          "entity": null,
+          "id": null,
+          "role": "button",
+          "name": "Load more agents",
+          "selector": "[data-lin-screen=\"agents\"] [data-lin-action=\"page-agents\"]",
+          "availability": "disabled",
+          "reason": "All agents loaded."
+        }
+      ],
+      "journey": [
+        "skip-main",
+        "filter-agent-query",
+        "clear-agent-filters",
+        "compare-agent",
+        "compare-agents",
+        "create-agent"
+      ],
+      "postconditions": []
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "clock_ms": 1700000000000,
+  "id": "empty",
+  "page": {
+    "events": [],
+    "has_more": false,
+    "head": 0,
+    "next_after": 0,
+    "resync": false
+  },
+  "panels": [
+    {
+      "id": "empty",
+      "state": "empty",
+      "title": "No agents yet."
+    },
+    {
+      "id": "no-match",
+      "state": "no-match",
+      "title": "No matching agents. Clear filters to see all loaded records."
+    }
+  ],
+  "results": [
+    {
+      "args": {},
+      "reply": {
+        "untrusted": {
+          "agents": [],
+          "synthetic": true
+        }
+      },
+      "tool": "agent_list"
+    }
+  ],
+  "schema": "lineage.ui.fixture/v1",
+  "tools": [
+    {
+      "description": "Synthetic agent list (read only)",
+      "inputSchema": {
+        "type": "object"
+      },
+      "name": "agent_list"
+    }
+  ]
+}

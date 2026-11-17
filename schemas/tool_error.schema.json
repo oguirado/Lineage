@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tool_error.schema.json",
+  "title": "tool_error",
+  "type": "object",
+  "properties": {
+    "ok": {
+      "const": false
+    },
+    "code": {
+      "enum": [
+        "bad_args",
+        "bad_op",
+        "stale_rev",
+        "busy",
+        "internal",
+        "conflict",
+        "no_agent",
+        "no_run",
+        "run_closed",
+        "memory_required",
+        "memory_debt",
+        "forbidden_level",
+        "not_inheritable",
+        "hash_mismatch",
+        "rule_not_declared",
+        "no_benchmark",
+        "heldout_forbidden",
+        "seat_not_allowed",
+        "fixture_readonly",
+        "timeout"
+      ]
+    },
+    "detail": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    }
+  },
+  "required": [
+    "ok",
+    "code"
+  ],
+  "additionalProperties": false
+}

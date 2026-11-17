@@ -1,0 +1,60 @@
+/* Shared semantic tokens: identity, evidence and measured state. */
+:root, .theme-light {
+  color-scheme: light;
+  --lin-bg: #f2f6f5;
+  --lin-surface: #ffffff;
+  --lin-surface-raised: #e5eeeb;
+  --lin-text: #172e35;
+  --lin-text-muted: #4d6368;
+  --lin-link: #096c64;
+  --lin-link-hover: #064e48;
+  --lin-error: #a32c40;
+  --lin-error-bg: #fff0f2;
+  --lin-success: #176044;
+  --lin-success-bg: #e6f4eb;
+  --lin-border: #79888c;
+  --lin-divider: #d4dfdc;
+  --lin-focus: #096c64;
+  --lin-accent: #096c64;
+  --lin-on-accent: #ffffff;
+  --lin-selection: #dcefe8;
+  --lin-shadow: 0 2px 4px #172e3505, 0 12px 36px #172e3509;
+  --lin-font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --lin-font-mono: ui-monospace, "Cascadia Code", "SFMono-Regular", monospace;
+  --lin-font-size: 0.9375rem;
+  --lin-line-height: 1.55;
+  --lin-type-xs: 0.75rem;
+  --lin-type-sm: 0.8125rem;
+  --lin-type-md: 1rem;
+  --lin-type-lg: 1.25rem;
+  --lin-type-xl: 1.5rem;
+  --lin-space-xs: 0.375rem;
+  --lin-space-sm: 0.75rem;
+  --lin-space-md: 1.25rem;
+  --lin-space-lg: 2rem;
+  --lin-space-xl: 3.5rem;
+  --lin-radius-sm: 0.375rem;
+  --lin-radius-md: 0.75rem;
+  --lin-content-max: 88rem;
+}
+.theme-dark {
+  color-scheme: dark;
+  --lin-bg: #101b20;
+  --lin-surface: #16262c;
+  --lin-surface-raised: #20343a;
+  --lin-text: #e8f1ef;
+  --lin-text-muted: #aabec2;
+  --lin-link: #76d7c2;
+  --lin-link-hover: #b2f2df;
+  --lin-error: #ffb4c2;
+  --lin-error-bg: #40242e;
+  --lin-success: #9ce2b7;
+  --lin-success-bg: #1e3c31;
+  --lin-border: #75888c;
+  --lin-divider: #354b50;
+  --lin-focus: #76d7c2;
+  --lin-accent: #76d7c2;
+  --lin-on-accent: #101b20;
+  --lin-selection: #214b45;
+  --lin-shadow: 0 2px 4px #00000018, 0 12px 36px #00000024;
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Extension discovery and tool descriptor validation",
+  "claims": [
+    {"id": "C1", "text": "load imports the extension package and visits its child modules in sorted name order, collecting their TOOLS, VALIDATORS and FOLDS.", "type": "behavior"},
+    {"id": "C2", "text": "load raises a RegistryError for duplicate tools, validators or folds. _descriptor checks ToolSpec metadata and preflights the object input_schema.", "type": "failure"},
+    {"id": "C3", "text": "Registry.__post_init__ copies input schemas and exposes read-only maps for tools, validators and folds.", "type": "invariant"}
+  ],
+  "triggers": ["extension import_failed", "duplicate_tool", "bad_descriptor", "bad_schema", "tool absent from registry discovery"],
+  "decision": {
+    "rule": "Change here when extension discovery order, descriptor validation or ownership of tool, validator and fold maps needs to change.",
+    "failure": "An extension import fails, a descriptor or schema is rejected, or a tool, validator or fold name is registered twice."
+  },
+  "questions": [
+    {"q": "Where does Registry load discover extensions and reject duplicate ToolSpec registrations?"},
+    {"q": "Where should I change validation of a tool descriptor input_schema before registry discovery succeeds?"},
+    {"q": "Where can I debug duplicate_validator or duplicate_fold while loading extensions?"}
+  ],
+  "aliases": ["plugin discovery", "tool catalog", "extension registry", "duplicate descriptor", "schema preflight"],
+  "edges": [],
+  "source_sha256": "987537665cfb681cb3b40d02c3b16ef7da13a22edec3e8e36a4ad13740a2e5d2"
+}

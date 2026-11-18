@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Canonical agent version identity",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "agent_version returns the SHA-256 hex digest of the canonical inputs containing constitution_sha256, sorted skill pins and memory_gen.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "_pins validates each pin has exactly skill_id and sha256, rejects duplicates and returns sorted copies.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "_inputs rejects a malformed constitution digest or memory_gen outside 0 through 9007199254740991 with bad_args.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "agent_version mismatch",
+    "duplicate skill pin",
+    "invalid memory generation",
+    "bad constitution digest"
+  ],
+  "decision": {
+    "rule": "Change here when agent version inputs, skill pin ordering or digest validation needs to change.",
+    "failure": "Two agents with identical inputs get different versions, or an invalid digest is accepted into the version."
+  },
+  "questions": [
+    {
+      "q": "Where is the agent version hash computed from constitution, skills and memory generation?"
+    },
+    {
+      "q": "Where should I change skill pin sorting or duplicate rejection before hashing?"
+    },
+    {
+      "q": "Where can I debug a bad_args failure from agent_version validation?"
+    }
+  ],
+  "aliases": [
+    "agent version",
+    "skill pins",
+    "memory generation",
+    "canonical hash"
+  ],
+  "edges": [],
+  "source_sha256": "cc96119b1dcf94c316f0a34b77a8e7ecf936351c1feebe70ef371584c17e421e"
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agent detail screen with ledger-gated panels",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "AgentScreen.checkHead throws HeadRace when the call head differs from the acknowledged ledger head.",
+      "type": "failure"
+    },
+    {
+      "id": "C2",
+      "text": "AgentScreen.bracket reads ledger_events with limit 1 and requires no resync before each fold.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "AgentScreen.available gates mutations by tool descriptor shape, selected actor, owner binding and ledger head.",
+      "type": "invariant"
+    },
+    {
+      "id": "C4",
+      "text": "AgentScreen.beat executes run_beat with a volatile heartbeat draft and reloads the runs panel on success.",
+      "type": "behavior"
+    },
+    {
+      "id": "C5",
+      "text": "AgentScreen.collisions detects identity key collisions across agent, skill, seat, unit and run keys.",
+      "type": "invariant"
+    }
+  ],
+  "triggers": [
+    "Data is stale. Ledger prefix changed",
+    "run heartbeat from Agent detail",
+    "identity key collision disables actions",
+    "agent panel fold fails"
+  ],
+  "decision": {
+    "rule": "Change here when AgentScreen ledger bracketing, staleness handling, tool availability gating, heartbeat drafts or panel rendering needs to change.",
+    "failure": "A panel reads a stale prefix, a mutation is offered without actor or descriptor checks, or the runs panel fails to refresh after a heartbeat."
+  },
+  "questions": [
+    {
+      "q": "Where does AgentScreen bracket each fold with ledger_events to detect a changed prefix?"
+    },
+    {
+      "q": "Where should I change how AgentScreen gates mutation buttons by actor and tool descriptor?"
+    },
+    {
+      "q": "Where can I debug a stale Agent detail after a ledger prefix change?"
+    },
+    {
+      "q": "Where does the Agent screen record a run heartbeat draft?"
+    }
+  ],
+  "aliases": [
+    "agent detail screen",
+    "ledger head race",
+    "identity key collision",
+    "run heartbeat",
+    "panel fold"
+  ],
+  "edges": [],
+  "source_sha256": "caa5661f8ff4bcffc6d4f99527449ddf0e5a12f15018c10c7671414807f3012c"
+}

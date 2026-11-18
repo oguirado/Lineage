@@ -1,0 +1,48 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Tool error wire shape",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The schema requires ok (const false) and code, and forbids unknown properties via additionalProperties false.",
+      "type": "invariant"
+    },
+    {
+      "id": "C2",
+      "text": "The code enum fixes exactly twenty codes: bad_args, bad_op, stale_rev, busy, internal, conflict, no_agent, no_run, run_closed, memory_required, memory_debt, forbidden_level, not_inheritable, hash_mismatch, rule_not_declared, no_benchmark, heldout_forbidden, seat_not_allowed, fixture_readonly and timeout.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "The optional detail string is bounded to minLength 1 and maxLength 2048 characters.",
+      "type": "invariant"
+    }
+  ],
+  "triggers": [
+    "tool error with unknown code",
+    "tool error with extra property",
+    "tool error with empty detail"
+  ],
+  "decision": {
+    "rule": "Change here when the tool error wire shape, fixed error codes, or detail bound needs to change.",
+    "failure": "A tool error uses a code outside the enum, carries an extra property, or omits ok or code."
+  },
+  "questions": [
+    {
+      "q": "Where does the tool_error schema fix the twenty allowed error codes?"
+    },
+    {
+      "q": "Where should I change the detail length bound on tool errors?"
+    },
+    {
+      "q": "Where can I debug why a tool error is rejected for a missing code?"
+    }
+  ],
+  "aliases": [
+    "tool error",
+    "error codes",
+    "wire shape"
+  ],
+  "edges": [],
+  "source_sha256": "11f47c9c3c935a74ee843088b58ba114fbe37c2eb44c75b676d4c0e0fc343125"
+}

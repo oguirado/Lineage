@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Ledger timeline styles",
+  "claims": [
+    {"id": "C1", "text": "The toolbar, filters, actions, progress, coverage and warning and error blocks style ledger controls and banners.", "type": "behavior"},
+    {"id": "C2", "text": "The event spine, cards, dot markers, hash and payload blocks, pagination and verification sections present journal history.", "type": "interface"},
+    {"id": "C3", "text": "Narrow breakpoints stack the filters and compact padding while wrapping rules keep operation and payload text readable.", "type": "invariant"}
+  ],
+  "triggers": ["ledger event spine", "hash payload wrapping", "filter grid", "warning banner"],
+  "decision": {
+    "rule": "Change here when the ledger toolbar, timeline cards or payload blocks need to change.",
+    "failure": "Events become unreadable, hashes overflow, or filters misalign on narrow screens."
+  },
+  "questions": [
+    {"q": "Where are the ledger timeline spine and event card styles defined?"},
+    {"q": "Where should I change the hash and payload block styling?"},
+    {"q": "Where can I debug why ledger filters misalign on narrow screens?"}
+  ],
+  "aliases": ["ledger spine", "event timeline", "payload blocks", "ledger toolbar"],
+  "edges": [],
+  "source_sha256": "866a80a5dfe4a0042a87351bb0190f43ad3e263d7da80faae5fda8dae705a1ac"
+}

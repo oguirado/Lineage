@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Concurrent loopback HTTP adapter",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "serve binds ThreadingHTTPServer on 127.0.0.1, forces tool authority with http transport, mints a session token, announces the startup port on stderr and the loopback url on stdout, and serves until SIGINT or SIGTERM.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "_route authorizes Host/Origin/session before any API handling, maps _STATUS from error codes to HTTP statuses, refuses fixture mutations with fixture_readonly, and exposes only /api/health, /api/tools, /api/call and /api/events plus static assets.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "_dispatch accepts only the frozen {untrusted} success seam or {ok:false,code,detail} errors (detail 1..2048 chars), and _body enforces exact JSON media, Content-Length cap 1048576, and a closed {tool,args} body shape.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "403 on unauthorized HTTP call",
+    "fixture_readonly on protected call in fixture mode",
+    "400 on closed events query syntax",
+    "503 when cursor provider unavailable"
+  ],
+  "decision": {
+    "rule": "Change here when loopback binding, session authorization, route table, or the dispatch result seam needs to change.",
+    "failure": "A foreign-origin mutation is authorized, a fixture mode serves live writes, or a legacy dispatch result is silently adapted."
+  },
+  "questions": [
+    {
+      "q": "Where does _route map domain error codes to HTTP statuses?"
+    },
+    {
+      "q": "Where should I change which API paths the loopback adapter exposes?"
+    },
+    {
+      "q": "Where can I debug why a fixture-mode protected call returns fixture_readonly?"
+    }
+  ],
+  "aliases": [
+    "loopback HTTP",
+    "session authorization",
+    "route table",
+    "result seam"
+  ],
+  "edges": [],
+  "source_sha256": "96d59843a470e7a582a6db0bc8c3a3d94cea66c696a4cebdb9ba542eb0540d84"
+}

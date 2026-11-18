@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Memory unit schema with per-kind bodies",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The schema requires schema (const lineage.mem.unit/v1), id, kind, level, statement, status, privacy, scope, provenance, receipts, supersedes and body, and forbids unknown properties at the top level.",
+      "type": "invariant"
+    },
+    {
+      "id": "C2",
+      "text": "Each kind restricts level and body shape through if/then clauses: ruling is level 1 with quote_sha256 plus how_to_apply, lesson and negative and episode and open_item accept levels 2 or 3 with kind-specific bodies, and workflow and decision require level 2.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "Level 2 units must carry at least one receipt, a superseded unit must carry superseded_by (and a non-superseded unit must not), and episodes must carry provenance.run_id.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "memory unit missing receipts at level 2",
+    "superseded unit without superseded_by",
+    "episode without provenance run_id",
+    "ruling with lesson body"
+  ],
+  "decision": {
+    "rule": "Change here when the memory unit shape, per-kind bodies, or level and supersession rules need to change.",
+    "failure": "A level 2 unit validates with no receipts, a superseded unit escapes its superseded_by requirement, or an episode validates without a run binding."
+  },
+  "questions": [
+    {
+      "q": "Where does the mem_unit schema pin ruling to level 1 with a quote hash?"
+    },
+    {
+      "q": "Where should I change the body required for lesson units?"
+    },
+    {
+      "q": "Where can I debug why a level 2 unit without receipts is rejected?"
+    }
+  ],
+  "aliases": [
+    "memory unit",
+    "per-kind body",
+    "level 2 receipts",
+    "supersession"
+  ],
+  "edges": [],
+  "source_sha256": "3ed62dbb08d75af0bacce44fe7dfb4dddbab93c4a99aa8d6dcde2d4ac7079d15"
+}

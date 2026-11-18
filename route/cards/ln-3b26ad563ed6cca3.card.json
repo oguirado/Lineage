@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Read-only lexical memory recall",
+  "claims": [
+    {"id": "C1", "text": "route validates the agent identity, requires a query of 1 to 512 characters that encodes as strict UTF-8, and a limit from 1 to 50, raising bad_args otherwise.", "type": "failure"},
+    {"id": "C2", "text": "route scores each eligible unit from fold.units_for by the overlap of casefolded word tokens between the query and the unit statement, sorts by descending score then unit id, and truncates to the limit.", "type": "behavior"},
+    {"id": "C3", "text": "route returns the selected units deep-copied with the top statement as answer (or NOT IN MEMORY) and the snapshot head; LineageError passes through while unexpected exceptions become internal.", "type": "interface"}
+  ],
+  "triggers": ["memory query rejected for length", "recall returns NOT IN MEMORY", "authoritative memory unavailable"],
+  "decision": {
+    "rule": "Change here when memory recall matching, ranking, or the answer contract needs to change.",
+    "failure": "A valid query is rejected, eligible units are missed by the token overlap, or a recall failure surfaces inconsistently."
+  },
+  "questions": [
+    {"q": "Where does route rank memory units by lexical term overlap?"},
+    {"q": "Where should I change the query length or result limit validation?"},
+    {"q": "Where can I debug why recall reports NOT IN MEMORY for an eligible unit?"}
+  ],
+  "aliases": ["lexical recall", "term overlap", "memory search", "NOT IN MEMORY"],
+  "edges": [],
+  "source_sha256": "7cad8414de9b22b593e0f2fef819713c340bee062e9c0575e75fd0f7d7f41e76"
+}

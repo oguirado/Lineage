@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Correctness-first scorecard ranking",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "rank_pairs validates each card, rejects duplicate identities and requires identical task_ids across compared series.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "rank_pairs orders by exact correctness ratio, breaking ties by cost only when every tied card has no unknown cost for the chosen metric.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "_validate requires correctness to equal n_correct over n_tasks exactly and cost means to equal total over known exactly.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "rank_pairs duplicate series",
+    "task sets differ",
+    "cost mean mismatch",
+    "correctness ratio invalid"
+  ],
+  "decision": {
+    "rule": "Change here when ranking order, cost tie-breaking, task-set comparability or card validation needs to change.",
+    "failure": "A pair is ranked by cost despite unknown costs, or an inexact correctness ratio is accepted."
+  },
+  "questions": [
+    {
+      "q": "Where does rank_pairs validate scorecards before ranking?"
+    },
+    {
+      "q": "Where should I change correctness ordering or cost tie-breaking?"
+    },
+    {
+      "q": "Where can I debug a ranking failure from mismatched task sets?"
+    }
+  ],
+  "aliases": [
+    "scorecard ranking",
+    "correctness order",
+    "cost tiebreaker",
+    "rank pairs"
+  ],
+  "edges": [],
+  "source_sha256": "e7e03ed113042bc1b717c735b2ec66b7ffdd50e59702a596ac378967d15fb63a"
+}

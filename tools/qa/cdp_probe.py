@@ -10,7 +10,7 @@ import re
 import sys
 import tempfile
 import time
-from urllib.parse import urlsplit, parse_qsl
+from urllib.parse import unquote_plus, urlsplit
 from .cdp_pipe import PipeClient,PipeError
 from .contracts import (STATES, canonical, decode, identity_key, load_contract,
                         normalize_name, positive, role_for, validate_inventory)
@@ -291,6 +291,7 @@ def owned_page(browser, url, timeout_ms):
     @contextmanager
     def opened():
         _url(url);positive(timeout_ms)
+        _reject_url_credentials(url)
         with tempfile.TemporaryDirectory(prefix='lineage-ax-') as profile:
             client=PipeClient([str(browser),*_nested_userns_flags(),'--headless=new','--no-first-run',
                 '--no-default-browser-check','--disable-background-networking',
@@ -309,53 +310,109 @@ def owned_page(browser, url, timeout_ms):
     return opened()
 
 
-def wait_ready(client, session, url, timeout_ms):
+def _reject_url_credentials(url):
+    parsed = urlsplit(url)
+    if parsed.username is not None or parsed.password is not None:
+        raise PipeError('unsafe_content')
+    credential_keys = {
+        'token', 'session', 'session_token', 'lineage_session_token',
+        'access_token', 'refresh_token', 'id_token', 'auth_token', 'api_key', 'apikey',
+    }
+    fields = (
+        *re.split(r'[/;]', parsed.path),
+        *re.split(r'[&;?]', parsed.query),
+        *re.split(r'[&;#?]', parsed.fragment),
+    )
+    for field in fields:
+        key, separator, _ = field.partition('=')
+        if not separator:
+            continue
+        # Decode the key alone so encoded filter text stays inside its value.
+        key = re.split(r'[/&;#?]', unquote_plus(key))[-1].strip().casefold().replace('-', '_')
+        if key in credential_keys:
+            raise PipeError('unsafe_content')
+
+
+def wait_ready(client, session, url, timeout_ms, *, after_sample=None):
     """Completion depends only on pruned roles, names, states and quiet hashes."""
     import select
     from .ax_prune import prune, tree_hash
     deadline=time.monotonic()+timeout_ms/1000;previous=None;quiet=0
-    while time.monotonic()<deadline:
-        nodes=prune(client.call('Accessibility.getFullAXTree',{},session_id=session)['nodes'])
-        ready=any(n['role']=='status' and n['name']==screen_ready_name(url) for n in nodes)
-        busy=any(n['role']=='progressbar' or dict(n['attrs']).get('busy')=='true' for n in nodes)
-        digest=tree_hash(nodes)
-        quiet=quiet+1 if ready and not busy and digest==previous else 0
-        if quiet>=2:
-            return nodes
-        previous=digest
-        select.select([],[],[],min(0.05,max(0,deadline-time.monotonic())))
-    error=PipeError('deadline')
-    error.nodes=nodes
-    raise error
+    nodes = []
+    try:
+        while time.monotonic()<deadline:
+            nodes=prune(client.call('Accessibility.getFullAXTree',{},session_id=session)['nodes'])
+            if after_sample is not None:
+                after_sample()
+            ready=any(n['role']=='status' and n['name']==screen_ready_name(url) for n in nodes)
+            busy=any(n['role']=='progressbar' or dict(n['attrs']).get('busy')=='true' for n in nodes)
+            digest=tree_hash(nodes)
+            quiet=quiet+1 if ready and not busy and digest==previous else 0
+            if quiet>=2:
+                return nodes
+            previous=digest
+            select.select([],[],[],min(0.05,max(0,deadline-time.monotonic())))
+        raise PipeError('deadline')
+    except PipeError as error:
+        if error.code == 'deadline' and not hasattr(error, 'nodes'):
+            error.nodes = nodes
+        raise
 
 
 def viewpoint_probe(*, url, browser, timeout_ms, artifact_root=None):
     from .ax_prune import violations
+    from .evidence import _artifact_root
     checks=[];artifacts=[];context=context_for()
     try:
+        origin = _url(url)
+        positive(timeout_ms)
+        _reject_url_credentials(url)
+        root = None
+        if artifact_root is not None:
+            if not os.fspath(artifact_root):
+                raise ValueError('bad_config')
+            root = Path(artifact_root)
+            try:
+                directory = _artifact_root(root)
+            except OSError as error:
+                raise ValueError('bad_config') from error
+            os.close(directory)
         with owned_page(browser,url,timeout_ms) as (client,session):
-            nodes=wait_ready(client,session,url,timeout_ms)
-            current=_origin_guard(client,session,_url(url))
-            # Only the URL is sampled outside AX. A session credential is never a route.
-            parsed=urlsplit(current)
-            credential_keys={'token','session','session_token','lineage-session-token'}
-            queries=(parsed.query,parsed.fragment.partition('?')[2])
-            if any(key.casefold() in credential_keys for query in queries for key,_ in parse_qsl(query)):
-                checks.append(check('unsafe_content','Session credentials must not be in the URL.'))
+            def guard_location(*, navigating=False):
+                current = _eval(client, session, 'location.href')
+                if navigating and current == 'about:blank':
+                    return
+                try:
+                    _reject_url_credentials(current)
+                    current_origin = _url(current)
+                except ValueError:
+                    raise PipeError('wrong_target') from None
+                if current_origin != origin:
+                    raise PipeError('wrong_target')
+
+            # Page.navigate can return before the initial document commits.
+            guard_location(navigating=True)
+            nodes = wait_ready(client, session, url, timeout_ms,
+                               after_sample=lambda: guard_location(navigating=True))
+            guard_location()
             for failure in violations(nodes,screen_ready_name(url)):
                 if failure=='missing_current_navigation':
                     checks.append(check('incomplete_tree','Chrome omits aria-current from the CDP full AX response; current navigation state cannot be proven through the pruned tree.'))
                 else:
                     checks.append(check('semantic_mismatch',failure))
-            if artifact_root is not None:
-                artifacts.append(_save_artifact(Path(artifact_root),'pruned',nodes))
+            if root is not None:
+                artifacts.append(_save_artifact(root,'pruned',nodes))
             context['owner_ref']='owned-cdp'
     except PipeError as error:
-        checks.append(check(error.code,'AX completion unavailable: '+error.code))
+        detail = ('Session credentials must not be in the URL.' if error.code == 'unsafe_content'
+                  else 'AX completion unavailable: ' + error.code)
+        checks.append(check(error.code, detail))
     except (ValueError,TypeError):
         checks.append(check('bad_config','Invalid AX probe input.'))
     except OSError:
         checks.append(check('observer_unavailable','Browser executable or pipe unavailable.'))
+    except Exception:
+        checks.append(check('probe_internal','Unexpected AX probe failure.'))
     return make_report(method='C',scope='selftest',checks=checks or [check()],artifacts=artifacts,context=context)
 
 
@@ -368,7 +425,7 @@ def _parser(description):
     parser=_ArgumentParser(description=description)
     parser.add_argument('--url',required=True);parser.add_argument('--browser',required=True,type=Path)
     parser.add_argument('--inventory',type=Path);parser.add_argument('--contract',type=Path)
-    parser.add_argument('--viewpoint',action='store_true');parser.add_argument('--artifacts',type=Path)
+    parser.add_argument('--viewpoint',action='store_true');parser.add_argument('--artifacts')
     parser.add_argument('--timeout-ms',required=True,type=int)
     return parser
 

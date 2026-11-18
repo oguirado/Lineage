@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "JSON lane transport for program-to-program calls",
+  "claims": [
+    {"id": "C1", "text": "The document defines lineage.family/1 as a strict recipient-owned transport where stdio reads one JSON object to EOF and writes one canonical receipt plus LF.", "type": "behavior"},
+    {"id": "C2", "text": "The public layout table fixes family/<Endpoint>/config.json, consumer.lock, spool requests, state results with .done sentinels, quarantine entries and dedup retention.", "type": "interface"},
+    {"id": "C3", "text": "The request rules cap raw input at 65536 bytes, bound integers to the safe-integer range, limit nesting to 64 levels, and reserve id invalid0 for unidentifiable receipts.", "type": "invariant"},
+    {"id": "C4", "text": "The worked examples show capabilities, events.read with an exclusive after cursor, and a call retry that returns the original commit without appending another event.", "type": "behavior"}
+  ],
+  "triggers": ["family receipt bad_args", "endpoint config group/world writable", "duplicate request id with different payload", "capabilities list empty"],
+  "decision": {
+    "rule": "Change here when the family envelope shape, mailbox layout, request bounds or retry deduplication needs to change.",
+    "failure": "Unsafe configuration is accepted, an exact retry appends a second event, or a changed payload under a retained id is not refused."
+  },
+  "questions": [
+    {"q": "Where is the family mailbox layout and its .done sentinel documented?"},
+    {"q": "Where should I change the raw request byte cap and integer bounds?"},
+    {"q": "Where can I debug why a JSON lane request is refused with bad_args?"},
+    {"q": "Why does an exact retry of a published request return the original commit?"}
+  ],
+  "aliases": ["JSON lane", "family envelope", "recipient mailbox", "capabilities request", "events read cursor"],
+  "edges": [],
+  "source_sha256": "de3853920709456adb6c5cc2b10a193693a8712ac628939348d2c81da648f0f9"
+}

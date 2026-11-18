@@ -1,0 +1,64 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Lineage tree screen with evidence inspector",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "perform loads lineage_tree when available, otherwise pages agent_list with a stable head and strictly increasing cursor.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "candidates filters by root scope and folded query and retains all canonical parent chains of matches.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "evidence renders recorded inheritance, accepted eligible unit bodies, rejected reasons, birth constitution and parent constitution deltas.",
+      "type": "interface"
+    },
+    {
+      "id": "C4",
+      "text": "render reveals at most fifty agents per generation, collapses subtrees and restores focus with caret position after render.",
+      "type": "behavior"
+    },
+    {
+      "id": "C5",
+      "text": "perform rejects identity key collisions and incoherent tree heads instead of rendering ambiguous lineage.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "lineage tree fails to load",
+    "selected agent hidden by filter",
+    "identity key collision",
+    "tree drawing unavailable"
+  ],
+  "decision": {
+    "rule": "Change here when lineage loading, root and query filtering, reveal budgets, evidence rendering or collision handling needs to change.",
+    "failure": "Search drops canonical ancestors, a hidden selection stays active, or colliding identities render as distinct agents."
+  },
+  "questions": [
+    {
+      "q": "Where does the Lineage screen load the tree from lineage_tree or paged agent_list?"
+    },
+    {
+      "q": "Where should I change the per-generation reveal budget or collapse behaviour?"
+    },
+    {
+      "q": "Where can I debug a lineage selection hidden by filters or pending expansion?"
+    },
+    {
+      "q": "Where does the inspector show parent constitution changes?"
+    }
+  ],
+  "aliases": [
+    "lineage tree",
+    "reveal budget",
+    "evidence inspector",
+    "canonical parent",
+    "inheritance evidence"
+  ],
+  "edges": [],
+  "source_sha256": "9b01aede2ae9e5e684c085dda85c056c777de4821ac94499a09195ba9f864b23"
+}

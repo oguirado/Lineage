@@ -1,0 +1,23 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "App shell layout and responsive grid styles",
+  "claims": [
+    {"id": "C1", "text": "The #app rule lays out the shell as a two-column grid with the banner, primary navigation and main content, centered at var(--lin-content-max).", "type": "behavior"},
+    {"id": "C2", "text": "The .shell-toolbar rule styles the shared toolbar row, and the skip-link rule hides the skip link until focus with .skip-link:focus.", "type": "behavior"},
+    {"id": "C3", "text": "Media queries at 58rem, 30rem and 18rem collapse the grid to one column and reflow the primary navigation and toolbar for narrow viewports.", "type": "invariant"},
+    {"id": "C4", "text": "The .state-error and .state-completed rules color diagnostics with the error and success tokens, and .screen-readiness plus .action-outcome show when not hidden.", "type": "interface"}
+  ],
+  "triggers": ["shell layout overflows on small screens", "primary navigation wraps badly", "skip link not visible on focus", "toolbar overlaps main content"],
+  "decision": {
+    "rule": "Change here when shell grid layout, toolbar styling, navigation styling or responsive breakpoints need to change.",
+    "failure": "The shell overflows or misaligns at a breakpoint, the skip link is unreachable, or the toolbar crowds the main region."
+  },
+  "questions": [
+    {"q": "Where is the #app grid defined and what are its columns?"},
+    {"q": "Where should I change the breakpoint where navigation becomes a four-column grid?"},
+    {"q": "Where can I debug why the skip link is not visible until focus?"}
+  ],
+  "aliases": ["shell layout", "app grid", "responsive breakpoints", "primary navigation", "toolbar styles"],
+  "edges": [],
+  "source_sha256": "e5cedca3ff9419406cb04683b9b2b962580aaf3c96bdad6e94378f0e82863e20"
+}

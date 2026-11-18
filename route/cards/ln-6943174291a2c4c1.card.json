@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Memory resume tool descriptors",
+  "claims": [
+    {"id": "C1", "text": "TOOLS registers memory_route and memory_bootcheck as read-effect ToolSpecs with closed input schemas, where memory_bootcheck requires an observed object with agent_version, memory_gen, head and entry_sha256.", "type": "interface"},
+    {"id": "C2", "text": "_route and _bootcheck delegate to the domain route and bootcheck functions with the declared arguments, and carry the _memory_contract and _memory_resume marker attributes.", "type": "behavior"},
+    {"id": "C3", "text": "Import time calls store._install_resume_dispatch, _install_memory_publication, _install_resume_json and _install_resume_lifecycle, while VALIDATORS and FOLDS stay empty so no state or event is owned here.", "type": "invariant"}
+  ],
+  "triggers": ["memory_route tool absent", "bootcheck observed shape rejected", "resume dispatch not installed"],
+  "decision": {
+    "rule": "Change here when the memory resume tool schemas, delegation, or dispatch installation needs to change.",
+    "failure": "A resume tool is missing from the registry, an observed bootcheck payload is rejected, or dispatch wiring is absent after import."
+  },
+  "questions": [
+    {"q": "Where are the memory_route and memory_bootcheck descriptors registered?"},
+    {"q": "Where should I change the observed bootcheck fields?"},
+    {"q": "Where can I debug why resume dispatch wiring is missing after import?"}
+  ],
+  "aliases": ["memory route tool", "bootcheck tool", "resume dispatch", "observed memory", "read effect"],
+  "edges": [
+    {"rel": "imports", "to": "ln-3b26ad563ed6cca3"}
+  ],
+  "source_sha256": "1fa6e761d0b9f8095de970029f604a42aee5882aa2fe6d0f93433b1c85087f25"
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Accessibility tree pruning and completion checks",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "prune walks from roots in document order with an explicit stack, keeping only non-ignored nodes whose role is in CHASSIS_ROLES and emitting role, normalized name, state attrs, depth, ancestors, node_id and backend_id; OPAQUE_ROLES (article) stops descent into children.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "normalize_name collapses whitespace via NFC, escapes backslash and pipe, and truncates to MAX_NAME_BYTES (64) bytes without ending on a lone backslash.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "violations checks the pruned projection for an empty tree, a missing ready status, progressbars after ready, duplicate or invalid actionable names, a missing current navigation link, missing banner/navigation/main/contentinfo landmarks, and an unnamed main screen.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "empty_tree",
+    "missing_ready_status",
+    "progress_after_ready",
+    "duplicate_action",
+    "invalid_action_name",
+    "missing_current_navigation",
+    "missing_landmark:main",
+    "unnamed_screen"
+  ],
+  "decision": {
+    "rule": "Change here when the pruned accessibility projection, name normalization, canonical tree hash, or violation checks need to change.",
+    "failure": "A ready screen reports missing landmarks or duplicate actions, or the tree hash changes without any role/name/state change."
+  },
+  "questions": [
+    {
+      "q": "Where does prune decide which roles descend and which articles are opaque?"
+    },
+    {
+      "q": "Where should I change how normalize_name bounds serialized names to 64 bytes?"
+    },
+    {
+      "q": "Where can I debug why violations reports progress_after_ready or duplicate_action?"
+    }
+  ],
+  "aliases": [
+    "prune_ax_v1",
+    "accessibility projection",
+    "tree hash",
+    "landmark checks"
+  ],
+  "edges": [],
+  "source_sha256": "10d0052f8c81dd6ebbfbdff7c51474dcd423c26f8d3a2aa791ef25349a9bc5c8"
+}

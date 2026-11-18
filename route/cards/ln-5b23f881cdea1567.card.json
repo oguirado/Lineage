@@ -1,0 +1,48 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Plan and memory Markdown rendering",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "render_plan_md renders the plan title, phase, state and closed outcome from the projection, then lists tasks sorted by id with sorted microtasks, or _No plan_ / _No tasks_ placeholders when empty.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "render_plan_md and render_memory_md sanitize every field with _one_line/_block, stripping control characters (except newlines in _block) so rendered Markdown carries no stray controls.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "render_memory_md renders # Memory with sections sorted by id, labelling from the template memory_sections, trimming trailing whitespace per section and ending with exactly one newline.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "rendered plan has stray control characters",
+    "memory rendered out of order",
+    "missing task list in markdown"
+  ],
+  "decision": {
+    "rule": "Change here when plan or memory Markdown layout, sorting, or control-character sanitization needs to change.",
+    "failure": "Plan output leaks control characters, tasks or memory sections render unsorted, or the trailing newline is missing."
+  },
+  "questions": [
+    {
+      "q": "Where does render_plan_md sort tasks and microtasks before listing them?"
+    },
+    {
+      "q": "Where should I change how _one_line sanitizes control characters in rendered fields?"
+    },
+    {
+      "q": "Where can I debug why render_memory_md shows _No memory_ instead of sections?"
+    }
+  ],
+  "aliases": [
+    "plan markdown",
+    "memory markdown",
+    "control sanitization"
+  ],
+  "edges": [],
+  "source_sha256": "5a9cfc2dcb739c4e923266c7248adcc490d8e23a9d0fcb35c21eaa339878f100"
+}

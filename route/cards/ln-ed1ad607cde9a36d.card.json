@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Strict JSON decoding and structural schema boundary",
+  "claims": [
+    {"id": "C1", "text": "strict_loads rejects duplicate keys, non-finite numbers, non-JSON types, invalid unicode and container cycles before any schema assertion runs.", "type": "failure"},
+    {"id": "C2", "text": "validate preflights the complete schema with _schema_node, checks the instance with _check_json, then applies conjunctive assertions in fixed keyword order.", "type": "behavior"},
+    {"id": "C3", "text": "_assertions enforces enum and const with JSON equality that treats bool as a distinct type from numbers, matching the safe-integer and nesting limits.", "type": "invariant"},
+    {"id": "C4", "text": "SchemaError carries code bad_args with independent instance pointer and schema pointer, so failures report exactly where the instance or the schema is wrong.", "type": "interface"}
+  ],
+  "triggers": ["schema validation fails unexpectedly", "duplicate_key error", "invalid_schema preflight", "enum const mismatch"],
+  "decision": {
+    "rule": "Change here when strict decoding, schema preflight, assertion order or equality semantics need to change.",
+    "failure": "An invalid JSON value passes decoding, a bool is accepted as an integer, or a schema keyword is silently ignored."
+  },
+  "questions": [
+    {"q": "Where does strict_loads reject duplicate keys and non-finite numbers?"},
+    {"q": "Where should I change the assertion order in _assertions?"},
+    {"q": "Where can I debug a schema failure from its instance and schema pointers?"},
+    {"q": "How does validate distinguish invalid_schema from instance failures?"}
+  ],
+  "aliases": ["strict JSON", "schema validation", "SchemaError", "preflight", "JSON pointer"],
+  "edges": [],
+  "source_sha256": "bbbfa43229e71fec980c7f4d67f31afc6900233d1e68c944c3169e29a93bcb20"
+}

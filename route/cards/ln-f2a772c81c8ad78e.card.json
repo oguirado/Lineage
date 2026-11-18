@@ -1,0 +1,20 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "CLI entrypoint re-export",
+  "claims": [
+    {"id": "C1", "text": "The __main__ guard delegates to cli.main and raises SystemExit with its return value.", "type": "behavior"},
+    {"id": "C2", "text": "The entry imports main from .cli and the module docstring states it runs the mechanically extracted CLI.", "type": "interface"}
+  ],
+  "triggers": ["CLI not found error", "wrong exit code", "cli import failure"],
+  "decision": {
+    "rule": "Change here when the CLI entrypoint or its exit behavior needs to change.",
+    "failure": "Module execution misroutes or exit codes are lost."
+  },
+  "questions": [
+    {"q": "Where is the CLI main imported and invoked?"},
+    {"q": "What exit code does the entrypoint propagate?"}
+  ],
+  "aliases": ["cli entrypoint", "__main__", "system exit"],
+  "edges": [],
+  "source_sha256": "202be546fc8eb671eddbcb1a6a28d57f2bc8ce884576d63f5b6275783faa319d"
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "App shell mounting, theming and screen lifecycle",
+  "claims": [
+    {"id": "C1", "text": "mountShell builds the header, primary navigation for agents, lineage, arena and ledger, the toolbar, fixture info, notice, main region and footer, then replaces the root children.", "type": "behavior"},
+    {"id": "C2", "text": "Theme selection prefers an explicit saved lineage-theme value, falls back to prefers-color-scheme, and persists only when the user activates a theme button.", "type": "behavior"},
+    {"id": "C3", "text": "viewState sets document title, aria-current navigation, busy state and diagnostics panels, and data-lin-rev only when a confirmed head exists.", "type": "invariant"},
+    {"id": "C4", "text": "An identity key collision lint finding disables every button, input and select in main and blocks screen readiness until resolved.", "type": "failure"}
+  ],
+  "triggers": ["screen never ready", "theme not persisted", "identity key collision disables actions", "stale data notice missing"],
+  "decision": {
+    "rule": "Change here when shell structure, theme persistence, screen readiness or focus management needs to change.",
+    "failure": "A screen stays not-ready, the theme flips on every visit, or focus is lost on navigation or refresh."
+  },
+  "questions": [
+    {"q": "Where does mountShell build the navigation and toolbar?"},
+    {"q": "Where should I change theme persistence and the prefers-color-scheme fallback?"},
+    {"q": "Where can I debug why a screen is not marked ready?"},
+    {"q": "How is focus restored after navigation or refresh?"}
+  ],
+  "aliases": ["app shell", "screen lifecycle", "theme toggle", "readiness mirror", "focus restoration"],
+  "edges": [],
+  "source_sha256": "80c5ec23a0ad487d927fd6651449a2c21da45204335fced42b86924b013c4eba"
+}

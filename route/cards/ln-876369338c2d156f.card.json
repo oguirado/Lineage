@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Arena benchmark admission, compound execution and verdicts",
+  "claims": [
+    {"id": "C1", "text": "declare validates the bench_declared shape, requires p0 below p1, rejects duplicate bench declarations as conflict or bad_op, admits the bank, and refuses retired subjects or unadmitted seats.", "type": "failure"},
+    {"id": "C2", "text": "run executes the cell plan under the per-operation claim lock with deterministic ar- child operation ids, staged and identity-checked runner output, memory preflight, a required current-run episode, then close and bench.result per cell.", "type": "behavior"},
+    {"id": "C3", "text": "verdict aggregates only complete-task prefixes into observations, runs the declared SPRT bounds and credit rule, and refuses unfinished cells, unmatched grids, or finalized benchmarks.", "type": "invariant"}
+  ],
+  "triggers": ["benchmark declaration differs from command", "heldout_forbidden on select purpose", "command completion is ambiguous", "benchmark task cell grid incomplete"],
+  "decision": {
+    "rule": "Change here when benchmark admission, compound execution, recovery, or verdict aggregation needs to change.",
+    "failure": "A benchmark runs without a declared rule, held-out tasks leak into selection, or a verdict is issued over unfinished cells."
+  },
+  "questions": [
+    {"q": "Where does declare freeze benchmark admission and reject duplicate declarations?"},
+    {"q": "Where should I change the deterministic child operation identity for run cells?"},
+    {"q": "Where can I debug why a benchmark verdict refuses with incomplete task cells?"}
+  ],
+  "aliases": ["bench declare", "compound execution", "child operations", "SPRT verdict", "claim lock"],
+  "edges": [
+    {"rel": "imports", "to": "ln-499ed3e0fa4be245"}
+  ],
+  "source_sha256": "ab008f2862b3cdfad1ce7f4dae505653240ae9902b1365f92357f26e1125f36b"
+}

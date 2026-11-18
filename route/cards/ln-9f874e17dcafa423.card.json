@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "OpenFresnel bridge tool descriptors",
+  "claims": [
+    {"id": "C1", "text": "TOOLS registers openfresnel_probe and openfresnel_spawn with journal effect and the client argument schemas, and discovery performs no I/O.", "type": "interface"},
+    {"id": "C2", "text": "_probe and _spawn validate args through client.validated_args, build a Command from the agent and op_id, and delegate to client.probe and client.spawn, with _spawn passing mode separately.", "type": "behavior"},
+    {"id": "C3", "text": "VALIDATORS and FOLDS stay empty so neither handler uses the memory-contract dispatcher or creates application journal events.", "type": "invariant"}
+  ],
+  "triggers": ["openfresnel_probe arguments rejected", "terminal launch mode missing", "bridge tool absent from registry"],
+  "decision": {
+    "rule": "Change here when the bridge descriptors, argument validation, or probe and spawn delegation needs to change.",
+    "failure": "A bridge tool is missing, arguments are accepted without validation, or an application event is created for an external launch."
+  },
+  "questions": [
+    {"q": "Where are the openfresnel probe and spawn tools registered?"},
+    {"q": "Where should I change how _spawn separates the mode argument?"},
+    {"q": "Where can I debug why a bridge tool validation fails before dispatch?"}
+  ],
+  "aliases": ["bridge descriptors", "terminal probe", "headless launch", "external effect", "argument validation"],
+  "edges": [],
+  "source_sha256": "00524505b348589d50eee077341d4f77a2249661ab7a6f48e580dafb97247c2c"
+}

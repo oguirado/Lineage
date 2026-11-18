@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "OpenFresnel client boundary document",
+  "claims": [
+    {"id": "C1", "text": "The document states that the OpenFresnel receiver command ABI is AUSENTE and that the client validates arguments then refuses with internal without publication.", "type": "behavior"},
+    {"id": "C2", "text": "The configuration section defines the selection order of commands_dir: explicit argument, LINEAGE_OPENFRESNEL_COMMANDS_DIR environment value, then paths.commands_dir in the named contract file.", "type": "interface"},
+    {"id": "C3", "text": "The argument contract section requires caller-asserted agent and op_id, forbids unknown fields such as rid and argv, and bounds timeout_ms to 1..60000 with default 20000.", "type": "invariant"},
+    {"id": "C4", "text": "The required publication section describes the <rid>.tmp, <rid>.json and <rid>.result.json protocol filenames and the fsync-before-rename publication sequence as blocked until an ABI exists.", "type": "interface"}
+  ],
+  "triggers": ["openfresnel_probe refuses with internal", "commands_dir configuration bad_args", "receiver command ABI missing", "spawn mode envelope versus endpoint confusion"],
+  "decision": {
+    "rule": "Change here when the OpenFresnel client boundary, its configuration sources, argument contract or publication protocol needs to change.",
+    "failure": "The bridge refuses every call, an invalid configuration source is selected, or a spawn request carries both envelope and endpoint."
+  },
+  "questions": [
+    {"q": "Where is the configuration selection order for commands_dir documented?"},
+    {"q": "Where should I check why openfresnel_spawn refuses with internal?"},
+    {"q": "What argument fields does the bridge reject, such as rid or argv?"},
+    {"q": "Which publication steps are blocked until the command ABI is supplied?"}
+  ],
+  "aliases": ["OpenFresnel bridge", "external spawn", "commands directory", "receiver acknowledgement", "client boundary"],
+  "edges": [],
+  "source_sha256": "b262db5575bd9c28091549bf0e0265c74f39562f3981694174eef7f786619b46"
+}

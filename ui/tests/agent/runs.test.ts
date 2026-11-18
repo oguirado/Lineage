@@ -1,4 +1,5 @@
 import {expect,it} from 'vitest';
+import {TransportError} from '../../src/transport.ts';
 import {badPaths,closed,cost,eid,event,evidence,H,opening,outcome,OWNER,RUN,seat,task,UNIT} from './fixtures.ts';
 import {action,click,closeDraft,dialog,failureMemory,flush,isolate,messages,mount,noSuccess,ready,record,refuse,Service,set,submit,writes} from './helpers.ts';
 isolate();
@@ -27,6 +28,59 @@ it('A25 run start sends complete allowed seat, task, parents array and memory ar
 it('A25 each new heartbeat uses fresh identity, exact progress and witnessed read',async()=>{
  const s=new Service();s.addRun();s.overrides.set('run_beat',args=>{const c=s.commit('run_beat',args,{run_id:args.run_id,agent_id:OWNER,progress:args.progress},'run.beat');return {event:c.event,commit:c.commit};});const v=await mount(s,{panel:'runs'});await ready(v);
  await click(v.host,'heartbeat-run',RUN);await click(v.host,'heartbeat-run',RUN);const calls=writes(v,'run_beat');expect(calls).toHaveLength(2);for(const c of calls)expect(c[1]).toMatchObject({agent:OWNER,run_id:RUN,progress:'Heartbeat requested from Agent detail.'});expect(calls[0][1].op_id).not.toBe(calls[1][1].op_id);expect(s.calls('run_get').length).toBeGreaterThan(0);
+});
+it('A25 uncertain heartbeat retries the original request after a different run confirms',async()=>{
+ const s=new Service();
+ s.addRun();
+ const otherRun='run-00000002';
+ const opened=opening({run_id:otherRun},++s.head);
+ s.ledger.push(opened);
+ s.runs.set(otherRun,{opened,closed:null});
+ const initialHead=s.head;
+ const committed=new Map<string,ReturnType<Service['commit']>>();
+ s.overrides.set('run_beat',args=>{
+  const previous=committed.get(args.op_id);
+  if(previous)return previous;
+  expect(args.expected_head).toBe(s.head);
+  const result=s.commit('run_beat',args,{run_id:args.run_id,agent_id:args.agent,progress:args.progress},'run.beat');
+  committed.set(args.op_id,result);
+  if(committed.size===1)throw new TransportError('transport','timeout','Heartbeat response was lost.');
+  return result;
+ });
+ const v=await mount(s,{panel:'runs'});
+ await ready(v);
+ const requests=()=>writes(v,'run_beat').map(([,args])=>args);
+
+ await click(v.host,'heartbeat-run',RUN);
+ expect(requests()).toHaveLength(1);
+ expect(v.host.textContent).toContain('Transport uncertainty. Retry replays the original operation.');
+ noSuccess(v);
+ const [first]=requests();
+ expect(first).toMatchObject({agent:OWNER,run_id:RUN,progress:'Heartbeat requested from Agent detail.',expected_head:initialHead});
+
+ await v.store.refresh();
+ await v.update();
+ await click(v.host,'heartbeat-run',otherRun);
+ expect(requests()).toHaveLength(2);
+ const [,other]=requests();
+ expect(other).toMatchObject({agent:OWNER,run_id:otherRun,progress:first.progress,expected_head:initialHead+1});
+ expect(other.op_id).not.toBe(first.op_id);
+ expect(messages(v)).toContain('Record heartbeat recorded for '+otherRun+'.');
+
+ await click(v.host,'heartbeat-run',RUN);
+ expect(requests()).toHaveLength(3);
+ const [,,retry]=requests();
+ expect(retry.op_id).toBe(first.op_id);
+ expect(retry).toEqual(first);
+ expect(committed.size).toBe(2);
+ expect(messages(v)).toContain('Record heartbeat recorded for '+RUN+'.');
+
+ await click(v.host,'heartbeat-run',RUN);
+ expect(requests()).toHaveLength(4);
+ const [,,,next]=requests();
+ expect(next).toMatchObject({agent:OWNER,run_id:RUN,progress:first.progress,expected_head:initialHead+2});
+ expect(next.op_id).not.toBe(first.op_id);
+ expect(committed.size).toBe(3);
 });
 it.each(['memory_required','memory_debt'])('A26 real close dispatch receives %s and rereads an open run',async(code)=>{
  const s=new Service();s.addRun();s.overrides.set('run_close',()=>refuse(code));const v=await mount(s,{panel:'runs'});await ready(v);expect((action(v.host,'close-run',RUN) as HTMLButtonElement).disabled).toBe(false);const d=await closeDraft(v);const before=s.calls('run_get').length;await submit(v);

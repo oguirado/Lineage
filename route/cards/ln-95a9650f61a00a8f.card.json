@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Arena draft and pending-operation recovery store",
+  "claims": [
+    {"id": "C1", "text": "Drafts keys every record as lineage-arena-v1:tool:scope with version 1, defaulting to an empty draft when storage holds nothing.", "type": "interface"},
+    {"id": "C2", "text": "get rejects records over 65536 bytes, validates the draft and any pending operation against the live tool descriptors, requiring matching actor, op_id, expected_head, bench scope, and a fake runner for bench_run.", "type": "failure"},
+    {"id": "C3", "text": "save persists the record to localStorage and complete removes the storage key and deletes the pending entry, both reporting storage-unavailable notices on failure.", "type": "behavior"}
+  ],
+  "triggers": ["unsafe saved draft unavailable", "pending operation fails descriptor match", "draft storage unavailable"],
+  "decision": {
+    "rule": "Change here when draft persistence, pending-operation recovery, or storage keying needs to change.",
+    "failure": "An invalid saved draft is recovered as current, a mismatched pending operation is retried, or a completed operation leaves its pending entry behind."
+  },
+  "questions": [
+    {"q": "Where does Drafts validate a pending operation against the tool descriptors?"},
+    {"q": "Where should I change the storage key or record version for saved drafts?"},
+    {"q": "Where can I debug why a saved draft is marked unsafe or unavailable?"}
+  ],
+  "aliases": ["saved draft", "pending operation", "localStorage recovery", "descriptor match", "retry scope"],
+  "edges": [],
+  "source_sha256": "4c55027319f66f3a9681c64f0eb9cc58a56531ae00b149c47271af5b687ee680"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Owned Chromium inherited-pipe transport",
+  "claims": [
+    {"id": "C1", "text": "_decode_frame rejects duplicate keys, non-finite numbers and unpaired surrogates, while PipeClient refuses argv with a remote-debugging-port, appends --remote-debugging-pipe, and launches Chromium with inherited pipe descriptors 3 and 4.", "type": "failure"},
+    {"id": "C2", "text": "_frame reads NUL-delimited frames bounded at 1048576 bytes, and call routes events without an id to the capped events log while matching responses by pending request id and session, raising wrong_target on mismatch.", "type": "behavior"},
+    {"id": "C3", "text": "close requests Browser.close, then terminates and finally kills a still-running process, raising cleanup_incomplete when cleanup fails.", "type": "behavior"}
+  ],
+  "triggers": ["deadline exceeded waiting for frame", "response id does not match pending", "cleanup_incomplete after close", "browser pipe EOF"],
+  "decision": {
+    "rule": "Change here when the pipe startup, frame bounds, request routing, or browser teardown needs to change.",
+    "failure": "Requests hang past their deadline, a mismatched response is accepted, or close leaves the browser process running."
+  },
+  "questions": [
+    {"q": "Where does PipeClient start Chromium with inherited pipe descriptors?"},
+    {"q": "Where should I change the frame size bound or event log cap?"},
+    {"q": "Where can I debug why call raises wrong_target for a response?"}
+  ],
+  "aliases": ["CDP pipe", "NUL framing", "inherited descriptors", "request routing", "browser teardown"],
+  "edges": [],
+  "source_sha256": "b5ff76b5974d4ebdcad226795ccaa1e9c06925a2db5b7b20c469d7b75713c759"
+}

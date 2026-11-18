@@ -52,6 +52,63 @@ it('A19 reload offers the saved uncertain draft but never submits until explicit
   expect(saved().unresolved).toEqual(snapshot.unresolved);service.overrides.delete('agent_create');await confirm(recovered);
   expect(service.for('agent_create')[1].args).toEqual(snapshot.unresolved);
 });
+it('R49 a draft saved without an actor can be confirmed after reload with one explicit actor', async () => {
+  const service=new Service(),first=await boot({service,actor:null});
+  await fillCreate(await openCreate(first));
+  const original=saved();
+  expect(original).toMatchObject({actor:null,phase:'editing',submitted:null,unresolved:null});
+  first.dispose();first.root.remove();
+
+  const second=await boot({service,actor:'other-actor'});
+  const actor=second.actor!;
+  actor.replaceChildren(new Option('Other actor','other-actor',true,true));
+  const change=vi.fn();actor.addEventListener('change',change);
+  const d=await openCreate(second);
+  expect(saved()).toEqual({...original,actor:'other-actor'});
+  expect(service.mutations()).toHaveLength(0);
+  await confirm(d);
+  expect(change).not.toHaveBeenCalled();
+  expect(service.for('agent_create').map(call => call.args)).toEqual([
+    {...original.fields as JsonObject,agent:'other-actor',op_id:original.op_id,expected_head:7},
+  ]);
+  expect(second.announcements.filter(e => e.message==='Create agent recorded for new-child.')).toHaveLength(1);
+});
+it.each([
+  ['absent',null,false,false],['disabled selector','acting-root',true,false],
+  ['disabled option','acting-root',false,true],['reserved operator','operator',false,false],
+  ['reserved system','system',false,false],
+] as const)('R49 %s cannot bind or submit a recovered null-actor draft', async (_label,actor,actorDisabled,optionDisabled) => {
+  window.localStorage.setItem(DRAFT_KEY,JSON.stringify(draft({actor:null})));
+  const h=await boot({actor,actorDisabled});
+  if(optionDisabled) h.actor!.selectedOptions[0].disabled=true;
+  const d=await openCreate(h),submit=action<HTMLButtonElement>(d,'submit-dialog');
+  expect(saved().actor).toBeNull();
+  expect(submit.disabled).toBe(true);submit.click();await flush();
+  expect(h.service.mutations()).toHaveLength(0);
+});
+it.each([
+  ['bound editable','acting-root','editing'],['unbound refused',null,'refused'],
+] as const)('R49 an %s draft keeps its stored actor', async (_label,actor,phase) => {
+  window.localStorage.setItem(DRAFT_KEY,JSON.stringify(draft({actor,phase})));
+  const h=await boot({actor:'other-actor'}),d=await openCreate(h);
+  expect(saved()).toMatchObject({actor,phase});
+  expect(action<HTMLButtonElement>(d,'submit-dialog').disabled).toBe(true);
+  expect(h.service.mutations()).toHaveLength(0);
+});
+it('R49 a different selected actor leaves the original unresolved attempt intact on reload', async () => {
+  const service=new Service(),snapshot=args();
+  service.reply('agent_create',snapshot);
+  window.localStorage.setItem(DRAFT_KEY,JSON.stringify(draft({
+    actor:null,op_id:'edited-operation',phase:'uncertain',submitted:snapshot,unresolved:snapshot,
+  })));
+  const h=await boot({service,actor:'other-actor'}),d=await openCreate(h);
+  expect(saved()).toMatchObject({actor:null,op_id:'edited-operation',submitted:snapshot,unresolved:snapshot});
+  expect(action<HTMLButtonElement>(d,'submit-dialog').disabled).toBe(true);
+  expect(service.mutations()).toHaveLength(0);
+  unresolvedControl(d,'retry').click();await flush();
+  expect(service.for('agent_create').map(call => call.args)).toEqual([snapshot]);
+  expect(service.events).toHaveLength(1);
+});
 it('A19 reload converts pending into uncertain and preserves the exact operation snapshot', async () => {
   const snapshot=args();window.localStorage.setItem(DRAFT_KEY,JSON.stringify(draft({phase:'pending',submitted:snapshot,unresolved:snapshot})));
   const h=await boot();expect(h.service.mutations()).toHaveLength(0);const d=await openCreate(h);

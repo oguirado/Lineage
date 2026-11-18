@@ -134,7 +134,7 @@ def _main(argv: Sequence[str] | None, *, stdin: BinaryIO | None,
         return _bad(stdout)
     home = None
     if args[:1] == ["--home"]:
-        if len(args) < 2 or args[1].startswith("--"):
+        if len(args) < 2 or not args[1] or args[1].startswith("-"):
             return _bad(stdout)
         home, args = args[1], args[2:]
     if not args or args in (["--help"], ["-h"]):

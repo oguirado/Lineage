@@ -1,8 +1,8 @@
 """Reproducible memory projections; the committed ledger remains authoritative.
 
 All pathname operations use pinned, no-follow directory descriptors. Published
-generations are immutable, and the per-agent publication lock is independent of
-the journal lock. Coordination files are deliberately outside the projection.
+generation bytes are immutable. Missing files can be restored from the ledger.
+The publication lock is independent of the journal lock and outside the projection.
 """
 from __future__ import annotations
 
@@ -23,9 +23,9 @@ from lineage.domain import layout
 from . import entry, fold, schema
 
 _AGENT = re.compile(r'[a-z][a-z0-9-]{2,63}')
-_CURRENT = re.compile(rb'gen/([1-9][0-9]*)\n')
-_RELATIVE = re.compile(r'[A-Za-z0-9_./-]{1,512}')
+# Shared with the integrated bootcheck observation validator.
 _SAFE = 9007199254740991
+_RELATIVE = re.compile(r'[A-Za-z0-9_./-]{1,512}')
 _RESUME_CAPTURE = ContextVar('memory_resume_result', default=None)
 
 
@@ -226,13 +226,22 @@ def _child_directory(parent, name, *, create=False):
 
 
 @contextmanager
-def _directory(path, *, create=False):
+def _directory(path, *, create=False, relative_root=None):
     # abspath is lexical: never resolve a caller-supplied symlink before checks.
     absolute = Path(os.path.abspath(os.fspath(path)))
     descriptors = [os.open(absolute.anchor, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)]
     try:
+        coordinate = Path(absolute.anchor)
         for part in absolute.parts[1:]:
-            descriptors.append(_child_directory(descriptors[-1], part, create=create))
+            coordinate /= part
+            try:
+                descriptors.append(_child_directory(descriptors[-1], part, create=create))
+            except OSError as exc:
+                if (_io_error(exc).code == 'hash_mismatch' and relative_root is not None
+                        and coordinate.is_relative_to(relative_root)):
+                    raise LineageError('hash_mismatch', 'unsafe projection path: ' +
+                                       coordinate.relative_to(relative_root).as_posix()) from None
+                raise
         yield descriptors[-1]
         for parent, child, part in zip(descriptors, descriptors[1:], absolute.parts[1:]):
             named, opened = os.stat(part, dir_fd=parent, follow_symlinks=False), os.fstat(child)
@@ -254,7 +263,7 @@ def _file(root, relative):
         fd = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
         descriptors.append(fd)
         before = os.fstat(fd)
-        if not stat.S_ISREG(before.st_mode):
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
             raise LineageError('hash_mismatch', 'required artifact is not a regular file')
         yield fd
         named, after = os.stat(parts[-1], dir_fd=parent, follow_symlinks=False), os.fstat(fd)
@@ -296,13 +305,20 @@ def _issue(path, code='hash_mismatch', detail='projection differs from committed
     return {'path': path, 'code': code, 'detail': detail}
 
 
-def _inspect(root, expected):
+def _inspect(root, expected, *, missing=None):
     issues = []
     for path, raw in sorted(expected.items()):
+        generation_file = path.startswith('gen/')
         try:
             actual = _read(root, path, maximum=len(raw))
-            if actual != raw:
+            # CURRENT and root mirrors can change with the committed prefix.
+            if actual != raw and (missing is None or generation_file):
                 issues.append(_issue(path))
+        except FileNotFoundError:
+            if missing is None:
+                issues.append(_issue(path, detail='required projection artifact missing'))
+            elif generation_file:
+                missing.add(path)
         except (OSError, LineageError) as exc:
             error = _io_error(exc)
             issues.append(_issue(path, error.code, error.detail))
@@ -386,11 +402,37 @@ def _write(root, relative, raw):
             os.close(fd)
 
 
-def _atomic(root, name, raw):
+def _atomic(root, name, raw, *, missing_coordinate=None):
     temporary = '.tmp-' + secrets.token_hex(16)
-    _write(root, temporary, raw)
-    os.replace(temporary, name, src_dir_fd=root, dst_dir_fd=root)
-    os.fsync(root)
+    try:
+        _write(root, temporary, raw)
+        info = _existing(root, name)
+        if info is not None:
+            if missing_coordinate is not None:
+                raise LineageError('hash_mismatch', 'projection destination appeared: ' +
+                                   missing_coordinate)
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+                raise LineageError('hash_mismatch', 'unsafe projection artifact: ' + name)
+        os.replace(temporary, name, src_dir_fd=root, dst_dir_fd=root)
+        os.fsync(root)
+    finally:
+        try:
+            os.unlink(temporary, dir_fd=root)
+        except FileNotFoundError:
+            pass
+
+
+def _restore_missing(root, relative, raw, *, coordinate):
+    """Restore a missing generation file through pinned parent descriptors."""
+    parts, descriptors, parent = _parts(relative), [], root
+    try:
+        for part in parts[:-1]:
+            parent = _child_directory(parent, part, create=True)
+            descriptors.append(parent)
+        _atomic(parent, parts[-1], raw, missing_coordinate=coordinate)
+    finally:
+        for fd in reversed(descriptors):
+            os.close(fd)
 
 
 def _existing(root, name):
@@ -404,9 +446,8 @@ def rebuild(agent_id, *, snapshot, ctx):
     """Durably stage new generations, then publish pointer and root mirrors."""
     expected = _mapping(agent_id, snapshot, ctx)  # Admission precedes all I/O.
     memory = _root(agent_id, ctx, snapshot=snapshot)
-    desired = int(_CURRENT.fullmatch(expected['CURRENT']).group(1))
     try:
-        with _directory(memory, create=True) as root:
+        with _directory(memory, create=True, relative_root=ctx.services.home) as root:
             lock = os.open('.publish.lock', os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK,
                            0o600, dir_fd=root)
             try:
@@ -414,13 +455,20 @@ def rebuild(agent_id, *, snapshot, ctx):
                     raise LineageError('hash_mismatch', 'unsafe publication lock')
                 locking.lock_exclusive(lock)
                 try:
-                    if _existing(root, 'CURRENT') is not None:
-                        raw = _read(root, 'CURRENT', maximum=64)
-                        parsed = _CURRENT.fullmatch(raw)
-                        if parsed is None or int(parsed.group(1)) > _SAFE:
-                            raise LineageError('hash_mismatch', 'unsafe CURRENT contents')
-                        if int(parsed.group(1)) > desired:
-                            raise LineageError('stale_rev', 'newer committed memory projection exists')
+                    # The ledger, never a disposable CURRENT file, decides
+                    # whether this publication would regress committed state.
+                    supplied, latest = tuple(snapshot.events), tuple(_snapshot(ctx).events)
+                    if latest[:len(supplied)] != supplied:
+                        raise LineageError('bad_op', 'snapshot differs from committed memory prefix')
+                    if len(supplied) != len(latest):
+                        raise LineageError('stale_rev', 'newer committed memory prefix exists')
+                    missing = set()
+                    issues = _inspect(root, expected, missing=missing)
+                    memory_coordinate = memory.relative_to(ctx.services.home)
+                    if issues:
+                        issue = issues[0]
+                        coordinate = memory_coordinate / issue['path']
+                        raise LineageError(issue['code'], 'projection refused: ' + coordinate.as_posix())
                     gen = _child_directory(root, 'gen', create=True)
                     try:
                         generations = {}
@@ -428,19 +476,25 @@ def rebuild(agent_id, *, snapshot, ctx):
                             if path.startswith('gen/'):
                                 _, number, relative = path.split('/', 2)
                                 generations.setdefault(number, {})[relative] = raw
-                        # Refuse all damaged immutable generations before writing
-                        # any new generation or changing root mirrors.
-                        for number, files in generations.items():
-                            if _existing(gen, number) is not None:
-                                old = _child_directory(gen, number)
-                                try:
-                                    issues = _inspect_generation(old, files)
-                                    if issues:
-                                        raise LineageError('hash_mismatch', 'published generation differs: gen/' + number)
-                                finally:
-                                    os.close(old)
+                        # Preflight rejects corruption before restoring any gaps.
                         for number in sorted(generations, key=int):
                             if _existing(gen, number) is not None:
+                                generation_path = 'gen/' + number
+                                absent = [path for path in sorted(generations[number])
+                                          if generation_path + '/' + path in missing]
+                                if not absent:
+                                    continue
+                                old = _child_directory(gen, number)
+                                try:
+                                    for path in absent:
+                                        coordinate = memory_coordinate / generation_path / path
+                                        _restore_missing(old, path, generations[number][path],
+                                                         coordinate=coordinate.as_posix())
+                                    if _inspect_generation(old, generations[number]):
+                                        raise LineageError('hash_mismatch', 'rebuilt generation verification failed')
+                                    os.fsync(old)
+                                finally:
+                                    os.close(old)
                                 continue
                             stage = '.stage-' + secrets.token_hex(16)
                             os.mkdir(stage, 0o700, dir_fd=gen)

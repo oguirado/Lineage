@@ -14,14 +14,17 @@ def configuration(*, client='generic', home=None) -> str:
     if not os.fspath(selected):
         raise ValueError
     selected = str(Path(selected).expanduser().resolve())
+    selected.encode('utf-8')
     executable = Path(__file__).resolve().parents[2] / 'bin' / 'lineage'
     if not executable.is_file() or not os.access(executable, os.X_OK):
         raise ValueError
     command = str(executable)
+    command.encode('utf-8')
     args = ['--home', selected, 'mcp']
     if client == 'codex':
-        return ('[mcp_servers.lineage]\ncommand = ' + json.dumps(command, ensure_ascii=False)
+        text = ('[mcp_servers.lineage]\ncommand = ' + json.dumps(command, ensure_ascii=False)
                 + '\nargs = ' + json.dumps(args, ensure_ascii=False) + '\n')
+        return text.replace('\x7f', '\\u007f')
     return json.dumps({'mcpServers': {'lineage': {'command': command, 'args': args}}},
                       sort_keys=True, ensure_ascii=False, separators=(',', ':')) + '\n'
 

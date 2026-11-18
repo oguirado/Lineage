@@ -31,8 +31,29 @@ export function validate(v:any,s:any):void {
  for(const x of s.allOf??[]) {if(x.if){let applies=true;try{validate(v,x.if);}catch{applies=false;}if(applies&&x.then)validate(v,x.then);if(!applies&&x.else)validate(v,x.else);}else validate(v,x);}
  if(s.not){let match=true;try{validate(v,s.not);}catch{match=false;}ensure(!match);}
 }
+type PathContext = 'page'|'events'|'event'|'skillResult'|'skill'|'files'|'file';
+
+function validatePaths(value:any,detail:string,context?:PathContext):void {
+ if(!value||typeof value!=='object')return;
+ if(Object.hasOwn(value,'path'))ensure(validPath(value.path,context!=='file'),detail);
+ if(Array.isArray(value)){
+  const itemContext=context==='events'?'event':context==='files'?'file':undefined;
+  for(const item of value)validatePaths(item,detail,itemContext);
+  return;
+ }
+ // Only direct file entries in a skill result or publication use package paths.
+ for(const [key,child] of Object.entries(value)){
+  let childContext:PathContext|undefined;
+  if(context==='page'&&key==='events')childContext='events';
+  else if(context==='event'&&value.kind==='skill.published'&&key==='payload')childContext='skill';
+  else if(context==='skillResult'&&key==='skill')childContext='skill';
+  else if(context==='skill'&&key==='files')childContext='files';
+  validatePaths(child,detail,childContext);
+ }
+}
+
 export function record(v:any,kind:'agent'|'memory'|'run'|'event'):any {validateJson(v as unknown);validate(v,{agent:agentSchema,memory:memorySchema,run:runSchema,event:eventSchema}[kind]);
- const walk=(x:any):void=>{if(!x||typeof x!=='object')return;if(Object.hasOwn(x,'path'))ensure(validPath(x.path),'Invalid evidence path');for(const child of Object.values(x))walk(child);};walk(v);
+ validatePaths(v,'Invalid evidence path',kind==='event'?'event':undefined);
  if(kind==='agent'){ensure(new Set(v.references.map((p:any)=>p.id)).size===2);ensure(isAgentId(v.agent_id));}
  if(kind==='memory')ensure(new TextEncoder().encode(canonical(v)).length<=6000,'Memory unit exceeds byte budget');return v;
 }
@@ -94,7 +115,8 @@ export function resultShape(tool:string,v:any):void {
  };
  for(const name of ['clone','distill','cross','mutate','specialize'])shapes['agent_'+name]=object({record:{$ref:'agent.schema.json'},inherited_units:array(inherited,256),rejected_units:array(rejected),commit});
  if(shapes[tool])validate(v,shapes[tool]);
- const walk=(x:any):void=>{if(!x||typeof x!=='object')return;if(Object.hasOwn(x,'path'))ensure(validPath(x.path,tool!=='skill_get'),'Invalid evidence or package path');for(const child of Object.values(x))walk(child);};walk(v);
+ const pathContext=tool==='skill_get'?'skillResult':tool==='ledger_events'||tool==='memory_history'?'page':undefined;
+ validatePaths(v,'Invalid evidence or package path',pathContext);
  // These types carry semantic uniqueness beyond JSON syntax.
  if(tool==='agent_get')record(v.record,'agent');
  if(tool==='agent_list')v.agents.forEach((a:any)=>record(a,'agent'));

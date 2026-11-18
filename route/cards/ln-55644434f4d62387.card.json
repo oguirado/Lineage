@@ -1,0 +1,37 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Serve package marker",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The package docstring in lineage/serve/__init__.py declares loopback HTTP transport and confined static hosting.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "serve package not found",
+    "static hosting boundary missing"
+  ],
+  "decision": {
+    "rule": "Change here when the serve package boundary or its transport contract needs to change.",
+    "failure": "Serve imports resolve to an unexpected module or the package provides no transport boundary."
+  },
+  "questions": [
+    {
+      "q": "Where is the serve package boundary declared?"
+    },
+    {
+      "q": "What transport does lineage/serve/__init__.py advertise?"
+    },
+    {
+      "q": "Where should I debug the loopback HTTP transport boundary?"
+    }
+  ],
+  "aliases": [
+    "serve package",
+    "loopback HTTP",
+    "static hosting"
+  ],
+  "edges": [],
+  "source_sha256": "acbd2de3e666ff976a6e92a975fefe431b705c157195da238983f1659fe5b6e3"
+}

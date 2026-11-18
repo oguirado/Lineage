@@ -1,0 +1,56 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Breeding operator tool descriptors",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "TOOLS exposes agent_cross, agent_mutate and agent_specialize with closed _SCHEMAS and _cross, _mutate and _specialize handlers.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "_mutation forces authority to tool, strips agent and op_id from domain params and calls cross, mutate or specialize with a breeding Command.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "_install_one_of adds exact-one oneOf evaluation to the schema node and memory check for the frozen change union.",
+      "type": "invariant"
+    },
+    {
+      "id": "C4",
+      "text": "VALIDATORS and FOLDS are empty mappings because breeding reuses agent validators and the tree fold owned elsewhere.",
+      "type": "invariant"
+    }
+  ],
+  "triggers": [
+    "agent_mutate change rejected",
+    "oneOf schema invalid",
+    "breeding authority leak",
+    "cross parents missing"
+  ],
+  "decision": {
+    "rule": "Change here when breeding schemas, oneOf evaluation, discovery rebinding or mutation routing needs to change.",
+    "failure": "A mutate change matches zero or two union branches, or a breeding call mutates with operator authority."
+  },
+  "questions": [
+    {
+      "q": "Where are the cross, mutate and specialize tool schemas fixed?"
+    },
+    {
+      "q": "Where should I change oneOf exact-one evaluation for the mutate change union?"
+    },
+    {
+      "q": "Where can I debug a breeding handler that calls the wrong domain operator?"
+    }
+  ],
+  "aliases": [
+    "agent cross",
+    "agent mutate",
+    "agent specialize",
+    "oneOf union",
+    "breeding tools"
+  ],
+  "edges": [],
+  "source_sha256": "55867da9f94465b41da880366faabcaf89a83587afc818e0ee9df12362221711"
+}

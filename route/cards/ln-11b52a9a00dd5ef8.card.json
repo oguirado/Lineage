@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Observational Claude Code hook to run lifecycle bridge",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "main resolves the hook binding from _map (sessions or agent_types by session_id and agent_type), derives run_id as hook- plus the first 48 hex digits of sha256 over session, scope and agent identity, then opens or closes that run.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "main ignores unsupported events and unmapped identities with exit 0 (stderr note only when --verbose) and returns exit 2 with bad_args on invalid hook or map input and exit 3 with internal on unexpected errors.",
+      "type": "failure"
+    },
+    {
+      "id": "C3",
+      "text": "main calls agent_get then run_open for start events, and run_beat with a last_assistant_message sha256 then run_close (green, or error for StopFailure) for stop events; subagent events additionally require agent_id and agent_type.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "hook ignored: unmapped identity or unsupported event",
+    "invalid hook",
+    "invalid subagent hook",
+    "bad_args on hook input",
+    "internal on hook failure"
+  ],
+  "decision": {
+    "rule": "Change here when hook event handling, identity mapping, or run open/beat/close bridging for harness hooks needs to change.",
+    "failure": "A mapped hook session never opens a run, a stop hook closes with the wrong outcome, or an unmapped identity errors instead of being ignored."
+  },
+  "questions": [
+    {
+      "q": "Where does hook main map a session to an agent binding and derive the hook run_id?"
+    },
+    {
+      "q": "Where should I change how hook main ignores unsupported events or unmapped identities?"
+    },
+    {
+      "q": "Where can I debug why a StopFailure hook closes with the wrong outcome?"
+    }
+  ],
+  "aliases": [
+    "harness hook bridge",
+    "session mapping",
+    "run_id digest"
+  ],
+  "edges": [],
+  "source_sha256": "6410e62a97f94592c526f03c8df2960f9a9fbff82166f8d0b57dd73867cf3008"
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Inheritance selection policy for memory units",
+  "claims": [
+    {"id": "C1", "text": "select audits every supplied owned unit without truncation or I/O writes, sorting candidates by owner and unit id and returning an InheritanceSelection of inherited and rejected entries.", "type": "behavior"},
+    {"id": "C2", "text": "select rejects operator and system as source agents, duplicate owned units, unproven ownership, and unknown selected units with bad_args or not_inheritable.", "type": "failure"},
+    {"id": "C3", "text": "_rejection excludes episodes, level 1, level 3, private or inactive units, receiptless units and wrong workflow or language with an explicit reason string.", "type": "invariant"},
+    {"id": "C4", "text": "Accepted units gain provenance.inherited_from with the source agent, unit id and source sha256, then pass mem_unit schema validation before being returned.", "type": "behavior"}
+  ],
+  "triggers": ["not_inheritable source ownership", "bad_args invalid inheritance inputs", "unit rejected not_selected", "adopted unit byte capacity exceeded"],
+  "decision": {
+    "rule": "Change here when inheritance eligibility, rejection reasons, provenance stamping or adopted unit identity needs to change.",
+    "failure": "A private, receiptless or unpromoted unit is inherited, an unowned unit enters the selection, or an adopted unit collides on identity."
+  },
+  "questions": [
+    {"q": "Where does select prove source ownership before auditing units?"},
+    {"q": "Where should I change the eligibility rules in _rejection?"},
+    {"q": "Where can I debug why a specific unit was rejected during inheritance?"},
+    {"q": "How are adopted child unit ids derived in _adopt?"}
+  ],
+  "aliases": ["inheritance selection", "memory inheritance", "inherited_from provenance", "rejection reasons", "adopted units"],
+  "edges": [],
+  "source_sha256": "3eac183f3bc981a547ff2101088416e0203af677d969d036c8d55fb37df51ae6"
+}

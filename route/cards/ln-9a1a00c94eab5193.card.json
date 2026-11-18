@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Shared validated application dispatch boundary",
+  "claims": [
+    {"id": "C1", "text": "dispatch checks tool existence and registry map identity, validates input schema with envelope fallback for unsupported_keyword and openfresnel references, and returns untrusted payloads.", "type": "behavior"},
+    {"id": "C2", "text": "_execution_error maps recognized ToolError and LineageError codes in ERROR_CODES to execution failures and everything else to internal.", "type": "failure"},
+    {"id": "C3", "text": "preview rehearses mutation tools through _operable_handler, _prepare_transaction validator runs and _PreviewEffect refusal of unprepared side effects.", "type": "invariant"}
+  ],
+  "triggers": ["bad_args request or configuration", "schema diagnostic failure", "internal execution error", "dry-run refused side effect"],
+  "decision": {
+    "rule": "Change here when tool dispatch validation, error mapping or dry-run preview needs to change.",
+    "failure": "Invalid inputs reach handlers, domain errors are misreported, or a dry-run preview commits side effects."
+  },
+  "questions": [
+    {"q": "Where does dispatch validate tool inputs before invoking handlers?"},
+    {"q": "Where should I change the error-code mapping and dry-run preview rehearsal?"},
+    {"q": "Where can I debug why a dispatched tool returns internal instead of its domain code?"}
+  ],
+  "aliases": ["tool dispatch", "dry-run preview", "error mapping", "untrusted payload"],
+  "edges": [],
+  "source_sha256": "092fe2aac3b050d9747ae4366f4bcff51aa9b44c381621dfe64d642aadb14bfa"
+}

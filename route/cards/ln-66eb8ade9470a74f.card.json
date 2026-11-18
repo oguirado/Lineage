@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "One-shot family JSON carrier",
+  "claims": [
+    {"id": "C1", "text": "_admit validates the envelope and configuration, enforces tool admission, and injects agent, op_id and defaults before input schema validation.", "type": "behavior"},
+    {"id": "C2", "text": "_dispatch routes capabilities, events.read and call through app.dispatch or app.preview, sanitizes failures to wire-safe codes, and rejects invalid results via _valid_for.", "type": "invariant"},
+    {"id": "C3", "text": "main reads bounded stdin, delivers through the Mailbox, emits a canonical receipt, and maps the result to exit 0, 2 or 3.", "type": "interface"}
+  ],
+  "triggers": ["bad_args envelope admission", "mailbox refusal", "invalid result internal error", "dry-run preview refusal"],
+  "decision": {
+    "rule": "Change here when family envelope admission, tool dispatch or receipt emission needs to change.",
+    "failure": "Unadmitted tools are dispatched, untrusted diagnostics leak, or invalid results are emitted as success."
+  },
+  "questions": [
+    {"q": "Where does _admit validate envelopes and inject agent and op_id?"},
+    {"q": "Where should I change how _dispatch selects preview versus dispatch and sanitizes errors?"},
+    {"q": "Where can I debug why the JSON lane returns bad_args or internal for a receipt?"}
+  ],
+  "aliases": ["json lane", "family envelope", "mailbox dispatch", "dry-run preview"],
+  "edges": [
+    {"rel": "imports", "to": "ln-9a1a00c94eab5193"}
+  ],
+  "source_sha256": "0b506e2f0bd62a9839701e2fa84172d9eae7ce95ec164710ec0b77e7cf9718fe"
+}

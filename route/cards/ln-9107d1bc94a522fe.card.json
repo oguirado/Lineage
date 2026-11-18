@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Process-local HTTP session authorization",
+  "claims": [
+    {"id": "C1", "text": "authorize requires host equality with expected_authority and origin absence or matching HTTP origin, otherwise raising bad_args.", "type": "failure"},
+    {"id": "C2", "text": "Mutations require the exact origin plus a successful hmac.compare_digest token match, treating TypeError and ValueError as mismatch.", "type": "invariant"},
+    {"id": "C3", "text": "new_token returns secrets.token_urlsafe(32) as a process-local credential granting no domain authority.", "type": "interface"}
+  ],
+  "triggers": ["bad_args host mismatch", "origin mismatch", "token mismatch on mutation"],
+  "decision": {
+    "rule": "Change here when host and origin admission or token comparison needs to change.",
+    "failure": "Cross-origin mutations are admitted or valid tokens are rejected through comparison handling."
+  },
+  "questions": [
+    {"q": "Where does authorize check host and origin before serving requests?"},
+    {"q": "Where should I change the mutation token comparison?"},
+    {"q": "Where can I debug why a mutation returns bad_args for token or origin?"}
+  ],
+  "aliases": ["session token", "host origin check", "mutation guard", "compare digest"],
+  "edges": [],
+  "source_sha256": "9f71f01efdf11da0a9d0844cb6bf5d2c7d34dc2b19ce48b2b755b3d5c6cffd16"
+}

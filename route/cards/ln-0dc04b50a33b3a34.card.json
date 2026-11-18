@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Hash-chained journal transactions and replay",
+  "claims": [
+    {"id": "C1", "text": "transact verifies committed history under the authority lock. It returns the original event for an identical request with the same agent and op_id and raises bad_op when that identity has different request content.", "type": "behavior"},
+    {"id": "C2", "text": "transact assigns Lamport order and the previous head hash, then runs preparation and validation before _commit appends a canonical LF-terminated record.", "type": "invariant"},
+    {"id": "C3", "text": "snapshot returns a detached verified complete prefix without creating or repairing the journal. verify accepts an expected_head witness for the chain.", "type": "interface"}
+  ],
+  "triggers": ["operation retry returns bad_op", "journal hash chain verification fails", "unterminated journal tail", "event append validation failure"],
+  "decision": {
+    "rule": "Change here when canonical record encoding, append durability, Lamport ordering, replay identity or verified journal snapshots need to change.",
+    "failure": "An identical operation appends twice, request content conflicts under an existing op_id, a torn tail changes the head, or chain verification rejects a stored record."
+  },
+  "questions": [
+    {"q": "Where does the journal deduplicate retries by agent and op_id before appending an event?"},
+    {"q": "Where should I change how transact recovers an unterminated journal tail during the next append?"},
+    {"q": "Where can I debug why journal verify rejects a broken hash chain or unexpected head?"}
+  ],
+  "aliases": ["append-only event store", "operation idempotency", "Lamport sequence", "ledger hash chain", "torn tail"],
+  "edges": [],
+  "source_sha256": "e7f4f9ce27d266384a171d3350f698f7dc2969986cd0288987bc77f062839c7f"
+}

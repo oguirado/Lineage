@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Browser seam contracts for the Lineage UI",
+  "claims": [
+    {"id": "C1", "text": "contracts.ts defines JsonValue, JsonObject, ScreenId, ScreenModuleId, EntityKind, Theme, Query and Route as the passive public browser seam, with the server owning all decisions.", "type": "behavior"},
+    {"id": "C2", "text": "The Transport interface exposes mode, fixtureId, presentation, tools, events and call, and AppStore plus AppState carry phase, stale, route, tools, events, head, error, selection and expanded.", "type": "interface"},
+    {"id": "C3", "text": "The file fixes the closed K0 action vocabulary in the actions set and the panelStates, entityKinds and screenLabels tables that name every screen and panel state.", "type": "invariant"},
+    {"id": "C4", "text": "WireReply is exactly {untrusted:T} on success or {ok:false,code,detail} on domain failure, and LedgerEvent carries the lineage.event/v1 hash-chain fields.", "type": "interface"}
+  ],
+  "triggers": ["UI imports unknown ScreenId", "action not in closed vocabulary", "wire reply shape mismatch", "screen label missing"],
+  "decision": {
+    "rule": "Change here when the browser seam types, the closed action vocabulary, or the fixed screen and panel inventories need to change.",
+    "failure": "A screen references an action outside the closed set, a wire reply fails validation, or a screen has no label in screenLabels."
+  },
+  "questions": [
+    {"q": "Where is the closed list of UI action names defined for the shell and screens?"},
+    {"q": "Where should I change the Transport interface to add a new transport method?"},
+    {"q": "Where can I debug why a tool call reply is rejected as invalid_response?"},
+    {"q": "Which screens does screenLabels cover and what are their titles?"}
+  ],
+  "aliases": ["browser seam", "UI contracts", "AppStore", "Transport", "closed action vocabulary", "wire reply"],
+  "edges": [],
+  "source_sha256": "b9bcd1f9f9da0165e2bf369710345cd140d391f1e62ad755178583ccd59b5815"
+}

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { createHash } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { ACTOR, BENCH, CANDIDATE, FROZEN_VERSION, HASH, Script, action, allActions, click, copy, cursor, declaration, detailRoute, dialog, edit, event, eventId, flush, isolate, key, launchForm, listRoute, mount, nameOf, noRecorded, ready, record, refusal, restoreStorage, result, reveal, runReply, snapshotStorage, status, submit, text, verdict } from './helpers.ts';
 import { recordLaunch } from './forms.helpers.ts';
@@ -9,6 +10,28 @@ function withCells(cells = [result()]): Script {
   for (const cell of cells) script.runs.set(cell.run_id, runReply(cell));
   script.journal = cells.map((cell, n) => event(n + 5, 'bench.result', cell)); return script;
 }
+const pagedJournal = Array.from({ length: 201 }, (_, index) => {
+  const lamport = index + 1;
+  const cell = lamport === 201 ? result() : result(`run_unrelated_${lamport}`);
+  return event(lamport, 'bench.result', cell);
+});
+
+async function pagedDetail(cells: ReturnType<typeof result>[]) {
+  const script = new Script();
+  script.journal = copy(pagedJournal);
+  script.head = pagedJournal.length;
+  script.benches.set(BENCH, status({ results: cells, head: script.head }));
+  const digest = createHash('sha256').update(JSON.stringify(script.journal)).digest('hex');
+  expect(digest).toBe('0b15acbfdf9858c29aed689af8063f09c4eee452327c4737bf645465ef950892');
+
+  const h = mount(script);
+  await ready(h);
+  expect(h.host.getAttribute('aria-busy')).toBe('false');
+  expect(h.host.querySelector('[role="alert"]')).toBeNull();
+  expect(script.calls('bench_status').map(([, args]) => args)).toEqual([{ bench_id: BENCH }]);
+  return h;
+}
+
 async function inspect(script: Script, runId = 'run_alpha_0001', literal = 'inspect-bench-result') {
   const h = mount(script); await ready(h); await click(record(h.host, 'run', runId), literal);
   return { h, modal: dialog(h.root, literal === 'inspect-bench-result' ? 'task result' : 'run') };
@@ -58,6 +81,30 @@ describe('U25 actual runs, evidence and hostile inputs', () => {
     const refreshed = record(h.host, 'run', 'run_alpha_0001'); expect(text(refreshed)).toContain('error');
     expect(action(refreshed, 'open-task-evidence').getAttribute('href')).toBe(href);
     expect(h.script.mutationCalls()).toHaveLength(0);
+  });
+
+  it('A17 empty detail settles without paging for evidence', async () => {
+    const h = await pagedDetail([]);
+    expect(text(h.host)).toContain('Task results pending. Not measured.');
+    expect(h.host.querySelector('[data-lin-action="open-task-evidence"]')).toBeNull();
+    expect(h.script.calls('ledger_events').map(([, args]) => args)).toEqual([]);
+  });
+
+  it.each([
+    { name: 'a last-page witness', cell: result(), expectedHref: `#/ledger?event=${eventId(201)}` },
+    { name: 'only unrelated witnesses', cell: result('run_missing_0001'), expectedHref: null },
+  ])('A17 populated detail pages the same journal with $name', async ({ cell, expectedHref }) => {
+    const h = await pagedDetail([cell]);
+    const row = record(h.host, 'run', cell.run_id);
+    if (expectedHref) {
+      expect(action(row, 'open-task-evidence').getAttribute('href')).toBe(expectedHref);
+    } else {
+      expect(text(row)).toContain('Evidence: AUSENTE — no inventar. Refresh to retry resolution.');
+      expect(row.querySelector('[data-lin-action="open-task-evidence"]')).toBeNull();
+    }
+    expect(h.script.calls('ledger_events').map(([, args]) => args)).toEqual([
+      { after: 0, limit: 100 }, { after: 100, limit: 100 }, { after: 200, limit: 100 },
+    ]);
   });
 
   it('A17 a later cursor page supplies a task witness without a guessed link', async () => {
@@ -129,7 +176,12 @@ describe('U25 actual runs, evidence and hostile inputs', () => {
   });
 
   it('A24 successful live fake-runner provenance says Synthetic offline benchmark', async () => {
-    const script = new Script(); recordLaunch(script); const h = mount(script); await ready(h); await submit(await launchForm(h), 'Launch benchmark');
+    const script = new Script(); recordLaunch(script); const h = mount(script); await ready(h);
+    const modal = await launchForm(h);
+    const calls = vi.mocked(script.transport.call).mock.calls;
+    const from = calls.length;
+    await submit(modal, 'Launch benchmark');
+    expect(calls.slice(from, from + 2).map(([tool]) => tool)).toEqual(['bench_run', 'ledger_events']);
     expect(script.calls('bench_run')).toHaveLength(1); expect(text(h.host)).toContain('Synthetic offline benchmark');
     expect(text(h.host)).not.toMatch(/proves.*fitness|memory.*improves|inherited memory.*better/iu);
   });

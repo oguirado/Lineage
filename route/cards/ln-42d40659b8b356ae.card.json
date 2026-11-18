@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agents screen catalogue, filters and comparison",
+  "claims": [
+    {"id": "C1", "text": "The screen module mounts the Agents catalogue with a read helper that caps responses at 1048576 bytes, validates JSON, and raises TransportError on domain refusal.", "type": "behavior"},
+    {"id": "C2", "text": "The toolbar exposes filter controls for query, workflow, language, status, retired inclusion and sort, plus create, compare and clear-comparison actions.", "type": "interface"},
+    {"id": "C3", "text": "The compare action opens openComparison only when exactly two agents are selected and no identity collision is present.", "type": "invariant"},
+    {"id": "C4", "text": "The creation workflow wires createWorkflow with the confirmed head, read, refresh and announce hooks, and the score panel renders scoreResult groups.", "type": "behavior"}
+  ],
+  "triggers": ["agent list read returns invalid_config", "comparison button stays disabled", "identity key collision disables actions", "agent filters do not reset"],
+  "decision": {
+    "rule": "Change here when the Agents catalogue layout, its filters, comparison selection or creation flow needs to change.",
+    "failure": "The list fails to load, comparison opens with the wrong selection size, or creation does not refresh after commit."
+  },
+  "questions": [
+    {"q": "Where does the Agents screen read the agent list and cap its size?"},
+    {"q": "Where should I change the comparison rule that requires exactly two selected agents?"},
+    {"q": "Where can I debug why the language filter options are rebuilt from records?"},
+    {"q": "Which actions create, compare and clear agents on this screen?"}
+  ],
+  "aliases": ["agents catalogue", "agent filters", "agent comparison", "create agent", "score panel"],
+  "edges": [],
+  "source_sha256": "ffa635b56f23b99a864653fa6d80c6dfc32b5df7928c86dfb6abb1c4853e28ae"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Portable Lineage CLI delegation and exit codes",
+  "claims": [
+    {"id": "C1", "text": "main parses an optional leading --home, --help, and verbs tools, call, mcp, doctor, mcp-config plus the hook verbs, with call requiring TOOL --json OBJECT and an optional single --dry-run, returning exit codes 0, 2 or 3.", "type": "interface"},
+    {"id": "C2", "text": "_delegate lazily imports the owning command module and hook, maps a missing optional command to bad_args exit 2, and coerces any hook return outside 0, 2, 3 to internal exit 3.", "type": "behavior"},
+    {"id": "C3", "text": "_operator_ruling derives the ruling operation identity from the quote digest, builds an operator-authority context with token_count None, and admits through units.operator_ruling without a caller op_id.", "type": "behavior"}
+  ],
+  "triggers": ["bad_args from CLI shape", "internal from invalid hook code", "operator ruling rejected", "strict JSON parse failure"],
+  "decision": {
+    "rule": "Change here when CLI verbs, argument shapes, exit codes, or the operator ruling adaptation need to change.",
+    "failure": "A valid invocation returns bad_args, a hook code leaks outside 0/2/3, or a ruling is admitted with caller-supplied authority."
+  },
+  "questions": [
+    {"q": "Where does the CLI validate the call-tool argument shape and exit code?"},
+    {"q": "Where should I change how hook verbs are lazily delegated?"},
+    {"q": "Where can I debug why an operator ruling fails from the CLI?"}
+  ],
+  "aliases": ["CLI verbs", "exit codes", "lazy delegation", "operator ruling", "strict JSON"],
+  "edges": [],
+  "source_sha256": "2ce5095b84a8de69a4bc0981e36166c992e74ad97e983bb36d4bd740abbc5c90"
+}

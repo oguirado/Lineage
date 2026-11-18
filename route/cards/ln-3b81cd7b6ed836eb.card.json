@@ -1,0 +1,67 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Strict newline-framed MCP adapter",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "_method handles initialize, ping, tools/list, resources/list, resources/templates/list, prompts/list, tools/call, resources/read and prompts/get.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "_frames yields bounded newline frames up to MAX_JSON_BYTES and yields None for a drained oversized frame.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "tools/call dispatches through app.dispatch or app.preview for dry_run and returns isError only for execution failures.",
+      "type": "behavior"
+    },
+    {
+      "id": "C4",
+      "text": "_resource reads guide markdown via descriptor-relative no-follow opens confined under the repository root.",
+      "type": "invariant"
+    },
+    {
+      "id": "C5",
+      "text": "_live_resource serves snapshot through snapshot.build and agent views through app.dispatch without reading projection files.",
+      "type": "behavior"
+    }
+  ],
+  "triggers": [
+    "MCP parse error",
+    "resources/read rejected",
+    "tools/call dry_run",
+    "snapshot resource failed",
+    "oversized MCP frame"
+  ],
+  "decision": {
+    "rule": "Change here when MCP method routing, prompt or resource catalogues, frame bounds or dispatch wiring needs to change.",
+    "failure": "A valid request returns method not found, an oversized frame is accepted, or a live resource reads projection files instead of the verified prefix."
+  },
+  "questions": [
+    {
+      "q": "Where does the MCP adapter bound newline frames and reject oversized requests?"
+    },
+    {
+      "q": "Where should I change how tools/call handles dry_run preview versus dispatch?"
+    },
+    {
+      "q": "Where can I debug a resources/read failure for a guide or snapshot resource?"
+    }
+  ],
+  "aliases": [
+    "MCP adapter",
+    "JSON-RPC frames",
+    "tools call",
+    "resources read",
+    "snapshot resource"
+  ],
+  "edges": [
+    {
+      "rel": "imports",
+      "to": "ln-a09511d0fcab2fe5"
+    }
+  ],
+  "source_sha256": "276c6d080d8e52c37befa111a07903814973997a36f5f0699144fd75d408bcfd"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Run lifecycle transactions and close witnesses",
+  "claims": [
+    {"id": "C1", "text": "open_run prepares a run.open with the eligible agent version. beat prepares a run.beat with the owner from the opening and rejects timestamps before that opening.", "type": "behavior"},
+    {"id": "C2", "text": "_transact passes the command op_id unchanged to journal.transact. Closing checks gate_close for outcome, cost and memory receipts, validates evidence, and refreshes scorecard projections after the durable event.", "type": "invariant"},
+    {"id": "C3", "text": "get reads a journal snapshot and returns the detached opening, optional closed record and current head.", "type": "interface"}
+  ],
+  "triggers": ["run_close rejected before append", "run heartbeat owner differs", "missing current run memory receipts", "run projection publication failed"],
+  "decision": {
+    "rule": "Change here when run opening, heartbeat, close transaction preparation or result projection needs to change.",
+    "failure": "Run close is rejected during witness validation, an expected journal head is stale, or scorecard publication fails after the close event commits."
+  },
+  "questions": [
+    {"q": "Where does run_close prepare and validate the outcome, cost, and memory receipts before committing a run?"},
+    {"q": "Where should I change how open_run freezes agent version and seat while creating a run?"},
+    {"q": "Where can I debug why the scorecard projection failed after a run close committed?"}
+  ],
+  "aliases": ["run open heartbeat close", "run lifecycle transaction", "current run memory gate", "scorecard refresh"],
+  "edges": [
+    {"rel": "imports", "to": "ln-0dc04b50a33b3a34"},
+    {"rel": "imports", "to": "ln-4bc2d3ea662c5a53"},
+    {"rel": "imports", "to": "ln-a1ece928f6dce15d"}
+  ],
+  "source_sha256": "6ed36f79b8cdc672095ddb9b6c4f0a84611bd32d388eb76e572f7340b56bc847"
+}

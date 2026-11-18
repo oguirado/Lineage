@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Journal-authoritative agent records and projections",
+  "claims": [
+    {"id": "C1", "text": "create prepares agent.born inside the journal transaction with request identity and revision checks, and publication runs only after the durable commit returns.", "type": "behavior"},
+    {"id": "C2", "text": "_validate_born and _validate_status enforce the born and status event contracts, and _verify_immutable prevents any projection from acting as an admission authority.", "type": "invariant"},
+    {"id": "C3", "text": "materialize and refresh_projections rebuild the confined projection files from the verified journal prefix, writing only changed bytes via _unchanged_projection and _publish.", "type": "behavior"},
+    {"id": "C4", "text": "get, list_agents and _record expose the folded agent record, while _compile and _constitution_integrity compile and verify the constitution against its sources.", "type": "interface"}
+  ],
+  "triggers": ["agent creation refused", "projection differs from journal", "constitution integrity mismatch", "refresh_projections stale"],
+  "decision": {
+    "rule": "Change here when agent creation, born or status validation, constitution compilation or projection materialization needs to change.",
+    "failure": "An agent record is admitted without validation, a projection diverges from the journal, or refresh publishes unverified state."
+  },
+  "questions": [
+    {"q": "Where does create validate the agent.born event before committing?" },
+    {"q": "Where should I change projection materialization after a commit?"},
+    {"q": "Where can I debug a constitution integrity mismatch in _constitution_integrity?"},
+    {"q": "How does refresh_projections rebuild the verified prefix?"}
+  ],
+  "aliases": ["agent records", "agent projections", "constitution compile", "agent born validation", "materialize"],
+  "edges": [],
+  "source_sha256": "955eaa89bdd18cf1057177e53121f4d25b35b5cf8a861aed2fd86922375a130d"
+}

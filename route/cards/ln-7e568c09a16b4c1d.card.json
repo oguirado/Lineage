@@ -1,0 +1,23 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Frozen K0 contract extraction for QA",
+  "claims": [
+    {"id": "C1", "text": "The module pins FROZEN_SHA256, SAFE_INTEGER, STATES, ENTITIES, SCREENS and ROLES as the frozen passive inputs for QA contract checks.", "type": "invariant"},
+    {"id": "C2", "text": "The OPERATIONS table maps each operation label to its tool and event kind, with None marking operations such as bench_run that have no direct event.", "type": "interface"},
+    {"id": "C3", "text": "validate_inventory checks a DOM inventory against a contract, and validate_wire validates a wire file against schema and filename-specific rules.", "type": "behavior"},
+    {"id": "C4", "text": "identity_key, normalize_name and canonical provide the digest and naming helpers shared by QA checks, built on strict_loads, validate and canonical_bytes.", "type": "behavior"}
+  ],
+  "triggers": ["QA inventory validation fails", "frozen contract hash mismatch", "wire file shape invalid", "operation lacks tool mapping"],
+  "decision": {
+    "rule": "Change here when the frozen QA contract constants, operation mappings or inventory and wire validation needs to change.",
+    "failure": "A valid inventory is rejected, an operation has no tool mapping, or a wire file passes with the wrong shape."
+  },
+  "questions": [
+    {"q": "Where are the frozen K0 constants and operation mappings defined?"},
+    {"q": "Where should I change inventory validation against the contract?"},
+    {"q": "Where can I debug a wire file failing validation in validate_wire?"}
+  ],
+  "aliases": ["QA contracts", "frozen K0", "inventory validation", "wire validation", "operation mapping"],
+  "edges": [],
+  "source_sha256": "8ad60f4aa25f8bea68f27516dd196493cce746a7d35ffc69b377e24371b8da7e"
+}

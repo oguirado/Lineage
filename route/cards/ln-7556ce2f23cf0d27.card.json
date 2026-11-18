@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Verified ledger cursors and projection verification",
+  "claims": [
+    {"id": "C1", "text": "read_events validates after, limit, wait_ms, agent_id and kinds, filters matches before limiting a page, returns resync when after exceeds the head, and polls on a monotonic deadline while releasing each snapshot before waiting.", "type": "behavior"},
+    {"id": "C2", "text": "verify_ledger captures the journal report, certifies canonical agent projections inside the IO boundary, raises busy when the journal changed during verification, and reports external and unrun scope entries as unverified.", "type": "invariant"},
+    {"id": "C3", "text": "_verification_data maps the integrated reports to the frozen wire shape with codes bad_args, hash_mismatch, projection_drift and torn_tail, and verify_main delegates to the ledger_verify tool through _delegate.", "type": "interface"}
+  ],
+  "triggers": ["events cursor resync", "journal changed during verification", "projection_drift reported", "torn_tail issue"],
+  "decision": {
+    "rule": "Change here when event cursor paging, polling, or agent projection verification needs to change.",
+    "failure": "A filtered reader strands on a nonmatching page, verification misses a projection drift, or a changed journal is certified anyway."
+  },
+  "questions": [
+    {"q": "Where does read_events page filtered matches without stranding the cursor?"},
+    {"q": "Where should I change how verify_ledger certifies agent projections?"},
+    {"q": "Where can I debug why ledger_verify reports a torn tail or projection drift?"}
+  ],
+  "aliases": ["ledger cursor", "page filtering", "projection verification", "torn tail", "resync"],
+  "edges": [],
+  "source_sha256": "8d7b9d660cd3cd6145e18dd4fc2323ed07396ae4bd0f665a7a8eba3374cdcd3c"
+}

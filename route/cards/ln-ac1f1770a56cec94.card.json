@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Memory tool surface",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "TOOLS exposes memory_put, memory_get and memory_history with journal or read effects and closed input schemas.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "_put forwards to units.put with a registry Command carrying the actor and op_id, and _history and _get delegate to units.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "VALIDATORS binds memory.put and memory.retire to domain validators and FOLDS binds the memory namespace at order 30.",
+      "type": "invariant"
+    }
+  ],
+  "triggers": [
+    "memory_put rejected",
+    "memory history empty",
+    "memory fold missing",
+    "unit schema invalid"
+  ],
+  "decision": {
+    "rule": "Change here when memory tool schemas, handler routing, validators or the memory fold needs to change.",
+    "failure": "A memory tool reaches the domain with a wrong actor, or the memory fold stops receiving agent.born events."
+  },
+  "questions": [
+    {
+      "q": "Where are the memory tool input schemas and handlers registered?"
+    },
+    {
+      "q": "Where should I change how memory_put builds its registry Command?"
+    },
+    {
+      "q": "Where can I debug a missing memory validator during dispatch?"
+    }
+  ],
+  "aliases": [
+    "memory put",
+    "memory history",
+    "memory fold",
+    "unit validators"
+  ],
+  "edges": [],
+  "source_sha256": "99e3870e1c9c21bfff924edfb5fc0e0b5d939ab55d5e0d0a7db4498b1b2580ea"
+}

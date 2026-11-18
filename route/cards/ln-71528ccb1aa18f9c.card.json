@@ -1,0 +1,23 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Family envelope wire schema",
+  "claims": [
+    {"id": "C1", "text": "The schema requires schema, id, source, target, kind, agent and payload, fixes schema to the lineage.family/1 constant, and closes the object with additionalProperties false.", "type": "behavior"},
+    {"id": "C2", "text": "The kind enum admits exactly capabilities, events.read and call, and the id pattern forbids the reserved invalid0 value with a not const clause.", "type": "invariant"},
+    {"id": "C3", "text": "The allOf branches specialize payload per kind: capabilities requires an empty payload and forbids after, events.read requires after with bounded limit and wait_ms, and call validates tool and args against a oneOf of closed tool shapes.", "type": "interface"},
+    {"id": "C4", "text": "Identifier patterns bound source and target to 1 to 64 characters starting alphanumeric, agent to a lowercase identity, and after to the safe-integer maximum.", "type": "invariant"}
+  ],
+  "triggers": ["family envelope fails validation", "capabilities carries after", "call payload tool shape unknown", "reserved invalid0 id"],
+  "decision": {
+    "rule": "Change here when the family envelope fields, kind-specific payload shapes or identifier patterns need to change.",
+    "failure": "An envelope with an unknown field passes, a kind carries a payload for another kind, or a forbidden identifier is accepted."
+  },
+  "questions": [
+    {"q": "Where is the per-kind payload shape for capabilities, events.read and call defined?"},
+    {"q": "Where should I check why a call envelope's tool and args are rejected?"},
+    {"q": "Where can I debug an invalid0 request id failing schema validation?"}
+  ],
+  "aliases": ["family envelope", "wire schema", "lineage.family/1", "capabilities payload", "call payload"],
+  "edges": [],
+  "source_sha256": "32ae99afcc151c5c5b60f7484a4b36e1adde027274cd680c1f0dcf21c10f4cd2"
+}

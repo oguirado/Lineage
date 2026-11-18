@@ -15,7 +15,7 @@ class HeadRace extends Error {constructor(){super('Data is stale. Ledger prefix 
 class AgentScreen implements Runtime {
  a:any=null;referenceId?:string;head:number|null=null;query:Record<string,string>={};search='';expanded=new Set<string>();states:Runtime['states']={};
  context:ScreenContext;signal:AbortSignal;private owned=new AbortController();private epoch=0;private disposed=false;private unsubscribe:()=>void;private detach:()=>void=()=>{};
- private feedbackNode=el('p');private ack:number|null=null;private stale=false;private collision=false;private notice='';private feedbackText='';private drafts:Drafts=new Map();private announcements=new Set<string>();private tools:readonly ToolDescriptor[]=[];
+ private feedbackNode=el('p');private ack:number|null=null;private stale=false;private collision=false;private notice='';private feedbackText='';private drafts:Drafts=new Map();private heartbeatDrafts=new Map<string,OperationDraft>();private announcements=new Set<string>();private tools:readonly ToolDescriptor[]=[];
  constructor(readonly host:HTMLElement,context:ScreenContext){this.feedbackNode.className='agent-feedback-global';this.context=context;this.signal=this.owned.signal;this.unsubscribe=context.store.subscribe(s=>{if(this.disposed||this.signal.aborted)return;if(this.ack!==null&&s.head!==this.ack){this.stale=true;if(!host.querySelector('dialog'))this.render();}});}
  button(action:string,name:string,fn:(button:HTMLButtonElement)=>void):HTMLButtonElement {const b=el('button',checkedName(name));b.type='button';b.dataset.linAction=action;b.disabled=this.collision;b.addEventListener('click',()=>{if(!b.disabled&&!this.disposed&&!this.signal.aborted)fn(b);});return b;}
  announce(key:string,message:string){if(this.disposed||this.signal.aborted||this.announcements.has(key))return;this.announcements.add(key);this.context.announce(key,message);}
@@ -49,7 +49,20 @@ class AgentScreen implements Runtime {
  available(tool:string,ownerBound=false):string|null {if(this.collision)return 'Identity key collision. Actions unavailable.';if(this.context.transport.mode==='fixture')return 'Synthetic fixtures. Changes are unavailable.';const descriptor=this.context.store.getState().tools.find(t=>t.name===tool);if(!descriptor)return 'Tool descriptor unavailable: '+tool;const known:Record<string,string[]>={memory_put:['agent_id','unit','run_id'],run_open:['run_id','agent_id','seat','task','parents_context','memory_arm'],run_beat:['run_id','progress'],run_close:['run_id','outcome','cost','evidence'],agent_clone:['parent_id','child_id','display_name'],agent_distill:['parent_id','child_id','display_name','unit_ids'],agent_cross:['parent_ids','child_id','display_name'],agent_mutate:['parent_id','child_id','display_name','change'],agent_specialize:['parent_id','child_id','display_name','language'],agent_retire:['agent_id','reason'],agent_promote:['agent_id','bench_id']};const allowed=[...(known[tool]??[]),'agent','op_id','expected_head'];if((descriptor.inputSchema.required as string[]??[]).some(k=>!allowed.includes(k))||Object.keys(descriptor.inputSchema.properties??{}).some(k=>!allowed.includes(k)))return 'Unsupported tool descriptor shape. Changes are unavailable.';
  const actor=document.querySelector<HTMLSelectElement>('[data-lin-action="select-actor"]');if(!actor||actor.disabled||!isAgentId(actor.value))return 'Selected actor unavailable or reserved. Tool assertions grant no operator authority.';if(ownerBound&&actor.value!==this.a.agent_id)return 'actor_mismatch: selected actor must equal the target owner.';if(this.context.store.getState().head===null)return 'Acknowledged ledger head unavailable.';return null;}
  openForm(kind:string,trigger:HTMLElement,id?:string){openForm(this,this.drafts,kind,trigger,id);}
- beat(runId:string,trigger:HTMLElement){const draft:OperationDraft={};void execute(this,draft,'run_beat',{run_id:runId,progress:'Heartbeat requested from Agent detail.'},'Record heartbeat',runId,(_state,msg)=>{(trigger as HTMLButtonElement).disabled=_state==='pending';this.feedback(msg);}).then(result=>{if(result)void this.load('runs');});}
+ beat(runId:string,trigger:HTMLElement){
+  const tool='run_beat';
+  const key=JSON.stringify([this.a.agent_id,runId,tool]);
+  let draft=this.heartbeatDrafts.get(key);
+  if(!draft){draft={};this.heartbeatDrafts.set(key,draft);}
+  void execute(this,draft,tool,{run_id:runId,progress:'Heartbeat requested from Agent detail.'},'Record heartbeat',runId,(state,message)=>{
+   (trigger as HTMLButtonElement).disabled=state==='pending';
+   this.feedback(message);
+  }).then(result=>{
+   if(!result)return;
+   this.heartbeatDrafts.delete(key);
+   void this.load('runs');
+  });
+ }
  render(){if(this.disposed||this.signal.aborted)return;const focus=captureFocus(this.host);if(!this.a){const id=(this.context.route as any).agentId,heading=el('h1','Agent '+identityKey('agent',id));heading.tabIndex=-1;const full=el('p',id);full.className='full-identity';full.id='screen-identity';heading.setAttribute('aria-describedby',full.id);this.host.replaceChildren(heading,full);const message=this.feedbackText||this.states[(this.query.panel??'constitution') as Panel]?.error||'Agent unavailable.';const alert=el('p');outcome(alert,message,true);this.host.append(alert,this.button('retry-panel','Retry Agent',()=>{void this.update(this.context).catch(()=>{});}));return;}
   // Refresh does not tear down an open modal or its volatile editor.
   if(this.host.querySelector('dialog'))return;
@@ -61,7 +74,7 @@ class AgentScreen implements Runtime {
   const mutationMap:Record<string,string>={'write-memory':'memory_put','open-run-form':'run_open','heartbeat-run':'run_beat','close-run':'run_close','derive-agent':'agent_clone','retire-agent':'agent_retire','promote-agent':'agent_promote'};const reasons=new Set<string>();for(const button of this.host.querySelectorAll<HTMLButtonElement>('button[data-lin-action]')){let tool=mutationMap[button.dataset.linAction!];if(button.dataset.linAction==='derive-agent')tool=['agent_clone','agent_distill','agent_cross','agent_mutate','agent_specialize'].find(name=>this.context.store.getState().tools.some(t=>t.name===name))??'agent_clone';if(tool){const reason=this.available(tool,['memory_put','run_open','run_beat','run_close'].includes(tool));if(reason){button.disabled=true;reasons.add(reason);}}if(this.collision)button.disabled=true;}for(const reason of reasons)text(this.host,reason);
   outcome(this.feedbackNode,this.feedbackText);this.host.append(this.feedbackNode);restoreFocus(this.host,focus,heading,(k,m)=>this.announce(k,m));
  }
- dispose(){if(this.disposed)return;this.disposed=true;this.owned.abort();this.detach();this.unsubscribe();closeDialogsWithin(this.host);this.drafts.clear();delete this.host.dataset.linEntity;delete this.host.dataset.linId;}
+ dispose(){if(this.disposed)return;this.disposed=true;this.owned.abort();this.detach();this.unsubscribe();closeDialogsWithin(this.host);this.drafts.clear();this.heartbeatDrafts.clear();delete this.host.dataset.linEntity;delete this.host.dataset.linId;}
 }
 export const screen: ScreenModule = {
  id: 'agent', title: 'Agent',

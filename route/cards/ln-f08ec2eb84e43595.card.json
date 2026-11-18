@@ -1,0 +1,48 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Per-agent seat arm score aggregation",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "aggregate_score validates the agent/seat/arm identity, requires rows with task_id, seed, boolean correct and integer-or-null costs, checks redeliveries, then retains only the first row per task_id.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "For every cost field it reports known, unknown, total and mean (None when nothing is known) and counts n_tasks, n_correct, n_incorrect, correctness (None for zero tasks) and ignored_repeats as repeated rows.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "It returns the lineage.arena.score/v1 summary with sorted task_ids and a copied seat dict for the given memory_arm.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "correct must be an explicitly adjudicated boolean",
+    "ignored_repeats on repeated seeds",
+    "correctness null with zero tasks"
+  ],
+  "decision": {
+    "rule": "Change here when score retention, correctness ratio, or unknown cost accounting needs to change.",
+    "failure": "Repeated seeds double-count tasks, a boolean accepts a truthy non-boolean, or unknown costs enter arithmetic."
+  },
+  "questions": [
+    {
+      "q": "Where does aggregate_score retain the first seed per task?"
+    },
+    {
+      "q": "Where should I change how unknown costs are counted in summaries?"
+    },
+    {
+      "q": "Where can I debug why ignored_repeats counts repeated rows?"
+    }
+  ],
+  "aliases": [
+    "score aggregation",
+    "first seed retention",
+    "unknown costs"
+  ],
+  "edges": [],
+  "source_sha256": "981eabab2d9c63c7908946374df48fa37b47e3f011396f77a357989d63b9ffa0"
+}

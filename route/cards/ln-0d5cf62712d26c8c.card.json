@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Hash-chained event record schema",
+  "claims": [
+    {"id": "C1", "text": "The top-level record is a closed object requiring schema lineage.event/v1, id e- plus 16 hex chars, lamport at least 1, ledger main, one of 13 kinds, op_id and request_sha256.", "type": "interface"},
+    {"id": "C2", "text": "The allOf array holds one if/then branch per kind const, pinning each payload shape; the memory.put branch requires agent_id and a unit $ref to mem_unit.schema.json with an optional run_id.", "type": "invariant"},
+    {"id": "C3", "text": "The evidence array is unique, capped at 64 items, and each item closes over exactly a bounded path and sha256; the chain is carried by prev_sha256 and sha256 64-hex fields.", "type": "invariant"}
+  ],
+  "triggers": ["event shape validation fails", "unknown event kind payload", "evidence entry rejected"],
+  "decision": {
+    "rule": "Change here when a new event kind, an event field, or a payload shape for an existing kind needs to change.",
+    "failure": "A committed event fails shape validation, a kind has no matching allOf branch, or evidence entries exceed the 64-item cap."
+  },
+  "questions": [
+    {"q": "Where does the event schema pin the payload shape for each kind const?"},
+    {"q": "Where should I change the evidence item bounds for event records?"},
+    {"q": "Where can I debug why an event record fails validation despite a valid kind?"}
+  ],
+  "aliases": ["event shape", "payload conformance", "hash chain fields", "evidence item", "closed record"],
+  "edges": [],
+  "source_sha256": "a4a2ae8a75f39f51aa927808bbdef10269c92b9d958859c2ee8e020c13cc4afe"
+}

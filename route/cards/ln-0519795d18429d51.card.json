@@ -1,0 +1,47 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Language specialization delegates eligibility to the shared selector",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "specialize builds the agent_specialize command via _command, then its prepare callback returns _birth_payload with op='specialize' and the requested language.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "specialize imposes no independent eligibility rule of its own; the shared selector reachable through _birth_payload and _transact decides admission.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "specialize returns _transact(effective, prepare, ctx), the committed birth result for the specialized child agent.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "language specialized agent born with wrong inheritance",
+    "specialize child rejects unexpected language"
+  ],
+  "decision": {
+    "rule": "Change here when language specialization birth payload, command name or eligibility delegation needs to change.",
+    "failure": "A specialized child is born without the requested language, or specialization bypasses the shared selector rules."
+  },
+  "questions": [
+    {
+      "q": "Where does specialize build its birth payload with op specialize and the language?"
+    },
+    {
+      "q": "Where should I change how specialize delegates eligibility to the shared selector?"
+    },
+    {
+      "q": "Where can I debug why a specialized child was born with the wrong language?"
+    }
+  ],
+  "aliases": [
+    "language specialization",
+    "agent_specialize birth",
+    "specialize op"
+  ],
+  "edges": [],
+  "source_sha256": "d7f635d9bcd197dc231f0f516af63f2175c129623b74d0cd32c1032505e2eeab"
+}

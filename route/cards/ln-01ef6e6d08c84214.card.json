@@ -1,0 +1,36 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Bridge package marker",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The package docstring in lineage/bridge/__init__.py declares explicitly configured, headless external client boundaries.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "bridge client boundary not found",
+    "where is the external client configured"
+  ],
+  "decision": {
+    "rule": "Change here when the bridge package boundary or its external-client contract needs to change.",
+    "failure": "Bridge imports resolve to an unexpected module or the package provides no client boundary."
+  },
+  "questions": [
+    {
+      "q": "Where is the bridge package boundary declared?"
+    },
+    {
+      "q": "What client boundaries does lineage/bridge/__init__.py expose?"
+    },
+    {
+      "q": "Where should I debug an explicitly configured external client boundary?"
+    }
+  ],
+  "aliases": [
+    "bridge package",
+    "external client boundary"
+  ],
+  "edges": [],
+  "source_sha256": "33f28cf6da5c3bd61a0b8d3d9843900ef2a3b0c0f829cb61b0bc084a469f3f6f"
+}

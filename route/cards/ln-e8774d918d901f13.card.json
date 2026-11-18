@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Structured library errors and public envelope",
+  "claims": [
+    {"id": "C1", "text": "LineageError stores a stable code and a deep-copied JSON diagnostic detail, initializing the exception with the code.", "type": "behavior"},
+    {"id": "C2", "text": "as_dict returns ok false with the code and, only when detail is not None, a deep-copied detail; error_payload returns that dict for the HTTP host.", "type": "interface"},
+    {"id": "C3", "text": "JSONValue is a TypeAlias for the recursive None, bool, int, float, str, list and dict union used for diagnostic data.", "type": "interface"}
+  ],
+  "triggers": ["error envelope missing detail", "caller mutates error detail", "unknown error code"],
+  "decision": {
+    "rule": "Change here when the error code contract or the public error envelope needs to change.",
+    "failure": "An error payload omits the code, leaks a mutable detail reference, or includes detail when it must be absent."
+  },
+  "questions": [
+    {"q": "Where does LineageError detach its diagnostic detail?"},
+    {"q": "Where should I change the public error envelope shape?"},
+    {"q": "Where can I debug why an error response is missing its detail?"}
+  ],
+  "aliases": ["LineageError", "error envelope", "diagnostic detail", "as_dict", "JSONValue"],
+  "edges": [],
+  "source_sha256": "3506b2fd2b1e9e2631763bc076a182403ec8cc3f49aa97b7d8670252d86254d1"
+}

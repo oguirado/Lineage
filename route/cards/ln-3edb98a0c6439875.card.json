@@ -1,0 +1,49 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Deterministic distill selection and immutable retirement",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "distill copies parent_id/child_id and optional display_name, validates unit_ids as a non-string Sequence (bad_args otherwise), builds the agent_distill command, checks the child target via agents._target, and prepares an agent.born payload with op='distill'.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "distill never paraphrases selected units; selection is deterministic through _birth_payload with the selected ids.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "retire builds the agent_retire command, checks the target via agents._target, and transacts an agent.status payload from _retirement_payload so retirement preserves history instead of deleting the agent.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "invalid selected unit collection distill",
+    "distilled child has paraphrased units",
+    "retired agent history missing"
+  ],
+  "decision": {
+    "rule": "Change here when deterministic unit selection for distill or immutable retirement payload needs to change.",
+    "failure": "Distill mangles or drops selected units, rejects a valid unit collection, or retirement deletes agent history."
+  },
+  "questions": [
+    {
+      "q": "Where does distill validate the unit_ids collection before building its command?"
+    },
+    {
+      "q": "Where should I change how distill passes selected ids to _birth_payload?"
+    },
+    {
+      "q": "Where can I debug why retire preserves history instead of deleting the agent?"
+    }
+  ],
+  "aliases": [
+    "distill selection",
+    "immutable retirement",
+    "agent_distill",
+    "agent_retire"
+  ],
+  "edges": [],
+  "source_sha256": "1a8fc40430d706ee5c08b960fa59c36866f70a954725a58dca08d502300a7f5f"
+}

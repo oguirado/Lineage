@@ -61,6 +61,33 @@ class DoctorTests(CommsCase):
         result = json.loads(self.cli('doctor', '--json', home=link, expected=3).stdout)
         self.assertFalse(next(c for c in result['checks'] if c['id'] == 'home_permissions')['ok'])
 
+    def test_unsafe_or_invalid_home_skips_inspection_with_stable_ids(self):
+        from lineage.core import app, doctor, registry
+        reg = registry.load()
+        private = self.home / 'private'
+        private.mkdir(mode=0o700)
+        link = Path(self.temporary.name) / 'linked'
+        link.symlink_to(self.home, target_is_directory=True)
+        self.home.chmod(0o777)
+        for home in (self.home, link, link / 'private', '', object()):
+            with self.subTest(home=home), \
+                    mock.patch.object(app, 'create_context') as create_context, \
+                    mock.patch.object(app, 'dispatch') as dispatch, \
+                    mock.patch.object(doctor, '_endpoints') as endpoints:
+                result = doctor.report(home, registry=reg)
+                self.assertEqual(create_context.call_count, 0)
+                self.assertEqual(dispatch.call_count, 0)
+                self.assertEqual(endpoints.call_count, 0)
+                self.assertFalse(result['ok'])
+                self.assertCountEqual((item['id'] for item in result['checks']), CHECKS)
+                checks = {item['id']: item for item in result['checks']}
+                self.assertFalse(checks['home_permissions']['ok'])
+                self.assertTrue(checks['registry']['ok'])
+                self.assertTrue(checks['contract_conformance']['ok'])
+                for ident in ('ledger', 'references', 'json_endpoints'):
+                    self.assertEqual(checks[ident], {
+                        'id': ident, 'ok': False, 'detail': 'skipped: unsafe or invalid home'})
+
     def test_missing_home_is_reported_without_creation(self):
         missing = self.home / 'missing'
         result = json.loads(self.cli('doctor', '--json', home=missing, expected=3).stdout)

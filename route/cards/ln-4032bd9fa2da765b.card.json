@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Reproducible memory projections",
+  "claims": [
+    {"id": "C1", "text": "generation_files returns fresh complete bytes for every selected historical prefix with gen/<n> entry, journal, units and manifest files plus CURRENT and root mirrors.", "type": "behavior"},
+    {"id": "C2", "text": "verify_projection compares the on-disk projection against exact ledger-derived bytes and returns issues without repairing artifacts.", "type": "interface"},
+    {"id": "C3", "text": "rebuild stages new generations under the publish lock, fsyncs them, publishes CURRENT and mirrors, and raises stale_rev when a newer committed prefix exists.", "type": "invariant"}
+  ],
+  "triggers": ["projection differs from committed prefix", "required projection artifact missing", "stale_rev newer prefix", "duplicate agent birth"],
+  "decision": {
+    "rule": "Change here when memory generation layout, projection verification or rebuild publication needs to change.",
+    "failure": "Projection verification reports differences, rebuild refuses stale snapshots, or staged generations fail verification."
+  },
+  "questions": [
+    {"q": "Where does generation_files build complete generation bytes from the ledger prefix?"},
+    {"q": "Where should I change how verify_projection detects projection differences without repairing?"},
+    {"q": "Where can I debug why rebuild raises stale_rev or fails staged verification?"}
+  ],
+  "aliases": ["memory projection", "generation files", "CURRENT pointer", "projection rebuild"],
+  "edges": [],
+  "source_sha256": "29c3c000eaa2ed261783efc977c060d5ea1431615594a721202d09ee2982f76f"
+}

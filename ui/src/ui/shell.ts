@@ -61,6 +61,14 @@ export function mountShell(root:HTMLElement,store:AppStore,router:Router,transpo
   const screenStatus=doc.createElement('output');screenStatus.className='screen-readiness';screenStatus.hidden=true;footer.append(screenStatus);
   const progress=doc.createElement('div');progress.setAttribute('role','progressbar');progress.hidden=true;footer.append(progress);
   const status=createStatusRegion(root);
+  const announceFocus=(key:string,message:string)=>status.announce(key,message,'update');
+  let lastReadState='';
+  const announceReadState=(key:string,message:string)=>{
+    // Repeated render acknowledgements should leave a newer focus message intact.
+    if(key===lastReadState) return;
+    lastReadState=key;
+    status.announce(key,message,'update');
+  };
   let screenName='agents',screenCanBeReady=false;
   function labelOptions() {
     for(const select of root.querySelectorAll<HTMLSelectElement>('select')) {
@@ -90,12 +98,13 @@ export function mountShell(root:HTMLElement,store:AppStore,router:Router,transpo
     if(!(control instanceof HTMLInputElement||control instanceof HTMLSelectElement||control instanceof HTMLTextAreaElement)||control instanceof HTMLInputElement&&control.type==='password') return;
     const name=control.getAttribute('aria-label')??control.labels?.[0]?.textContent??'Field';
     const value=control instanceof HTMLInputElement&&control.type==='checkbox'?String(control.checked):control.value;
-    status.announce(`field:${name}:${value}`,`${name}: ${value||'empty'}`);
+    status.announce(`field:${name}:${value}`,`${name}: ${value||'empty'}`,'status');
   };
   root.addEventListener('click',beginAction,true);root.addEventListener('input',echoValue);root.addEventListener('change',echoValue);
   const skipClick=(event:MouseEvent)=>{event.preventDefault();focusMain(main);};skip.addEventListener('click',skipClick);
   let module:ScreenModule|null=null,mounted:MountedScreen|null=null,controller:AbortController|null=null;
   let routeKey='',focusPathKey='',rendered=false,renderFailure:string|null=null,epoch=0,initialReady:Promise<void>=Promise.resolve();
+  let pendingUpdate=false;
   let lastEvents:AppState['events']|null=null;let lastHead:number|null=null;let navigateFocus=true;let refreshFocus:FocusSnapshot|null=null;
   const focusHistory=new Map<string,FocusSnapshot|null>();
   const panelLabel=(state:AppState)=>state.route.screen==='arena'?'Benchmarks':state.route.screen==='bench'?'Rule':screenLabels[state.route.screen];
@@ -131,14 +140,16 @@ export function mountShell(root:HTMLElement,store:AppStore,router:Router,transpo
     const ready=state.head!==null&&state.phase!=='loading'&&rendered&&!renderFailure&&issues.length===0;
     screenCanBeReady=ready;mirrorBusy();
     if(ready) {
+      // A refresh can keep the previous view ready while its replacement is pending.
+      if(pendingUpdate) return;
+      if(!state.error&&!state.notice) announceReadState(`ready:${routeKey}:${state.head}`,`${label} ready.`);
+      else if(state.stale) announceReadState(`stale:${routeKey}:${state.head}`,`Data is stale. Last confirmed revision ${state.head}.`);
       if(navigateFocus) {
         const previous=focusHistory.get(focusPathKey);
-        if(previous) restoreFocus(root,previous,main,status.announce);else focusMain(main.querySelector<HTMLElement>('h1')??main);
+        if(previous) restoreFocus(root,previous,main,announceFocus);else focusMain(main.querySelector<HTMLElement>('h1')??main);
         navigateFocus=false;
-      } else if(refreshFocus) {restoreFocus(root,refreshFocus,main,status.announce);refreshFocus=null;}
-      if(!state.error&&!state.notice) status.announce(`ready:${routeKey}:${state.head}`,`${label} ready.`);
-      else if(state.stale) status.announce(`stale:${routeKey}:${state.head}`,`Data is stale. Last confirmed revision ${state.head}.`);
-    } else if(!state.error&&!renderFailure&&!state.notice) status.announce(`loading:${routeKey}`,`Loading ${label}.`);
+      } else if(refreshFocus) {restoreFocus(root,refreshFocus,main,announceFocus);refreshFocus=null;}
+    } else if(!state.error&&!renderFailure&&!state.notice) announceReadState(`loading:${routeKey}`,`Loading ${label}.`);
   }
   function render(state:AppState) {
     if(disposed) return;
@@ -146,6 +157,7 @@ export function mountShell(root:HTMLElement,store:AppStore,router:Router,transpo
     if(state.phase==='loading'&&state.head!==null&&!refreshFocus) refreshFocus=captureFocus(root);
     if(routeChanged||dataChanged) {
       const token=++epoch;
+      pendingUpdate=true;
       if(routeChanged) {
         // Query edits retain the active control; path history restores entity focus.
         if(pathKey!==focusPathKey) {
@@ -165,11 +177,14 @@ export function mountShell(root:HTMLElement,store:AppStore,router:Router,transpo
         }
         else update=mounted!.update(context);
         Promise.all([initialReady,update!]).then(()=>{
-          if(disposed||token!==epoch||context.signal.aborted) return;rendered=true;viewState(store.getState());
+          if(disposed||token!==epoch||context.signal.aborted) return;
+          pendingUpdate=false;rendered=true;viewState(store.getState());
         }).catch(()=>{
-          if(disposed||token!==epoch||context.signal.aborted) return;renderFailure='The screen could not be rendered.';rendered=false;viewState(store.getState());
+          if(disposed||token!==epoch||context.signal.aborted) return;
+          pendingUpdate=false;renderFailure='The screen could not be rendered.';rendered=false;viewState(store.getState());
         });
       } catch {
+        pendingUpdate=false;
         controller?.abort();closeDialogsWithin(main);const previous=mounted;mounted=null;module=null;previous?.dispose();
         renderFailure='The screen could not be rendered.';rendered=false;
       }

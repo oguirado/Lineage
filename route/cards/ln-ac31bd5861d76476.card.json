@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Room journal lifecycle recording under the shared lock",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "agent_lifecycle requires room, agent, state and run_id, rejects unknown keys, checks room and agent, generates a random op_id when absent, and validates the op shape with PlanError mapped to RoomError.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "_commit serializes through the room lock, replays a matching op_id (bad_op on room, op or batch conflict), folds the op with fold_plan and apply_op_event, appends one canonical event line, and refuses beyond the room CAP with room_full.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "agent_lifecycle trusts no client clock: ts is resolved only after acquiring the shared lock, and the registered agent_lifecycle tool accepts exactly the room, agent, state, run_id, swarm, harness, reason and op_id arguments.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "bad_args invalid lifecycle arguments",
+    "op_id conflict bad_op",
+    "room_full room file cap exceeded",
+    "internal on lifecycle append"
+  ],
+  "decision": {
+    "rule": "Change here when room lifecycle argument validation, op replay, or lifecycle append under the room lock needs to change.",
+    "failure": "The same lifecycle op appends twice, a conflicting op_id passes, or client-supplied timestamps are honored."
+  },
+  "questions": [
+    {
+      "q": "Where does _commit deduplicate lifecycle ops by op_id under the room lock?"
+    },
+    {
+      "q": "Where should I change the lifecycle tool input schema?"
+    },
+    {
+      "q": "Where can I debug why a lifecycle append fails with room_full?"
+    }
+  ],
+  "aliases": [
+    "agent lifecycle",
+    "room lock",
+    "op_id replay",
+    "lifecycle registration"
+  ],
+  "edges": [],
+  "source_sha256": "def6a86f79601e0d9ac0f95f4e3c34bc75df270eeb628da4eec7d052106f0a9d"
+}

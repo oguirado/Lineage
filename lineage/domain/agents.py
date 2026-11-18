@@ -558,7 +558,7 @@ def _same(a, b):
 
 
 @contextmanager
-def _directory(path, *, create=False):
+def _directory(path, *, create=False, relative_root=None):
     """Pin every component; validate ancestry again at each publication gate."""
     descriptors, links = [], []
     try:
@@ -567,7 +567,9 @@ def _directory(path, *, create=False):
             raise OSError
         fd = os.open(path.anchor, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         descriptors.append(fd)
+        coordinate = Path(path.anchor)
         for name in path.parts[1:]:
+            coordinate /= name
             if name in ('', '.', '..'):
                 raise OSError
             try:
@@ -580,6 +582,9 @@ def _directory(path, *, create=False):
                 os.fsync(fd)
                 before = os.stat(name, dir_fd=fd, follow_symlinks=False)
             if not stat.S_ISDIR(before.st_mode):
+                if relative_root is not None:
+                    raise LineageError('internal', 'unsafe projection path: ' +
+                                       coordinate.relative_to(relative_root).as_posix())
                 raise OSError
             child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
             descriptors.append(child)
@@ -606,7 +611,7 @@ def _destinations(fd):
         except FileNotFoundError:
             continue
         if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
-            raise OSError
+            raise LineageError('internal', 'unsafe agent projection: ' + name)
 
 
 def _unchanged_projection(fd, name, raw, guard):
@@ -699,7 +704,7 @@ def materialize(agent_id: str, *, snapshot, ctx, _preserve_unchanged=False) -> t
     try:
         # Unsafe existing destinations must refuse before any coordination file
         # or projection is created, including a sibling destination symlink.
-        with _directory(directory) as (fd, guard):
+        with _directory(directory, relative_root=_home(ctx)) as (fd, guard):
             if fd is not None:
                 _destinations(fd)
                 guard()
@@ -717,13 +722,13 @@ def materialize(agent_id: str, *, snapshot, ctx, _preserve_unchanged=False) -> t
                         raise OSError
                     if history != _history(ctx):
                         raise LineageError('internal', 'stale projection snapshot')
-                    with _directory(directory, create=True) as (fd, guard):
+                    with _directory(directory, create=True, relative_root=_home(ctx)) as (fd, guard):
                         _destinations(fd)
                         for name in _FILES:
                             if not _preserve_unchanged or not _unchanged_projection(fd, name, contents[name], guard):
                                 _publish(fd, name, contents[name], guard)
                         guard()
-                    # Memory keeps immutable generations inside the same agent home.
+                    # Memory rebuilds ledger-derived generations inside the same agent home.
                     store = _peer('memory.store')
                     memory_ctx = _memory_context(ctx)
                     from .memory import _snapshot_of
@@ -734,6 +739,14 @@ def materialize(agent_id: str, *, snapshot, ctx, _preserve_unchanged=False) -> t
             finally:
                 os.close(lock)
         return tuple(directory / name for name in _FILES) + tuple(memory_files)
+    except LineageError as exc:
+        detail = (exc.detail if exc.detail and 'projection' in exc.detail
+                  else 'agent projection publication refused')
+        if detail.startswith('unsafe agent projection: '):
+            coordinate = directory.relative_to(_home(ctx)) / detail.split(': ', 1)[1]
+            detail = 'agent projection publication refused: ' + coordinate.as_posix()
+        code = exc.code if exc.code == 'hash_mismatch' else 'internal'
+        raise LineageError(code, detail) from None
     except Exception:
         raise LineageError('internal', 'agent projection publication refused') from None
 

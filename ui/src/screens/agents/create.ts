@@ -12,7 +12,12 @@ export function createWorkflow(options:{host:HTMLElement;context:()=>ScreenConte
   let updateDialog:()=>void=()=>{};
   const context=()=>options.context();
   const live=()=>context().transport.mode==='live';
-  function acting():string|null {const el=document.querySelector<HTMLSelectElement>('[data-lin-action="select-actor"]');return el&&!el.disabled&&id(el.value)&&Array.from(el.selectedOptions).some(o=>!o.disabled)?el.value:null;}
+  function acting():string|null {
+    const el=document.querySelector<HTMLSelectElement>('[data-lin-action="select-actor"]');
+    const selected=el?.selectedOptions[0];
+    if(!el||el.matches(':disabled')||!selected||selected.disabled||selected.closest('optgroup')?.disabled) return null;
+    return id(el.value)&&!['operator','system'].includes(el.value)?el.value:null;
+  }
   function operation():string {return live()?'create-'+window.crypto.randomUUID():'';}
   function fresh():Draft {return {schema:'lineage.ui.create-draft/v1',fields:{agent_id:'',display_name:'',workflow:'',language:'',allowed_seats:[],references:[],skills:[]},seat_draft:{model:'',effort:'',mode:'headless'},actor:acting(),op_id:operation(),phase:'editing',submitted:null,unresolved:null};}
   function save() {
@@ -23,7 +28,9 @@ export function createWorkflow(options:{host:HTMLElement;context:()=>ScreenConte
   function recover() {
     if(loaded) return;loaded=true;
     if(live()) {try {const raw=window.localStorage.getItem(DRAFT_KEY);if(raw!==null) draft=admitDraft(raw);}catch {storageWarning='Saved draft invalid or recovery storage unavailable. Draft could not be recovered.';}}
-    if(!draft) draft=fresh();save();
+    if(!draft) draft=fresh();
+    else if(draft.phase==='editing'&&draft.actor===null&&draft.unresolved===null) draft.actor=acting();
+    save();
   }
   function edit() {
     if(!draft) return;

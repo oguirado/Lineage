@@ -1,0 +1,29 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Lineage package identity",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The lineage package docstring identifies Lineage as headless agent lifecycle foundations.",
+      "type": "behavior"
+    }
+  ],
+  "triggers": [
+    "lineage package with missing docstring"
+  ],
+  "decision": {
+    "rule": "Change here when package identity documentation needs to change.",
+    "failure": "Package metadata describes Lineage as something other than headless agent lifecycle foundations."
+  },
+  "questions": [
+    {
+      "q": "What does the lineage package docstring declare?"
+    }
+  ],
+  "aliases": [
+    "lineage package",
+    "package identity"
+  ],
+  "edges": [],
+  "source_sha256": "dfbdbab2c4f8fda6b8eac3fbc8dbc2db836ddb56113d77f1b559d91f40595b28"
+}

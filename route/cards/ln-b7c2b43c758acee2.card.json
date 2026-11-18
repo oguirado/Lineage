@@ -1,0 +1,49 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Hash router with per-screen query allowlists",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "parseRoute maps empty, bare and agents hashes to the agents screen, accepts single-part agents/lineage/arena/ledger paths plus agents/{agentId} and arena/{benchId} two-part paths, and falls back to agents with an unknown-page notice for anything else.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "parseRoute refuses control characters, encoded separators, duplicate keys and forbidden keys, keeps only allowlisted query keys per screen from the registry, and flags the rest as ignored with a notice.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "formatRoute emits the canonical hash with sorted, encoded query entries and throws on forbidden or unsafe keys; createRouter supports both callback-first and hash-first call shapes, canonicalizes via replaceState, navigates via pushState, and disposes the hashchange listener.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "Unknown page. Showing Agents.",
+    "Unknown query fields ignored.",
+    "Invalid route query"
+  ],
+  "decision": {
+    "rule": "Change here when route parsing, per-screen query allowlists, canonical hashing, or router lifecycle needs to change.",
+    "failure": "A valid screen falls back to Agents, an unknown query field is silently kept, or navigation does not canonicalize the hash."
+  },
+  "questions": [
+    {
+      "q": "Where does parseRoute enforce the per-screen query allowlist?"
+    },
+    {
+      "q": "Where should I change the fallback route for unknown pages?"
+    },
+    {
+      "q": "Where can I debug why a query field is reported as ignored?"
+    }
+  ],
+  "aliases": [
+    "hash router",
+    "canonical hash",
+    "query allowlist",
+    "route fallback"
+  ],
+  "edges": [],
+  "source_sha256": "18f055ce91de304e96f2248e7c7071fecdbe70b6c1b95d9f515d9a759d0a2a23"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Native accessibility traversal and private-session probe",
+  "claims": [
+    {"id": "C1", "text": "observe walks the AT-SPI desktop within deadline and node limits, records raw observations, and returns nodes, complete, truncated and owner_ref.", "type": "behavior"},
+    {"id": "C2", "text": "_probe starts Xvfb, dbus, browser and worker processes in a private session and reports no_document, incomplete_tree, missing_control and stale_ready checks.", "type": "failure"},
+    {"id": "C3", "text": "_native_worker polls observe until the owned document is ready or the tree quiets, then emits the canonical observation, raw and diagnostic triple.", "type": "interface"}
+  ],
+  "triggers": ["observer_unavailable", "no_document", "incomplete_tree", "missing_control", "cleanup_incomplete", "deadline exceeded"],
+  "decision": {
+    "rule": "Change here when native traversal, session setup or required-control checks need to change.",
+    "failure": "Owned browser documents are missed, truncated trees pass as complete, or probe sessions leak."
+  },
+  "questions": [
+    {"q": "Where does observe traverse the AT-SPI desktop and hash raw observations?"},
+    {"q": "Where should I change the private-session startup and required-control checks?"},
+    {"q": "Where can I debug why the native probe reports no_document or missing_control?"}
+  ],
+  "aliases": ["atspi probe", "native traversal", "private session", "owner ref", "raw observations"],
+  "edges": [],
+  "source_sha256": "903b70c53f3d4cc7c8bcbeabe22288cb20edeffd5ab4450758b254b21a55c6ed"
+}

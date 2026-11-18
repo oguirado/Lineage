@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Read-only local preflight and operable checks",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "report builds checks for home_permissions, registry, ledger, contract_conformance, references, ui_bundle and json_endpoints, and returns ok only when every check passed, together with unverified entries for scopes the preflight cannot certify.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "_private_home requires the home to be an owned, group/other-free directory with no symlinked ancestor, and check_home skips dependent checks with an explicit unsafe-home failure when that gate fails.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "contract_mismatches compares each registered tool input schema against the normative Arguments JSON blocks in docs/CONTRACT.md, and main returns 0 when healthy, 2 on bad tail arguments, and 3 on any failed check; operable_report runs the mechanical checklist against an owned temporary home only.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "home_permissions FAIL invalid home",
+    "ledger verification failed or unavailable",
+    "schema mismatch in contract_conformance",
+    "registry unavailable"
+  ],
+  "decision": {
+    "rule": "Change here when preflight checks, home safety gating, contract schema comparison, or the operable checklist needs to change.",
+    "failure": "Doctor passes despite a mismatched contract schema, or skips ledger checks silently for an unsafe home."
+  },
+  "questions": [
+    {
+      "q": "Where does doctor compare registered schemas against docs/CONTRACT.md?"
+    },
+    {
+      "q": "Where should I change which scopes doctor lists as unverified?"
+    },
+    {
+      "q": "Where can I debug why home_permissions fails for an owned private home?"
+    }
+  ],
+  "aliases": [
+    "doctor preflight",
+    "contract conformance",
+    "home permissions",
+    "operable checklist"
+  ],
+  "edges": [],
+  "source_sha256": "304ee38b95e380474761738b63ee3d6ce0a7137f0a62b11b5810ca8a745c8360"
+}

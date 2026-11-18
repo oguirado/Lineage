@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Memory unit schema admission and evidence checks",
+  "claims": [
+    {"id": "C1", "text": "_SchemaStore loads only flat *.schema.json names from the bundled schemas directory with an lru_cache, deep-copying on load and raising bad_args or internal otherwise.", "type": "behavior"},
+    {"id": "C2", "text": "_check composes the frozen schema conditionals by delegating simple assertions to the native validator and recursing through $ref, properties, items, allOf, anyOf, if/then/else and not, raising invalid_schema for unknown keywords.", "type": "behavior"},
+    {"id": "C3", "text": "validate_unit requires level 1 units to carry operator authority and actor, workflow successes not to exceed runs, canonical units to fit 6000 bytes, and every receipt to verify through _evidence, which walks pinned directory descriptors with O_NOFOLLOW and compares the file digest and stat snapshot.", "type": "invariant"}
+  ],
+  "triggers": ["memory unit shape rejected", "forbidden_level on level 1 write", "hash_mismatch on evidence receipt", "memory_debt unit over capacity"],
+  "decision": {
+    "rule": "Change here when memory unit admission rules, evidence verification, or the bundled schema loading policy need to change.",
+    "failure": "A valid unit is rejected for its shape, a level 1 unit is admitted without operator authority, or an evidence receipt with a stale digest passes."
+  },
+  "questions": [
+    {"q": "Where does validate_unit enforce operator-only level 1 admission and the 6000 byte capacity?"},
+    {"q": "Where should I change how _evidence verifies receipt files without following symlinks?"},
+    {"q": "Where can I debug why a memory unit fails shape validation after a schema change?"}
+  ],
+  "aliases": ["unit admission", "schema composition", "evidence digest check", "bundled schemas", "6000 byte ceiling"],
+  "edges": [],
+  "source_sha256": "3632a0bd7f6bd1a481031a04d016e0c4425ca625e1e6a9122579fb2e83f238d3"
+}

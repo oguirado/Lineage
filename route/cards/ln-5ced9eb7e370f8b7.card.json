@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Immutable application store with ledger refresh",
+  "claims": [
+    {"id": "C1", "text": "createStore freezes state with immutable and publishes patches by cloning, so every refresh, route, selection and expanded change produces a new frozen AppState.", "type": "invariant"},
+    {"id": "C2", "text": "refresh validates tools with validateTools, pages events with validatePage, and throws invalidResponse on a second resync or on out-of-order, duplicate or non-advancing cursors.", "type": "failure"},
+    {"id": "C3", "text": "refresh merges paged events into a staged ledger keyed by id and lamport, deduplicating identical events by canonical comparison and rejecting conflicting ones.", "type": "behavior"},
+    {"id": "C4", "text": "A failed refresh publishes phase error with stale true when a head exists, keeps the prior events, and surfaces domain refusals distinctly from transport failures.", "type": "interface"}
+  ],
+  "triggers": ["invalid_response during refresh", "ledger resync loops", "stale data after refresh failure", "store disposed during refresh"],
+  "decision": {
+    "rule": "Change here when store immutability, ledger paging validation, duplicate event merging or error publication needs to change.",
+    "failure": "Refresh accepts a non-advancing cursor, a conflicting duplicate event merges silently, or a failed refresh drops the prior head."
+  },
+  "questions": [
+    {"q": "Where does refresh reject a second resync from the transport?"},
+    {"q": "Where should I change how duplicate ledger events are merged by id and lamport?"},
+    {"q": "Where can I debug why a refresh ends in stale error state?"},
+    {"q": "How does the store keep state immutable across patches?"}
+  ],
+  "aliases": ["app store", "immutable state", "ledger refresh", "event paging", "resync handling"],
+  "edges": [],
+  "source_sha256": "236b875c686eac78da61ec8b5025676cec9ea887a99f28d3ad52250f27a959f5"
+}

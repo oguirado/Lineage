@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agent comparison dialog loading",
+  "claims": [
+    {"id": "C1", "text": "openComparison opens the 'agent comparison' dialog with openDialog and renders a loading placeholder in the dialog content.", "type": "behavior"},
+    {"id": "C2", "text": "loadRecords fetches each agent record with a call to getResult over agent_get, then loadScores fetches score groups with scoreResult over scorecard_get for loaded records.", "type": "behavior"},
+    {"id": "C3", "text": "render checks identityKey collisions across ids and reports 'Identity key collision. Actions unavailable.' when two ids share a key.", "type": "failure"}
+  ],
+  "triggers": ["identity key collision actions unavailable", "agent comparison load error panel", "scorecard comparison error panel"],
+  "decision": {
+    "rule": "Change here when agent comparison dialog loading, record fetching or identity-key collision handling needs to change.",
+    "failure": "Two agent ids collide on identityKey, an agent_get or scorecard_get read fails, or stale async results render after the dialog closes or the context aborts."
+  },
+  "questions": [
+    {"q": "Where does openComparison fetch agent records and score groups for the comparison dialog?"},
+    {"q": "Where should I change how render detects identityKey collisions between compared agents?"},
+    {"q": "Where can I debug why the comparison dialog shows stale results after close or abort?"}
+  ],
+  "aliases": ["agent comparison dialog", "seat comparison table", "identity key collision"],
+  "edges": [],
+  "source_sha256": "6230eedd5a390387e2cd725a90afc5fd9c1ad4a572cc0371abbab31b7c456d5d"
+}

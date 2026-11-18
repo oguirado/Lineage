@@ -1,9 +1,9 @@
 {
   "files": {
     "ui/tests/arena/ORACLE.md": "ee37a854847f25093eb5e76575cb73100407d10679c6365133a21dead6037174",
-    "ui/tests/arena/continuity.test.ts": "e809b3790db7ef343d2942d4c11197b22a57651b8d20b8d983159fb70a9f8aff",
+    "ui/tests/arena/continuity.test.ts": "f7851ec6874eea311e65cb25602a35301686f45156d07b1689af1b82ac068429",
     "ui/tests/arena/contracts.test.ts": "8ee02488736dc33177f9bd5a799073af4d59c7a033ec4e36f190620d8bc98e16",
-    "ui/tests/arena/evidence.test.ts": "57d82d200359ef754ab0c293e03b451b2c70322c3a5c626e153aaf8211d4f307",
+    "ui/tests/arena/evidence.test.ts": "29524e7cd5303bf63537f75d01eb30ae4cfb3ed0907d8312527fe641aea52c53",
     "ui/tests/arena/forms.helpers.ts": "a83502e8d452b90a1162bdc8adb862709b1e8e33e1c7aaf2349d605a672b8b1d",
     "ui/tests/arena/h2.review.test.ts": "f558701127cf30703e1548957dbe1b22749e8b7b1f13ee4d7680afbb1b2f525b",
     "ui/tests/arena/helpers.ts": "d795fcc0ec3d89d4c98201bdd537dcb11ae27674d32e1be7d65c53a3fd44a07c",

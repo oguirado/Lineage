@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agent scorecard table rendering",
+  "claims": [
+    {"id": "C1", "text": "scorecard fetches scorecard_get through scoreResult and verifies the returned head.", "type": "behavior"},
+    {"id": "C2", "text": "renderScorecard filters groups by seat and memory arm and renders runs, successes, unknown costs, mean cost and mean duration columns.", "type": "interface"},
+    {"id": "C3", "text": "Missing data renders the grouped-by-seat-arm note and empty groups render the no-measurements note.", "type": "behavior"}
+  ],
+  "triggers": ["seat or arm filter with no rows", "missing scorecard data", "mean cost or duration formatting"],
+  "decision": {
+    "rule": "Change here when scorecard fetching, filtering or table columns need to change.",
+    "failure": "Scorecards show wrong seats or arms, averages use wrong groups, or empty data renders a blank table."
+  },
+  "questions": [
+    {"q": "Where does scorecard fetch and verify the scorecard head?"},
+    {"q": "Where should I change the seat and memory-arm filters or table columns?"},
+    {"q": "Where can I debug why scorecard rows disappear under filters?"}
+  ],
+  "aliases": ["scorecard table", "seat filter", "memory arm filter", "mean cost"],
+  "edges": [],
+  "source_sha256": "2b7d42157a8ed7a12e4196e890145d4e45c9a1212f7002962fdc2d0f2d46a658"
+}

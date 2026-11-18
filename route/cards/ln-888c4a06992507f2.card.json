@@ -1,0 +1,61 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Descriptor-confined durable journal exports",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "_capture verifies the journal, snapshots it and binds both with a raw-head witness, raising busy if the journal changes during capture.",
+      "type": "invariant"
+    },
+    {
+      "id": "C2",
+      "text": "_prepare_contents rebuilds canonical agent projections, assembles the authority ledger file, scorecard file and a MANIFEST.json with per-file roles.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "_export publishes files with exclusive creates, fsyncs children before parents, writes MANIFEST.json last and removes only its own marker on failure.",
+      "type": "invariant"
+    },
+    {
+      "id": "C4",
+      "text": "_destination accepts only exports/ paths whose components pass _safe_component, rejecting traversal and drive-letter shapes.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "export destination differs",
+    "projection drift fails export",
+    "journal changed during export",
+    "unsafe export path"
+  ],
+  "decision": {
+    "rule": "Change here when export capture, projection comparison, manifest contents, destination rules or publication ordering needs to change.",
+    "failure": "An export publishes a manifest before files are durable, repairs an existing destination, or follows a symlink during capture."
+  },
+  "questions": [
+    {
+      "q": "Where does export verify the journal and bind the snapshot to a head witness?"
+    },
+    {
+      "q": "Where should I change the MANIFEST.json roles or file ordering before publication?"
+    },
+    {
+      "q": "Where can I debug a conflict or busy failure during export publication?"
+    }
+  ],
+  "aliases": [
+    "journal export",
+    "MANIFEST.json",
+    "projection drift",
+    "descriptor confinement",
+    "head witness"
+  ],
+  "edges": [
+    {
+      "rel": "imports",
+      "to": "ln-e928e13297cf478a"
+    }
+  ],
+  "source_sha256": "bef011ef47d8657c23537b33a01559fadf9aa9550082cba0623778ece1ed1d38"
+}

@@ -2,7 +2,7 @@ import { it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { screen } from '../../src/screens/agents/index.ts';
 import { startApp } from '../../src/main.ts';
-import type { JsonObject } from '../../src/ui/contracts.ts';
+import type { EventsPage, JsonObject } from '../../src/ui/contracts.ts';
 import { agent, clone, group, hash, longIds, repositoryPath } from './fixtures.ts';
 import { Service, action, boot, card, deferred, enter, expectReads, failure, flush, ids, isolate, key, mount, name } from './helpers.ts';
 isolate();
@@ -49,7 +49,52 @@ it('A4 a persistent head mismatch has one reconciliation restart and a recoverab
 it('A4 unknown fold head is never treated as a confirmed zero revision', async () => {
   const service=new Service(),refresh=deferred<void>();const h=mount({service,head:null,refresh:() => refresh.promise});
   await flush();expectReads(h);expect(h.initial).not.toBe('fulfilled');expect(document.documentElement.hasAttribute('data-lin-rev')).toBe(false);
+  h.publish({notice:'Store notification without an acknowledged head.'});await flush();
+  expect(h.initial).toBe('pending');expect(h.host.textContent).toContain('Loading Agents.');
+  expect(h.store.refresh).not.toHaveBeenCalled();
   h.publish({head:7});refresh.resolve();await flush();
+  expect(h.initial).toBe('fulfilled');expect(card(h,'alpha-root')).toBeDefined();
+});
+it.each(['before','after'])('R49 fold failure %s list completion leaves a recoverable catalogue', async order => {
+  const service=new Service(),fold=deferred<EventsPage>(),list=deferred();
+  vi.mocked(service.transport.events).mockImplementationOnce(() => fold.promise);
+  service.overrides.set('agent_list',() => list.promise);
+  const root=document.createElement('div');document.body.append(root);
+  const app=startApp({root,transport:service.transport,storage:window.localStorage,initialHash:'#/agents'});
+  try {
+    const main=root.querySelector('main')!;
+    await flush();expect(service.for('agent_list')).toHaveLength(1);expect(service.transport.events).toHaveBeenCalledTimes(1);
+    const resolveList=() => list.resolve({agents:[],next_after:null,head:0});
+    if(order==='before') {
+      fold.reject(failure());await flush();expect(app.store.getState().phase).toBe('error');
+      resolveList();
+    } else {
+      resolveList();await flush();expect(app.store.getState().phase).toBe('loading');
+      expect(main.textContent).toContain('Loading Agents.');
+      expect(main.querySelector('[data-lin-action="retry-panel"]')).toBeNull();
+      fold.reject(failure());
+    }
+    await flush();
+    expect(app.store.getState()).toMatchObject({phase:'error',head:null});
+    expect(document.documentElement.dataset.linReady).toBe('false');
+    expect(document.documentElement.hasAttribute('data-lin-rev')).toBe(false);
+    expect(main.textContent).toContain('Agents unavailable. Retry to continue.');
+    expect(main.textContent).not.toMatch(/Loading Agents\.|No agents yet\./u);
+    expect(service.for('agent_list')).toHaveLength(1);expect(service.for('scorecard_get')).toHaveLength(0);
+    service.overrides.delete('agent_list');
+    const retryFold=deferred<EventsPage>();
+    vi.mocked(service.transport.events).mockImplementationOnce(() => retryFold.promise);
+    action(main,'retry-panel','Retry Agents').click();await flush();
+    expect(app.store.getState()).toMatchObject({phase:'loading',head:null});
+    expect(document.documentElement.hasAttribute('data-lin-rev')).toBe(false);
+    expect(service.for('agent_list')).toHaveLength(1);
+    retryFold.resolve({events:[],head:7,next_after:7,has_more:false,resync:false});await flush();
+    expect(app.store.getState()).toMatchObject({phase:'ready',head:7});
+    expect(main.querySelector('[data-lin-id="alpha-root"]')).not.toBeNull();
+    expect(main.querySelector('[data-lin-action="retry-panel"]')).toBeNull();
+    expect(document.documentElement.dataset.linReady).toBe('true');
+    expect(document.documentElement.dataset.linRev).toBe('7');
+  } finally {app.dispose();}
 });
 it.each([
   ['unfiltered',{},'No agents yet.'],['local query',{q:'missing'},'No matching agents. Clear filters to see all loaded records.'],

@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Immutable skill packages over the shared journal",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "package validates 1..256 file objects with unique relative paths, requires SKILL.md at the package root, rejects file/directory collisions, and returns canonical sorted JSON bytes plus their sha256 digest without touching disk.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "_payload enforces exact skill.published/skill.retired payload fields, canonical file order, digest agreement with package, and immutable history: republishing a known sha256 with different files raises hash_mismatch.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "publish commits the canonical transaction then materializes a confined immutable projection, retire preserves bytes and original receipts while marking the pin retired, and get resolves either an exact pin or the latest active version after verifying the projection.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "missing skill entry point",
+    "duplicate skill path",
+    "hash_mismatch skill event digest disagrees with package",
+    "active skill version does not exist"
+  ],
+  "decision": {
+    "rule": "Change here when skill packaging, canonical ordering, immutable history checks, or projection materialization needs to change.",
+    "failure": "A skill publishes with non-root SKILL.md, history is rewritten under the same digest, or retirement deletes the package bytes."
+  },
+  "questions": [
+    {
+      "q": "Where does package enforce the SKILL.md entry point at the root?"
+    },
+    {
+      "q": "Where should I change the canonical file ordering for skill packages?"
+    },
+    {
+      "q": "Where can I debug why republishing a digest raises hash_mismatch?"
+    }
+  ],
+  "aliases": [
+    "skill packages",
+    "canonical bytes",
+    "immutable history",
+    "projection materialization"
+  ],
+  "edges": [],
+  "source_sha256": "5e981256c252bbd7aa1fce5e86431dabc0886d4651f5f3181195c56f8f9cc911"
+}

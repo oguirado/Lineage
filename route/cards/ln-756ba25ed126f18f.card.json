@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agents screen styles",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The .agents-toolbar grid lays out filter labels and action buttons across twelve columns with a four-column fallback at 62rem and a single column at 34rem.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "The .agent-card rule styles each agent entry with a bordered surface, accent top border, mono identity text and a wrapped actions row.",
+      "type": "interface"
+    },
+    {
+      "id": "C3",
+      "text": "The .agents-table-scroll rules make the score table horizontally scrollable with tabular numerals and a caption header.",
+      "type": "behavior"
+    }
+  ],
+  "triggers": [
+    "agents toolbar collapses",
+    "agent card overflows",
+    "score table clipped",
+    "dialog too narrow"
+  ],
+  "decision": {
+    "rule": "Change here when agents list layout, card presentation, table scrolling or responsive breakpoints needs to change.",
+    "failure": "Filters overlap on narrow viewports, identity text overflows, or the score table clips essential columns."
+  },
+  "questions": [
+    {
+      "q": "Where are the agents toolbar breakpoints defined?"
+    },
+    {
+      "q": "Where should I change agent card padding, borders or typography?"
+    },
+    {
+      "q": "Where can I debug a score table that scrolls or clips on small screens?"
+    }
+  ],
+  "aliases": [
+    "agents toolbar",
+    "agent card",
+    "score table scroll",
+    "responsive grid"
+  ],
+  "edges": [],
+  "source_sha256": "e63646631196567c8762479dedb20345b1d6e34dc8696550b42b2014659b5602"
+}

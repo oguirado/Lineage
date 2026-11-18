@@ -1,0 +1,9 @@
+{
+  "origin": "PapersFast route engine (corpus-router kit)",
+  "files": {
+    "engine/blocks.py": {"sha256": "17d9612cf7b39292477f2089d239ea68f0cb7a9b9347df9aeba41ee007a2f9a0"},
+    "engine/build_index_v2.py": {"sha256": "4a8e9a432254e20808584b42510edf428ba90f5c53fd7504432abe698d93d116"},
+    "engine/extract_nodes.py": {"sha256": "ac79ce0f204db9fa51a5548f9ca86b5871b2d704ea0a4c3938019396a03e18b2"},
+    "engine/route_v2.py": {"sha256": "e0f457ef1f03e3483873b07490710dfbcc02d2d9db6a489eafecfccfc1b18e15"}
+  }
+}

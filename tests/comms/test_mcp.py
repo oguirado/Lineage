@@ -49,11 +49,16 @@ class MCPTests(CommsCase):
         self.assertEqual(self.tree(), {})
 
     def test_unknown_agent_is_clear_and_server_continues(self):
-        replies = self.rpc([request('resources/read', {'uri': 'lineage://agents/missing-agent/record'}),
-                            request('ping', ident=2)])
-        self.assertEqual(replies[0]['error'], {'code': -32602,
-                                              'message': 'unknown agent: missing-agent'})
-        self.assertEqual(replies[1]['result'], {})
+        views = ('record', 'brief', 'memory')
+        reads = [request('resources/read', {'uri': f'lineage://agents/missing-agent/{view}'}, ident)
+                 for ident, view in enumerate(views, 1)]
+        replies = self.rpc([*reads, request('ping', ident=len(reads) + 1)])
+        self.assertEqual(len(replies), len(reads) + 1)
+        for read, reply in zip(reads, replies[:-1]):
+            self.assertEqual(reply['id'], read['id'])
+            self.assertEqual(reply['error'], {'code': -32602,
+                                             'message': 'unknown agent: missing-agent'})
+        self.assertEqual(replies[-1]['result'], {})
         self.assertEqual(self.tree(), {})
 
     def test_uri_traversal_and_invalid_identifiers_are_refused(self):

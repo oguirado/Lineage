@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Promotion qualification and lifecycle policy",
+  "claims": [
+    {"id": "C1", "text": "evaluate admits a draft to shadow only from a select-purpose declaration and a shadow to promoted only from a later confirm-purpose declaration with independent evidence.", "type": "behavior"},
+    {"id": "C2", "text": "evaluate requires the promotion seat to match the qualified seat, the constitution and skills to be unchanged, and the confirmation tasks to be disjoint from selection tasks, refusing heldout overlap.", "type": "invariant"},
+    {"id": "C3", "text": "Qualification uses detached committed witnesses only: _qualification, _runs and _valid_run read the verified snapshot history with no I/O or side effects.", "type": "behavior"},
+    {"id": "C4", "text": "promote runs inside journal preparation and validate_status plus _render govern the agent.status event, so no promotion is stored without its complete measured seat.", "type": "interface"}
+  ],
+  "triggers": ["promotion refused conflict", "heldout_forbidden on confirm", "no_benchmark or no_agent", "clean shadow runs below required count"],
+  "decision": {
+    "rule": "Change here when promotion qualification, lifecycle transitions, seat matching or confirmation independence needs to change.",
+    "failure": "An unqualified agent is promoted, a confirmation reuses selection tasks, or a promotion registers without its measured seat."
+  },
+  "questions": [
+    {"q": "Where does evaluate decide the draft to shadow and shadow to promoted transitions?"},
+    {"q": "Where should I check why evaluate refuses with heldout_forbidden?"},
+    {"q": "Where can I debug why clean shadow runs are counted below the required number?"},
+    {"q": "How does promote validate the agent.status event before committing?"}
+  ],
+  "aliases": ["promotion gate", "shadow promotion", "qualification", "lifecycle transitions", "agent status"],
+  "edges": [],
+  "source_sha256": "3eb56920388defe26879fed78ea1b3e9b531ac158d005bc66d0dead1ab2ac26c"
+}

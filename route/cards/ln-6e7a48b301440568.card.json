@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Base reset and typography styles",
+  "claims": [
+    {"id": "C1", "text": "The universal, html/body and heading rules set box-sizing, margin, scrollbar-gutter and typography through design tokens.", "type": "behavior"},
+    {"id": "C2", "text": "The button, input, select, label, focus-visible, hidden and dialog rules provide native control chrome, focus outline and dialog treatment.", "type": "interface"},
+    {"id": "C3", "text": "The prefers-reduced-motion media rule disables animation, transition and smooth scroll behavior.", "type": "invariant"}
+  ],
+  "triggers": ["focus outline missing", "dialog styling", "touch control height", "motion sensitivity"],
+  "decision": {
+    "rule": "Change here when the base reset, typography, control chrome or motion preferences need to change.",
+    "failure": "Controls render without focus visibility, dialogs overflow, or motion-sensitive users still receive animation."
+  },
+  "questions": [
+    {"q": "Where are the base reset and typography token rules defined?"},
+    {"q": "Where should I change the focus-visible outline and dialog styling?"},
+    {"q": "Where can I debug why controls still animate for reduced-motion users?"}
+  ],
+  "aliases": ["base reset", "typography scale", "focus visible", "reduced motion"],
+  "edges": [],
+  "source_sha256": "095a4c44ea65faf8392d3b8e48c5a6065deece5f473e15e75f00bcfeef0c1e14"
+}

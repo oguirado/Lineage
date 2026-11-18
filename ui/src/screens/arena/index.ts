@@ -180,6 +180,7 @@ export const screen:ScreenModule={id:'arena',title:'Arena',mount(host,initial) {
     }
   }
   async function resolveEvidence(b:Bench,signal:AbortSignal,token:number):Promise<void> {
+    if(!b.results.length) {if(alive(token)) resultsError='';return;}
     try {
       const events=await scan(signal,token);if(!alive(token)) return;
       for(const cell of b.results) {

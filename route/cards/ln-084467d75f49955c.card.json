@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Light and dark UI design tokens",
+  "claims": [
+    {"id": "C1", "text": "The :root and .theme-light block defines shared semantic tokens for background, surface, text, link, error and success colors with light values.", "type": "behavior"},
+    {"id": "C2", "text": "The .theme-dark block overrides the same semantic tokens with dark color-scheme values and dark shadow, keeping token names unchanged.", "type": "invariant"},
+    {"id": "C3", "text": "Shared typography, spacing and radius tokens (--lin-font-ui, --lin-font-mono, --lin-space-*, --lin-radius-*, --lin-type-*) are defined once and reused across every theme.", "type": "interface"}
+  ],
+  "triggers": ["light theme colors look wrong", "dark mode unreadable text", "design token missing", "inconsistent spacing scale"],
+  "decision": {
+    "rule": "Change here when semantic colors, typography, spacing or radius tokens for the light and dark themes need to change.",
+    "failure": "A theme renders with wrong or unreadable colors, a token is undefined, or component spacing and type sizes drift from the shared scale."
+  },
+  "questions": [
+    {"q": "Where are the shared semantic color tokens for the light theme defined?"},
+    {"q": "Where should I change the dark theme surface and text tokens?"},
+    {"q": "Where can I debug a component using an undefined --lin token?"}
+  ],
+  "aliases": ["design tokens", "theme variables", "light theme", "dark theme", "semantic colors"],
+  "edges": [],
+  "source_sha256": "ab8d5c3f2276a32297a8931793426490925f235a02e1da24817def57d817b451"
+}

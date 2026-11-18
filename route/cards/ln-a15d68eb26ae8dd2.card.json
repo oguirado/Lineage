@@ -1,0 +1,49 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Native harness capture and refused-close repair",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Identity is caller-asserted: a harness type is a routing key, not an authenticated identity, and no command invokes a model, reads transcripts, or invents task memory.",
+      "type": "invariant"
+    },
+    {
+      "id": "C2",
+      "text": "The Supervise a command section runs literal argv after -- with no shell expansion, emits the opening run_id and op_id first, and maps child exit zero to green, nonzero to red, and signal or launch failure to error while costs stay null.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "The Repair a refused close section forbids synthesizing episodes, binds the repair episode through the top-level run_id argument, and retries run_close with the complete unchanged close_args so an exact retry replays the committed prefix.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "refused close memory_required",
+    "close gate rejects episode without run_id",
+    "supervisor exit 3 on child failure"
+  ],
+  "decision": {
+    "rule": "Change here when harness supervision, refused-close repair, or Claude Code hook mapping needs to change.",
+    "failure": "A refused close is treated as success, a repair episode misses the top-level run_id binding, or a child signal is recorded as green."
+  },
+  "questions": [
+    {
+      "q": "Where does the repair loop bind the episode to the run via the top-level run_id?"
+    },
+    {
+      "q": "Where should I change the child outcome mapping after signal or launch failure?"
+    },
+    {
+      "q": "Where can I debug why a refused close retried with changed close_args?"
+    }
+  ],
+  "aliases": [
+    "harness capture",
+    "refused-close repair",
+    "supervisor",
+    "Claude hook mapping"
+  ],
+  "edges": [],
+  "source_sha256": "78533d0053d47a1180ba2bb1e0e297d332b7721507cf05a3f8cd7c80da0b1a3a"
+}

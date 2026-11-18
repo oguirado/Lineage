@@ -1,0 +1,23 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Founding reference packages and pin verification",
+  "claims": [
+    {"id": "C1", "text": "reference_get returns the lineage.reference/v1 descriptor with gold rules for gold_s1 or the memory document for memory_v21, never exposing other package contents.", "type": "interface"},
+    {"id": "C2", "text": "reference_verify and verify check the package digest against an optional expected sha256 and report verified true with the checked file list.", "type": "behavior"},
+    {"id": "C3", "text": "require_pins requires exactly the two public reference ids sorted by id, validates their hashes, and raises hash_mismatch through _fail when any pin is missing, extra or unverifiable.", "type": "failure"},
+    {"id": "C4", "text": "_package and _inventory confine reads to the references tree with descriptor-relative descriptors, and get returns only id, sha256, byte counts and rule id-section-text triples.", "type": "invariant"}
+  ],
+  "triggers": ["reference hash_mismatch", "reference_pins bad_args", "reference package read failure", "pin verification fails at agent creation"],
+  "decision": {
+    "rule": "Change here when reference package reading, pin verification or the public reference inventory needs to change.",
+    "failure": "An agent is created without verified founding pins, a digest mismatch passes silently, or a package read escapes the references tree."
+  },
+  "questions": [
+    {"q": "Where does require_pins verify both founding reference pins?"},
+    {"q": "Where should I check why reference_verify reports a hash mismatch?"},
+    {"q": "Where can I debug a failure reading a reference package file?"}
+  ],
+  "aliases": ["founding references", "reference pins", "gold_s1", "memory_v21", "package verification"],
+  "edges": [],
+  "source_sha256": "08793cc3662ced1d28b34dcac02a0306991cc2d71b2588ff2742dd4418e1e5b2"
+}

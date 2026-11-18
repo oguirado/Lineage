@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Arena benchmark workbench screen",
+  "claims": [
+    {"id": "C1", "text": "The arena screen mounts a workbench with statement-level helpers for sections, buttons, failure alerts and mutation buttons that disable themselves with a reason when a tool is unavailable.", "type": "behavior"},
+    {"id": "C2", "text": "The operation table maps bench_declare, bench_run, bench_verdict and agent_promote to their mutation labels, and the reason helper refuses when the acting agent or registered tool is missing.", "type": "interface"},
+    {"id": "C3", "text": "The screen detects identity collisions across benches and runs, and a collision disables mutation controls via the disabled flag.", "type": "invariant"},
+    {"id": "C4", "text": "The benchmark list renders rows with identity keys and open links, and navigates to the bench screen with the rule query when a launch is requested.", "type": "behavior"}
+  ],
+  "triggers": ["declare benchmark button disabled", "launch benchmark unavailable", "identity collision in arena", "bench list load failure"],
+  "decision": {
+    "rule": "Change here when the arena workbench layout, benchmark mutations, identity collision handling or navigation needs to change.",
+    "failure": "A mutation is reachable without its tool, an identity collision still allows launching, or opening a benchmark navigates to the wrong screen."
+  },
+  "questions": [
+    {"q": "Where does the arena screen disable mutation buttons when a tool is missing?"},
+    {"q": "Where should I change how identity collisions between benches and runs are detected?"},
+    {"q": "Where can I debug why the launch control is unavailable for a benchmark?"},
+    {"q": "How does the arena screen distinguish the arena list from the bench detail view?"}
+  ],
+  "aliases": ["arena workbench", "benchmark list", "declare benchmark", "launch benchmark", "mutation buttons"],
+  "edges": [],
+  "source_sha256": "feb9e38d705b8e2d3436bf2ad788bcb17ec6bc1e1e3ea99449f457d7dbe3979a"
+}

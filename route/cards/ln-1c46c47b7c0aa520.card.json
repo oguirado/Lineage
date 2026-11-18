@@ -1,0 +1,47 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Bounded decorative lineage tree overview",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "drawTree filters tree.nodes to visibleIds, sorts them with order, and lays out one dot per node at x from generation (capped at 12) and y from sorted index.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "drawTree draws a parent line only when the parent point is present and marks the selected node with a larger radius (6 instead of 4).",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "drawTree returns an SVG marked aria-hidden and focusable false, so relationship evidence must come from the list rather than this overview.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "tree overview shows selected node wrong",
+    "parent line missing in tree overview"
+  ],
+  "decision": {
+    "rule": "Change here when the decorative tree overview layout, node positioning, or parent edge rendering needs to change.",
+    "failure": "Nodes overlap or misorder, parent edges point at the wrong nodes, or the selected node is not emphasized."
+  },
+  "questions": [
+    {
+      "q": "Where does drawTree compute node positions from generation and sorted index?"
+    },
+    {
+      "q": "Where should I change how drawTree filters trees to visible ids?"
+    },
+    {
+      "q": "Where can I debug why a parent edge is missing in the tree overview?"
+    }
+  ],
+  "aliases": [
+    "tree overview",
+    "decorative SVG",
+    "generation layout"
+  ],
+  "edges": [],
+  "source_sha256": "9937a856dc94109fdb4d90e52308e4caff7fa8d29ceea4bf404a25f91056f908"
+}

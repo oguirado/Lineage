@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Lineage screen tree layout and inspector styling",
+  "claims": [
+    {"id": "C1", "text": ".lineage-content lays out the screen as a grid with var(--lin-space-md) gaps, and .lineage-filters is a wrapping flex row with label fields flexing to at least 14rem.", "type": "behavior"},
+    {"id": "C2", "text": ".lineage-children indents nested lists with a 2px inline-start border and connector lines drawn by .lineage-card::before, with the depth-four rule stripping the connector and indent.", "type": "invariant"},
+    {"id": "C3", "text": "A @media (max-width: 34rem) block restacks .lineage-filters as a single-column grid and shrinks .lineage-card padding; .lineage-drawing sets pointer-events: none and caps height at 22rem.", "type": "behavior"}
+  ],
+  "triggers": ["lineage tree connector lines missing", "filters wrapping badly on narrow screen", "drawing intercepts clicks"],
+  "decision": {
+    "rule": "Change here when the lineage tree layout, filter styling, card or inspector appearance, or small-screen stacking needs to change.",
+    "failure": "Tree children lose their indent or connectors, cards overflow their column, or the drawing layer captures pointer events."
+  },
+  "questions": [
+    {"q": "Where is the nested tree indent and connector line drawn for lineage children?"},
+    {"q": "Where should I change the narrow-screen stacking of the lineage filters?"},
+    {"q": "Where does the selected lineage card get its accent border?"}
+  ],
+  "aliases": ["lineage tree styles", "tree connector", "filter bar layout", "inspector panel", "drawing viewport"],
+  "edges": [],
+  "source_sha256": "be606825902e7607d1dbc09329b6a32444283dfd35a8e87c450ad160d7df628a"
+}

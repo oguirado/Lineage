@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Modal dialog focus trap and inert background",
+  "claims": [
+    {"id": "C1", "text": "openDialog allows only one active dialog and requires a host that exists and is not inside an article, building an aria-modal dialog labelled with checkedName.", "type": "failure"},
+    {"id": "C2", "text": "Open dialogs set inert on every sibling up the ancestor chain, trap Tab between the first and last enabled control, close on Escape or cancel, and show with showModal when available.", "type": "behavior"},
+    {"id": "C3", "text": "close removes listeners, closes and detaches the element, restores prior inert state, returns focus to the trigger or fallback, and is idempotent.", "type": "behavior"}
+  ],
+  "triggers": ["only one dialog may be open", "dialog host inside article", "focus escapes the dialog"],
+  "decision": {
+    "rule": "Change here when dialog hosting, focus trapping, inert handling, or close restoration needs to change.",
+    "failure": "A second dialog opens over the first, background content stays interactive, or focus is lost after close."
+  },
+  "questions": [
+    {"q": "Where does openDialog enforce the single-dialog and host rules?"},
+    {"q": "Where should I change the Tab focus trap inside the dialog?"},
+    {"q": "Where can I debug why focus is not restored after closing a dialog?"}
+  ],
+  "aliases": ["modal dialog", "focus trap", "inert background", "escape close", "host constraint"],
+  "edges": [
+    {"rel": "imports", "to": "ln-2d607542a2da5357"}
+  ],
+  "source_sha256": "875f92dde2da48789c4388686dac06bb774afde8904943768e9e63ab38fb6cd7"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "QA operability instruments package",
+  "claims": [
+    {"id": "C1", "text": "The package docstring declares independent, dependency-free operability instruments.", "type": "interface"}
+  ],
+  "triggers": ["qa tools package import", "operability instrument discovery"],
+  "decision": {
+    "rule": "Change here when the QA instruments package scope or dependency contract needs to change.",
+    "failure": "QA probe imports fail or the package gains runtime dependencies against its declared contract."
+  },
+  "questions": [
+    {"q": "What scope does the tools/qa package declare?"},
+    {"q": "Where is the dependency-free contract stated?"}
+  ],
+  "aliases": ["qa instruments", "operability instruments"],
+  "edges": [],
+  "source_sha256": "8fd9dbc3c6f98516be68428e6ee09a3f7bc0e13d19791817ac75d91053509fbc"
+}

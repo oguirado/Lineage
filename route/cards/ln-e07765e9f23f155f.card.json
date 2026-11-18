@@ -1,0 +1,55 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Confined static asset serving",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "_parts rejects non-absolute, scheme-bearing, encoded-slash and dot-segment URL paths and maps root to index.html.",
+      "type": "failure"
+    },
+    {
+      "id": "C2",
+      "text": "resolve_asset lstats each path component under root and requires directories except for the final regular file.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "_read_asset reopens the asset through pinned root-relative descriptors with no-follow flags before reading bytes.",
+      "type": "invariant"
+    },
+    {
+      "id": "C4",
+      "text": "_bootstrap strips lineage-session-token metas from index HTML and injects one fresh token meta into head.",
+      "type": "behavior"
+    }
+  ],
+  "triggers": [
+    "asset path rejected",
+    "missing static file",
+    "session token stale",
+    "encoded traversal attempt"
+  ],
+  "decision": {
+    "rule": "Change here when URL confinement, asset lookup, descriptor reads, MIME mapping or bootstrap injection needs to change.",
+    "failure": "A traversal or encoded separator escapes root, a symlink is followed, or the bootstrap leaves a stale token."
+  },
+  "questions": [
+    {
+      "q": "Where is a static URL path confined and rejected before lookup?"
+    },
+    {
+      "q": "Where should I change MIME types or bootstrap token injection?"
+    },
+    {
+      "q": "Where can I debug a static asset read failure after resolution succeeds?"
+    }
+  ],
+  "aliases": [
+    "static assets",
+    "no-follow reads",
+    "bootstrap token",
+    "URL confinement"
+  ],
+  "edges": [],
+  "source_sha256": "d37872c5130b9105d75337d2d66447926977a02182f914f19ee5924afdf609ea"
+}

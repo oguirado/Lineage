@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { expect, it, vi } from 'vitest';
-import { app, fakeTransport, fixture, flush, isolateDom, response, source } from './helpers.ts';
+import { accessibleName, app, event, fakeTransport, fixture, flush, isolateDom, page, response, source } from './helpers.ts';
 import { stubScreens } from './screen-stubs.ts';
-import type { ScreenContext } from '../../src/ui/contracts.ts';
+import { descriptors as ledgerTools } from '../ledger/fixtures.ts';
+import type { ScreenContext, ScreenModule } from '../../src/ui/contracts.ts';
 
 isolateDom();
 
@@ -126,4 +127,127 @@ it.each([false, true])('B3 fixture calls preserve fixture_readonly for mutations
   const transport = createFixtureTransport(fixture());
   await expect(transport.call('ledger_export', {}, {mutation})).rejects.toMatchObject({source: 'domain', code: 'fixture_readonly'});
   await expect(transport.call('agent_list', {}, {mutation: true})).rejects.toMatchObject({source: 'domain', code: 'fixture_readonly'});
+});
+
+
+it('R49 the real Find agents input publishes an ordinary named status', async () => {
+  const {screen} = await vi.importActual<{screen: ScreenModule}>('../../src/screens/agents/index.ts');
+  vi.spyOn(stubScreens.agents, 'mount').mockImplementation(screen.mount);
+  const transport = fakeTransport({
+    call: vi.fn(async () => ({agents: [], next_after: null, head: 0})),
+  });
+  const {root, handle} = await app(transport);
+  const field = root.querySelector<HTMLInputElement>('[data-lin-action="filter-agent-query"]')!;
+  field.focus();
+  field.value = 'error-handler';
+  field.dispatchEvent(new Event('input', {bubbles: true}));
+  await flush();
+
+  expect(handle.store.getState().route.query.q).toBe('error-handler');
+  expect(document.activeElement).toBe(field);
+  const outcome = root.querySelector<HTMLOutputElement>('output.action-outcome')!;
+  expect(outcome.hidden).toBe(false);
+  expect(outcome.getAttribute('role')).toBeNull(); // Native output has the status role.
+  expect(accessibleName(outcome)).toBe('Find agents: error-handler');
+});
+
+it('R49 Ledger export validation publishes a named alert and returns focus to the field', async () => {
+  const {screen} = await vi.importActual<{screen: ScreenModule}>('../../src/screens/ledger/index.ts');
+  vi.spyOn(stubScreens.ledger, 'mount').mockImplementation(screen.mount);
+  const transport = fakeTransport({
+    tools: vi.fn(async () => ledgerTools),
+    call: vi.fn(async (tool: string) => {
+      if (tool !== 'ledger_events') throw Error('Unexpected tool: ' + tool);
+      return page();
+    }),
+  });
+  const {root} = await app(transport, '#/ledger');
+  await flush();
+  root.querySelector<HTMLButtonElement>('[data-lin-action="export-ledger"]')!.click();
+  const dialog = root.querySelector<HTMLDialogElement>('dialog[open]')!;
+  const field = dialog.querySelector<HTMLInputElement>('input[name="out"]')!;
+  const confirm = dialog.querySelector<HTMLButtonElement>('[data-lin-action="submit-dialog"]')!;
+  field.value = 'outside';
+  field.dispatchEvent(new Event('input', {bubbles: true}));
+  confirm.focus();
+  confirm.click();
+
+  expect(field.getAttribute('aria-invalid')).toBe('true');
+  expect(document.activeElement).toBe(field);
+  expect(transport.call.mock.calls.map(([tool]: [string]) => tool)).not.toContain('ledger_export');
+  const outcome = root.querySelector<HTMLOutputElement>('output.action-outcome')!;
+  expect(outcome.hidden).toBe(false);
+  expect(outcome.getAttribute('role')).toBe('alert');
+  expect(accessibleName(outcome)).toBe('Error: Export ledger refused: bad_args.');
+});
+
+it('R49 refresh announces a removed focused identity while preserving the confirmed outcome', async () => {
+  const confirmed = 'Create agent recorded for aurora-born.';
+  vi.spyOn(stubScreens.agents, 'mount').mockImplementation((host, context) => {
+    const heading = document.createElement('h1');
+    heading.textContent = 'Agents';
+    const record = document.createElement('a');
+    record.href = '#/agents/error-handler';
+    record.textContent = 'Open agent error-handler';
+    record.dataset.linEntity = 'agent';
+    record.dataset.linId = 'error-handler';
+    record.dataset.linAction = 'open-agent';
+    const create = document.createElement('button');
+    create.textContent = 'Create agent';
+    create.dataset.linAction = 'create-agent';
+    create.addEventListener('click', () => context.announce('created:aurora-born:confirmed', confirmed));
+    host.replaceChildren(heading, record, create);
+    return {
+      ready: Promise.resolve(),
+      async update(next) {
+        // Screen reads complete asynchronously before replacing the focused record.
+        await Promise.resolve();
+        if (next.store.getState().events.some(entry => entry.kind === 'agent.status')) record.remove();
+      },
+      dispose() {},
+    };
+  });
+  const transport = fakeTransport({
+    events: vi.fn().mockResolvedValueOnce(page())
+      .mockResolvedValueOnce(page([event(1, {kind: 'agent.status'})]))
+      .mockResolvedValue(page([], {head: 1, next_after: 1})),
+  });
+  const {root, handle} = await app(transport);
+  const main = root.querySelector('main')!;
+  const updates = root.querySelector<HTMLElement>('[role="status"][aria-label="Application updates"]')!;
+  const outcome = root.querySelector<HTMLOutputElement>('output.action-outcome')!;
+  root.querySelector<HTMLButtonElement>('[data-lin-action="create-agent"]')!.click();
+  expect(outcome.hidden).toBe(false);
+  expect(accessibleName(outcome)).toBe(confirmed);
+  expect(outcome.getAttribute('role')).toBeNull();
+  const record = root.querySelector<HTMLAnchorElement>('[data-lin-action="open-agent"]')!;
+  record.focus();
+  expect(document.activeElement).toBe(record);
+
+  const outcomeWrites: MutationRecord[] = [];
+  const writes = new MutationObserver(records => outcomeWrites.push(...records));
+  writes.observe(outcome, {attributes: true, childList: true});
+  try {
+    await handle.store.refresh();
+    await flush();
+    expect(record.isConnected).toBe(false);
+    expect(document.activeElement).toBe(main);
+    expect(accessibleName(outcome)).toBe(confirmed);
+    expect(outcome.getAttribute('role')).toBeNull();
+    expect(updates.textContent).toBe('error-handler is no longer in this view.');
+    await handle.store.refresh();
+    await flush();
+    expect(document.activeElement).toBe(main);
+    expect(outcome.hidden).toBe(false);
+    expect(accessibleName(outcome)).toBe(confirmed);
+    expect(root.querySelector('.application-status')).toBe(updates);
+    expect(root.querySelector('.action-outcome')).toBe(outcome);
+    expect([...outcomeWrites, ...writes.takeRecords()]).toEqual([]);
+
+    root.querySelector<HTMLButtonElement>('[data-lin-action="theme-dark"]')!.click();
+    expect(outcome.hidden).toBe(true);
+    expect(outcome.hasAttribute('aria-label')).toBe(false);
+  } finally {
+    writes.disconnect();
+  }
 });

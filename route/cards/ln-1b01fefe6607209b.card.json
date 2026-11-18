@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agents list view helpers for cards and score tables",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "scoreTable renders agent, seat model, effort, mode, memory arm, runs, successes, unknown costs and mean cost and duration per score group.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "agentCard builds an identity heading, full agent id, version, display name, workflow, language, status, allowed seats and compare control.",
+      "type": "interface"
+    },
+    {
+      "id": "C3",
+      "text": "measurement returns Not measured for null or undefined values and otherwise formats the number with formatMeasurement.",
+      "type": "behavior"
+    }
+  ],
+  "triggers": [
+    "agents table shows Not measured",
+    "compare agent checkbox disabled",
+    "open agent link missing"
+  ],
+  "decision": {
+    "rule": "Change here when agents list card layout, score table columns or measurement formatting needs to change.",
+    "failure": "A score table drops a seat column, a card loses its identity heading, or a missing value renders as zero instead of Not measured."
+  },
+  "questions": [
+    {
+      "q": "Where does scoreTable render mean cost and mean duration per agent seat?"
+    },
+    {
+      "q": "Where should I change how agentCard renders identity, version and allowed seats?"
+    },
+    {
+      "q": "Where can I debug a compare control that stays disabled on collision?"
+    }
+  ],
+  "aliases": [
+    "score table",
+    "agent card",
+    "mean cost",
+    "compare agent",
+    "Not measured"
+  ],
+  "edges": [],
+  "source_sha256": "820f4c9c21211ffbe0c823c63b422ea72521323f48e24ca9edb08dffe0c24868"
+}

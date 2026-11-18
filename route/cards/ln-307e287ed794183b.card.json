@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Family receipt envelope schema",
+  "claims": [
+    {"id": "C1", "text": "The top-level schema requires schema const lineage.family/1, id and result, allows an optional correlation_id, and closes unknown keys.", "type": "interface"},
+    {"id": "C2", "text": "The result section selects between an untrusted payload and a tool_error reference for the success and failure branches.", "type": "invariant"},
+    {"id": "C3", "text": "The untrusted anyOf enumerates the per-tool result shapes from reference and skill through agent, run, bench, ledger, openfresnel and capabilities results.", "type": "behavior"}
+  ],
+  "triggers": ["family receipt validation failure", "unknown tool result shape", "correlation id mismatch"],
+  "decision": {
+    "rule": "Change here when the family receipt envelope, tool result shapes or error mapping needs to change.",
+    "failure": "Valid tool results are rejected, unknown shapes are accepted, or correlation identifiers mismatch between request and receipt."
+  },
+  "questions": [
+    {"q": "Where is the family receipt envelope and correlation_id shape defined?"},
+    {"q": "Where should I change the per-tool untrusted result shapes?"},
+    {"q": "Where can I debug why a tool result fails family receipt validation?"}
+  ],
+  "aliases": ["family receipt", "tool result envelope", "correlation id", "untrusted payload"],
+  "edges": [],
+  "source_sha256": "7b928e608e3e1b3fcd316daabc4483e503df3b799360e0e012cfc5547f3f851c"
+}

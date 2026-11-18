@@ -1,0 +1,19 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Installed extensions package marker",
+  "claims": [
+    {"id": "C1", "text": "The module docstring declares installed domain extensions discovered by the core registry.", "type": "interface"}
+  ],
+  "triggers": ["extension discovery scope confusion", "registry load entry point"],
+  "decision": {
+    "rule": "Change here when the installed extensions package scope needs to change.",
+    "failure": "Extension modules are not discovered or the registry load path is wrong."
+  },
+  "questions": [
+    {"q": "What discovers the installed extensions package?"},
+    {"q": "Where is the extensions package scope declared?"}
+  ],
+  "aliases": ["extensions package", "registry discovery"],
+  "edges": [],
+  "source_sha256": "165c6716dcb6724a4d0c59068b29719bc4a126d65cdf92ab2228d0a5b4b6a4ec"
+}

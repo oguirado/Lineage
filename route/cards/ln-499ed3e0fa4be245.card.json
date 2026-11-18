@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Locked memory admission, inspection and history",
+  "claims": [
+    {"id": "C1", "text": "put validates the unit shape, compares the command args against the memory payload, and admits through journal.transact with a memory.put draft and a render returning the unit, memory_gen and commit proof.", "type": "behavior"},
+    {"id": "C2", "text": "_validate_put enforces ownership and scope, ruling quote digest equality, run attribution and open-run ownership, inherited source digest and eligibility, reciprocal replacement graph acyclicity, and the 6000-byte/4000-token entry capacity through _capacity.", "type": "invariant"},
+    {"id": "C3", "text": "operator_ruling requires operator actor and authority, derives the ruling id and quote receipt from the quote sha256, publishes the quote immutably via _publish_quote, and replaces the caller op_id with the deterministic ruling identity.", "type": "behavior"}
+  ],
+  "triggers": ["memory owner mismatch", "unit identity is immutable", "run_closed on memory write", "memory_debt entry capacity exceeded"],
+  "decision": {
+    "rule": "Change here when memory admission, ownership, replacement graph, entry capacity, or operator ruling publication needs to change.",
+    "failure": "A valid unit is rejected, a ruling is retired by a non-operator, or an inadmissible unit commits without headroom."
+  },
+  "questions": [
+    {"q": "Where does _validate_put check the replacement graph and entry capacity for a memory write?"},
+    {"q": "Where should I change how operator_ruling derives its operation identity from the quote?"},
+    {"q": "Where can I debug why a memory put fails with memory_debt after a prior write?"}
+  ],
+  "aliases": ["memory put", "replacement graph", "entry capacity", "operator ruling", "quote publication"],
+  "edges": [
+    {"rel": "imports", "to": "ln-1a9d309686105a96"}
+  ],
+  "source_sha256": "daeb32035817de9943b5ac70c45257cfe8f7c754939cc207fbc45842fe11b67a"
+}

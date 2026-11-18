@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Compact verified snapshot builder",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "build rejects registry context mismatch and missing agents, memory or runs folds before snapshotting.",
+      "type": "failure"
+    },
+    {
+      "id": "C2",
+      "text": "build projects at most 200 agents with truncated flag, truncated agent_version prefix and open, closed and last verdict telemetry.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "main accepts only empty argv or --json and emits untrusted build output with ok and code on failure.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "registry context mismatch",
+    "required registry fold unavailable",
+    "snapshot truncated",
+    "run has no agent"
+  ],
+  "decision": {
+    "rule": "Change here when snapshot authority checks, agent projection fields, telemetry limits or the CLI wrapper needs to change.",
+    "failure": "A snapshot is built from mismatched folds, or a run contributes telemetry for an unknown agent."
+  },
+  "questions": [
+    {
+      "q": "Where does build validate registry folds before projecting the snapshot?"
+    },
+    {
+      "q": "Where should I change the 200-agent limit or telemetry fields?"
+    },
+    {
+      "q": "Where can I debug a snapshot CLI error code?"
+    }
+  ],
+  "aliases": [
+    "verified snapshot",
+    "agent telemetry",
+    "registry folds",
+    "truncated snapshot"
+  ],
+  "edges": [],
+  "source_sha256": "d30eccfe0f0a47caa1718828c3375a7692dec16b05246b3953eaa30ecdd071cc"
+}

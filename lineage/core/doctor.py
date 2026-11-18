@@ -23,12 +23,12 @@ def contract_mismatches(registry, *, root: Path) -> list[str]:
 
 
 def _private_home(home: Path) -> str:
+    # Check ancestors from the root down before inspecting the leaf.
+    if any(parent.is_symlink() for parent in reversed(home.parents)):
+        raise ValueError
     info = home.lstat()
     if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.geteuid()
             or stat.S_IMODE(info.st_mode) & 0o077):
-        raise ValueError
-    # Refuse a symlink in any supplied component, even before resolving home.
-    if any(parent.is_symlink() for parent in home.parents):
         raise ValueError
     return 'owned private home'
 
@@ -83,6 +83,8 @@ def report(home=None, *, registry=None, root: Path | None = None) -> dict:
             checks.append({'id': ident, 'ok': True, 'detail': detail})
         except Exception:
             checks.append({'id': ident, 'ok': False, 'detail': failure})
+            return False
+        return True
 
     selected = home if home is not None else os.environ.get('LINEAGE_HOME') or '~/.lineage'
     try:
@@ -90,14 +92,21 @@ def report(home=None, *, registry=None, root: Path | None = None) -> dict:
             raise ValueError
         selected = Path(selected).expanduser().absolute()
     except (TypeError, ValueError, OSError, RuntimeError):
-        return {'ok': False, 'checks': [
-            {'id': 'home_permissions', 'ok': False, 'detail': 'invalid home'}],
-            'unverified': [{'scope': 'runtime', 'reason': 'invalid home prevented inspection'}]}
-    check('home_permissions', lambda: _private_home(selected),
-          'home must exist, be owned, private and free of symlinks')
+        home_ok = False
+        checks.append({'id': 'home_permissions', 'ok': False, 'detail': 'invalid home'})
+    else:
+        home_ok = check('home_permissions', lambda: _private_home(selected),
+                        'home must exist, be owned, private and free of symlinks')
+
+    def check_home(ident, operation, failure):
+        if home_ok:
+            check(ident, operation, failure)
+        else:
+            checks.append({'id': ident, 'ok': False, 'detail': 'skipped: unsafe or invalid home'})
+
     try:
         registry = extensions.load() if registry is None else registry
-        context = app.create_context(selected, registry=registry)
+        context = app.create_context(selected, registry=registry) if home_ok else None
         checks.append({'id': 'registry', 'ok': bool(registry.tools),
                        'detail': str(len(registry.tools)) + ' registered tools'})
     except Exception:
@@ -105,7 +114,7 @@ def report(home=None, *, registry=None, root: Path | None = None) -> dict:
         checks.append({'id': 'registry', 'ok': False, 'detail': 'registry unavailable'})
 
     def dispatch(name, args):
-        if registry is None:
+        if context is None:
             raise ValueError
         result = app.dispatch(name, args, context=context, registry=registry)
         if result.failure is not None:
@@ -143,17 +152,17 @@ def report(home=None, *, registry=None, root: Path | None = None) -> dict:
         resolve_asset('/', root=root / 'ui' / 'dist')
         return 'ui/dist/index.html present'
 
-    check('ledger', ledger, 'ledger verification failed or unavailable')
+    check_home('ledger', ledger, 'ledger verification failed or unavailable')
     try:
         ok, detail = conformance()
         checks.append({'id': 'contract_conformance', 'ok': ok, 'detail': detail})
     except Exception:
         checks.append({'id': 'contract_conformance', 'ok': False,
                        'detail': 'contract or registry unavailable'})
-    check('references', references, 'founding references failed verification')
+    check_home('references', references, 'founding references failed verification')
     check('ui_bundle', ui, 'ui/dist/index.html missing or unsafe; serve cannot load the UI')
-    check('json_endpoints', lambda: _endpoints(selected, registry),
-          'endpoint configuration missing, invalid, unsafe or names unavailable tools')
+    check_home('json_endpoints', lambda: _endpoints(selected, registry),
+               'endpoint configuration missing, invalid, unsafe or names unavailable tools')
     if not any(item['id'] == 'ledger' and item['ok'] for item in checks):
         unverified.append({'scope': 'ledger_and_projections', 'reason': 'ledger verification did not complete'})
     unverified.append({'scope': 'live_openfresnel', 'reason': 'preflight does not contact an external receiver'})

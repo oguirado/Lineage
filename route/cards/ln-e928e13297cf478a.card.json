@@ -1,0 +1,56 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Scorecard telemetry fold over committed records",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "fold_scorecards validates every agent.born and run.close, groups by agent, seat model, effort, mode and memory arm, and returns sorted detached series.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "_groups exposes only seat, memory arm, run count, successes, unknown costs and mean costs, keeping unbounded totals private to the fold.",
+      "type": "interface"
+    },
+    {
+      "id": "C3",
+      "text": "fold indexes public groups by born agent including empty agents, and projection_bytes emits canonical scorecard bytes with a trailing LF.",
+      "type": "behavior"
+    },
+    {
+      "id": "C4",
+      "text": "get filters by seat and memory arm against a journal snapshot and reports the head from the last lamport.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "scorecard mean not finite",
+    "run with unknown agent",
+    "invalid verdict",
+    "cost contains bool instead of int"
+  ],
+  "decision": {
+    "rule": "Change here when scorecard grouping, outcome counts, cost means, projection shape or filtering needs to change.",
+    "failure": "A series merges different seats, a bool is accepted as an integer, or totals leak into the public projection."
+  },
+  "questions": [
+    {
+      "q": "Where does fold_scorecards group closes by agent, seat and memory arm?"
+    },
+    {
+      "q": "Where should I change successes, unknown-cost or mean-cost computation?"
+    },
+    {
+      "q": "Where can I debug a scorecard that is missing an empty agent?"
+    }
+  ],
+  "aliases": [
+    "scorecard fold",
+    "run close telemetry",
+    "mean cost",
+    "unknown costs",
+    "memory arm"
+  ],
+  "edges": [],
+  "source_sha256": "014bce8045a6154571a1e8606a31c5303215221b57670c583347f7a7b705e913"
+}

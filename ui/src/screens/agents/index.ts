@@ -16,7 +16,7 @@ export const screen:ScreenModule={
     let records:Agent[]=[],filters:Filters=parseQuery(initial.route.query).filters,notice=parseQuery(initial.route.query).notice;
     let listError='',scoreError='',loading=true,hasSnapshot=false,failedCursor:string|null=null,collision=false;
     let comparison:{close():void}|null=null;
-    const waiting=new Set<()=>void>();
+    let resumeFoldWait:(()=>void)|undefined;
     const announced=new Set<string>();
     const announce=(key:string,message:string)=>{if(disposed||context.signal.aborted||announced.has(key)) return;announced.add(key);context.announce(key,message);};
     const heading=node('h1','Agents');heading.tabIndex=-1;
@@ -54,7 +54,10 @@ export const screen:ScreenModule={
       if(result&&typeof result==='object'&&!Array.isArray(result)&&result.ok===false) throw new TransportError('domain',String(result.code),'Read refused.',{detail:result.detail});return result;
     }
     const creation=createWorkflow({host,context:()=>context,head:()=>confirmedHead!==null&&context.store.getState().head===confirmedHead?confirmedHead:null,read,refresh:async()=>{await context.store.refresh();await load(false);},announce});
-    const unsubscribe=context.store.subscribe(()=>{for(const resolve of waiting) resolve();waiting.clear();creation.update();});
+    function releaseFoldWait() {
+      const resume=resumeFoldWait;resumeFoldWait=undefined;resume?.();
+    }
+    const unsubscribe=context.store.subscribe(()=>{releaseFoldWait();creation.update();});
     function navigate(next:Filters) {context.navigate({screen:'agents',query:queryOf(next)});}
     search.addEventListener('input',()=>navigate({...filters,q:search.value}));
     workflow.addEventListener('change',()=>navigate({...filters,workflow:workflow.value}));
@@ -78,7 +81,7 @@ export const screen:ScreenModule={
       if(notice) messages.append(node('p',notice));
       if(collision) messages.append(node('p','Identity key collision. Actions unavailable.'));
       if(loading&&!hasSnapshot) messages.append(node('p','Loading Agents.'));
-      if(listError) {if(hasSnapshot) messages.append(node('p',`Data is stale. Last confirmed revision ${confirmedHead}.`));messages.append(panel('Agents','Agents unavailable. Retry to continue. '+listError,()=>{void load(failedCursor!==null,failedCursor??undefined);}));}
+      if(listError) {if(hasSnapshot) messages.append(node('p',`Data is stale. Last confirmed revision ${confirmedHead}.`));messages.append(panel('Agents','Agents unavailable. Retry to continue. '+listError,()=>{void load(failedCursor!==null,failedCursor??undefined,true);}));}
       const showing=visible(records,filters);catalogue.replaceChildren();
       for(const record of showing) catalogue.append(agentCard(record,scores.get(record.agent_id),filters.compare.includes(record.agent_id),collision,()=>context.navigate({screen:'agent',agentId:record.agent_id,query:{}}),checked=>{
         if(checked&&filters.compare.length>=2&&!filters.compare.includes(record.agent_id)) {notice='Select exactly two agents for comparison.';render();return;}
@@ -95,14 +98,26 @@ export const screen:ScreenModule={
       await Promise.all(records.map(async record=>{try {const groups=scoreResult(await read('scorecard_get',{agent_id:record.agent_id}),record.agent_id);if(current(requestTurn)&&t===scoreTurn) scores.set(record.agent_id,groups);}catch(e){if(current(requestTurn)&&t===scoreTurn) scoreError=errorText(e);}}));
       if(current(requestTurn)&&t===scoreTurn) render();
     }
-    async function load(paging:boolean,cursor?:string) {
-      const t=++turn;++scoreTurn;loading=true;listError='';const after=paging?(cursor??nextAfter):null;failedCursor=after;render();
+    async function load(paging:boolean,cursor?:string,retry=false) {
+      const t=++turn;++scoreTurn;releaseFoldWait();loading=true;listError='';const after=paging?(cursor??nextAfter):null;failedCursor=after;render();
       announce('agents-loading','Loading Agents.');
       try {
+        let state=context.store.getState();
+        if(retry&&state.head===null&&state.phase==='error') {
+          await context.store.refresh();if(!current(t)) return;
+          state=context.store.getState();
+          if(state.head===null&&state.phase==='error') throw state.error??invalidResponse();
+        }
         const args=serverArgs(filters);if(after!==null) args.after=after;
         let result=listResult(await read('agent_list',args));if(!current(t)) return;
-        if(context.store.getState().head===null) {await new Promise<void>(resolve=>waiting.add(resolve));if(!current(t)) return;}
-        if(result.head!==context.store.getState().head) {
+        state=context.store.getState();
+        while(state.head===null) {
+          if(state.phase==='error') throw state.error??invalidResponse();
+          await new Promise<void>(resolve=>{resumeFoldWait=resolve;});
+          if(!current(t)) return;
+          state=context.store.getState();
+        }
+        if(result.head!==state.head) {
           await context.store.refresh();if(!current(t)) return;
           result=listResult(await read('agent_list',args));if(!current(t)) return;
           if(result.head!==context.store.getState().head) throw invalidResponse();
@@ -130,6 +145,6 @@ export const screen:ScreenModule={
       if(changed) {nextAfter=null;await load(false);}
       else if(sameQuery||signalChanged&&!hasSnapshot) await load(false);
       else render();
-    },dispose() {if(disposed) return;disposed=true;++turn;++scoreTurn;unsubscribe();for(const resolve of waiting) resolve();waiting.clear();creation.dispose();comparison?.close();}};
+    },dispose() {if(disposed) return;disposed=true;++turn;++scoreTurn;unsubscribe();releaseFoldWait();creation.dispose();comparison?.close();}};
   },
 };

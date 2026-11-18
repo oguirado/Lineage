@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Deadline-bounded flock ledger locking",
+  "claims": [
+    {"id": "C1", "text": "lock_exclusive attempts flock LOCK_EX with LOCK_NB immediately, retries EINTR, keeps waiting on EAGAIN and EWOULDBLOCK until the monotonic deadline, and raises busy when the deadline expires.", "type": "behavior"},
+    {"id": "C2", "text": "_validate_timeout requires an int or float that is finite and nonnegative, and lock_exclusive defaults to LOCK_TIMEOUT_S of 1.0 seconds; missing fcntl or other backend errors raise internal.", "type": "failure"},
+    {"id": "C3", "text": "unlock releases with flock LOCK_UN and never unlinks or replaces the stable lock file, raising internal on release failure.", "type": "invariant"}
+  ],
+  "triggers": ["journal lock deadline expired", "locking backend unavailable", "lock_timeout_s not finite"],
+  "decision": {
+    "rule": "Change here when lock acquisition, timeout validation, or lock release behavior needs to change.",
+    "failure": "A contended lock blocks past its deadline, a nonfinite timeout is accepted, or release unlinks the stable lock file."
+  },
+  "questions": [
+    {"q": "Where does lock_exclusive poll the deadline while waiting for the flock?"},
+    {"q": "Where should I change the default lock timeout?"},
+    {"q": "Where can I debug why the journal lock reports busy or internal?"}
+  ],
+  "aliases": ["flock", "lock deadline", "busy", "stable lock file", "nonblocking lock"],
+  "edges": [],
+  "source_sha256": "abaff09a8da1bf77adad2dba53599e91f701f6351b2f0a2e5e742fce7dc3de85"
+}

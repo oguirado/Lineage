@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Run record schema",
+  "claims": [
+    {"id": "C1", "text": "The top-level schema requires schema const lineage.run/v1 plus run_id, timestamps, agent identity, seat, task, outcome, cost, memory, evidence, parents_context and memory_arm, closing unknown keys.", "type": "interface"},
+    {"id": "C2", "text": "The outcome section constrains verdict to ADMIT, HOLD, red, green or error, and the memory section constrains gate_passed to true.", "type": "invariant"},
+    {"id": "C3", "text": "Identifier rules pin run_id, task_id and bench_id to Id patterns, agent_id to lowercase form, and agent_version and evidence sha256 to 64-hex digests.", "type": "failure"}
+  ],
+  "triggers": ["run record schema validation failure", "gate_passed not true", "invalid verdict", "duplicate evidence entry"],
+  "decision": {
+    "rule": "Change here when run record fields, outcome and cost shapes or identifier rules need to change.",
+    "failure": "Closed run records are rejected, the memory gate is weakened, or cost measurements accept wrong types."
+  },
+  "questions": [
+    {"q": "Where are the required run record fields and identifier rules defined?"},
+    {"q": "Where should I change the outcome verdict enum or memory gate shape?"},
+    {"q": "Where can I debug why a run record fails schema validation?"}
+  ],
+  "aliases": ["run record", "closure record", "gate passed", "memory arm"],
+  "edges": [],
+  "source_sha256": "47102a9b2c06ed9bd06f26241878d8b52b02817b090b7eca1bb45fe0c1b2e588"
+}

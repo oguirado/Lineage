@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Persistent status announcements region",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "createStatusRegion builds a polite atomic status div plus a hidden output outcome preserved across screens.",
+      "type": "behavior"
+    },
+    {
+      "id": "C2",
+      "text": "announce deduplicates by key and message, skips ready and loading keys for the outcome, and prefixes Error for error-like text.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "announce maps error-like messages to role alert and non-errors strip the alert role while keeping the outcome visible.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "announcement repeated",
+    "error not announced as alert",
+    "status region replaced",
+    "outcome stays hidden"
+  ],
+  "decision": {
+    "rule": "Change here when status announcements, dedupe keys, error styling or live region behaviour needs to change.",
+    "failure": "A transition is announced twice, an error renders without alert role, or the status node is replaced on navigation."
+  },
+  "questions": [
+    {
+      "q": "Where is the persistent status region created and announced to?"
+    },
+    {
+      "q": "Where should I change announcement dedupe or error prefixing?"
+    },
+    {
+      "q": "Where can I debug an announcement that never reaches the output outcome?"
+    }
+  ],
+  "aliases": [
+    "status region",
+    "announcements",
+    "aria-live",
+    "action outcome"
+  ],
+  "edges": [],
+  "source_sha256": "1393d81419409eaa18be56ee6129b96e49e4a107628aced71b4010bb181daf9f"
+}

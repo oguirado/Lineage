@@ -1,0 +1,23 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Pipe-only browser observation probe",
+  "claims": [
+    {"id": "C1", "text": "The DOM_SNAPSHOT script collects url, data-lin-ready, data-lin-rev, screen, title, h1 headings, status regions, nodes with actions, states and geometry across the whole document.", "type": "behavior"},
+    {"id": "C2", "text": "probe runs the owned pipe client and evaluates snapshots, accessibility data and inventory checks, while viewpoint_probe performs the ViewPoint variant with the same contract validation.", "type": "behavior"},
+    {"id": "C3", "text": "wait_ready and owned_page bound readiness by timeout_ms, and _origin_guard restricts evaluation to the expected origin before collecting evidence.", "type": "invariant"},
+    {"id": "C4", "text": "_inspect cross-checks snapshot nodes against accessibility roles, states and inventory, and _save_artifact persists the bounded evidence under the artifact root.", "type": "interface"}
+  ],
+  "triggers": ["browser probe timeout", "screen not ready in DOM snapshot", "origin guard mismatch", "inventory check fails in probe"],
+  "decision": {
+    "rule": "Change here when the DOM snapshot coverage, readiness waiting, origin guarding or inventory inspection needs to change.",
+    "failure": "The probe hangs without a timeout, collects elements from the wrong origin, or marks a screen ready before data-lin-ready is set."
+  },
+  "questions": [
+    {"q": "Where does probe collect the DOM snapshot and check readiness?"},
+    {"q": "Where should I change the timeout and origin guard for page observation?"},
+    {"q": "Where can I debug an inventory mismatch reported by _inspect?"}
+  ],
+  "aliases": ["CDP probe", "DOM snapshot", "browser observation", "screen readiness", "inventory inspection"],
+  "edges": [],
+  "source_sha256": "598fc71383d6cf0323128d7217ac8577f51b932c2ec26a233bbf62cb451ffff6"
+}

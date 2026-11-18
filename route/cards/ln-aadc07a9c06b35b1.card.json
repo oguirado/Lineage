@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Benchmark declaration schema",
+  "claims": [
+    {"id": "C1", "text": "The declaration is a closed object with schema const lineage.bench.declared/v1, requiring exactly two unique agents, one to sixteen unique seats, and unique memory_arms from none, own or inherited.", "type": "interface"},
+    {"id": "C2", "text": "credit_rule fixes metric to correctness_first and dispersion to population_stddev with a 0 to 1 minimum_gain and a cost_tiebreaker boolean, while sprt bounds p0, p1, alpha and beta within the open interval (0,1) plus a cap.", "type": "invariant"},
+    {"id": "C3", "text": "promotion requires n_shadow_runs from 1 to 1000000, and every nested object closes unknown properties.", "type": "invariant"}
+  ],
+  "triggers": ["benchmark declaration shape rejected", "seat list not unique", "sprt probability out of range"],
+  "decision": {
+    "rule": "Change here when the benchmark declaration fields, credit rule, SPRT parameters, or promotion requirement need to change.",
+    "failure": "A declaration with one agent or duplicate seats is admitted, or a closed nested object accepts an unknown field."
+  },
+  "questions": [
+    {"q": "Where does the declaration schema constrain the agents and seats arrays?"},
+    {"q": "Where should I change the SPRT probability bounds or cap?"},
+    {"q": "Where can I debug why a benchmark declaration fails credit_rule validation?"}
+  ],
+  "aliases": ["bench declaration", "credit rule", "SPRT parameters", "promotion", "closed object"],
+  "edges": [],
+  "source_sha256": "34d88549e262cd34158366cd089b32b6dec8d2883939f5f7dc0fe0af041341fd"
+}

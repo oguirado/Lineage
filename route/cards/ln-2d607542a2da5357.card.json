@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Accessible UI primitives and identity keys",
+  "claims": [
+    {"id": "C1", "text": "checkedName normalizes to NFC, collapses whitespace, and enforces a 64-byte UTF-8 budget; attributes writes textContent plus data-lin-action and optional validated entity/id attributes.", "type": "behavior"},
+    {"id": "C2", "text": "createLink rejects scheme, protocol-relative, backslash and control-char hrefs (including decoded form), allows only #/ routes for agents, lineage, arena and ledger, and requires the resolved URL to share the page origin.", "type": "failure"},
+    {"id": "C3", "text": "renderStatePanel maps each PanelState to a display string, gives error panels a region role, and only accepts the retry-panel action for its retry button; identityKey returns short identities verbatim and hashes longer ones with the synchronous SHA-256.", "type": "interface"}
+  ],
+  "triggers": ["control name too long", "invalid application link", "retry action rejected", "non-finite measurement"],
+  "decision": {
+    "rule": "Change here when accessible names, button or link construction, state panels, measurement formatting, or identity keys need to change.",
+    "failure": "A control renders with an empty or over-budget name, a link escapes the application routes or origin, or a retry button uses an unregistered action."
+  },
+  "questions": [
+    {"q": "Where does checkedName enforce the 64-byte accessible name budget?"},
+    {"q": "Where should I change which application routes createLink accepts?"},
+    {"q": "Where can I debug why a state panel retry button is rejected?"}
+  ],
+  "aliases": ["button factory", "link allowlist", "state panel", "identity key", "name budget"],
+  "edges": [],
+  "source_sha256": "1445841db7a3ab713901e18a2ac7ef0d755d67f30f402bbbc669d82233f820fa"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Current-prefix memory witnesses for closure",
+  "claims": [
+    {"id": "C1", "text": "check validates outcome and cost against run.schema via _selection and returns passed checks with sorted memory receipts capped at 256.", "type": "interface"},
+    {"id": "C2", "text": "_selection requires a post-open same-run episode else memory_required, and adds lesson and negative witnesses for error, HOLD, red or repair outcomes else memory_debt.", "type": "invariant"},
+    {"id": "C3", "text": "_valid verifies committed active unit ownership, lifecycle, scope, receipts, evidence digests and episode body equality, while _evidence pins descriptors and refuses symlinks.", "type": "behavior"}
+  ],
+  "triggers": ["memory_required", "memory_debt", "actor_mismatch", "no_run or run_closed or conflict", "evidence hash_mismatch"],
+  "decision": {
+    "rule": "Change here when closure witness selection, validity rules or receipt capacity needs to change.",
+    "failure": "Closes pass without same-run memory, invalid or inherited units are credited, or evidence digests mismatch."
+  },
+  "questions": [
+    {"q": "Where does check select the memory witnesses for run closure?"},
+    {"q": "Where should I change the episode, lesson and negative witness requirements?"},
+    {"q": "Where can I debug why closure raises memory_debt or hash_mismatch?"}
+  ],
+  "aliases": ["memory gate", "close witnesses", "memory receipts", "episode requirement"],
+  "edges": [],
+  "source_sha256": "137409aee4b37437296cd10d1bacaf5c5f0b4ca36d724003af218f452f4d8c57"
+}

@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tomllib
 
 from .support import CommsCase, ENV, ROOT, request
@@ -37,6 +38,25 @@ class MCPConfigTests(CommsCase):
         config = tomllib.loads(output.getvalue())['mcp_servers']['lineage']
         self.assertEqual(config['args'], ['--home', str(target), 'mcp'])
         self.assertFalse(target.exists())
+
+    def test_codex_del_in_home_round_trips_through_toml(self):
+        target = self.home / 'résumé\x7f'
+        text = self.cli('mcp-config', '--client', 'codex', home=target).stdout
+        config = tomllib.loads(text)['mcp_servers']['lineage']
+        self.assertEqual(config['args'], ['--home', str(target), 'mcp'])
+        self.assertFalse(target.exists())
+
+    def test_surrogateescaped_home_is_a_bad_argument(self):
+        target = self.home / 'invalid-\udcff'
+        for client in ('generic', 'claude', 'codex'):
+            with self.subTest(client=client):
+                result = subprocess.run(
+                    [sys.executable, '-m', 'lineage', '--home', str(target),
+                     'mcp-config', '--client', client],
+                    cwd=ROOT, env=ENV, capture_output=True, timeout=20)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(json.loads(result.stdout), {'ok': False, 'code': 'bad_args'})
+                self.assertEqual(result.stderr, b'')
 
     def test_invalid_options_and_duplicate_home_fail(self):
         for args in (['--client', 'unknown'], ['--client'], ['--home', str(self.home)],

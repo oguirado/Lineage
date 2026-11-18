@@ -1,0 +1,56 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agent record JSON schema",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The agent object requires schema, agent_id, display_name, workflow, language, allowed_seats, references, constitution_sha256, skills, memory_gen, brief_head_sha256, agent_version, generation, parents, born and status.",
+      "type": "invariant"
+    },
+    {
+      "id": "C2",
+      "text": "allowed_seats requires one to sixteen unique seat objects and references requires exactly gold_s1 and memory_v21 pins.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "born.op is one of genesis, clone, distill, cross, mutate or specialize and conditions parents and generation via allOf branches.",
+      "type": "behavior"
+    },
+    {
+      "id": "C4",
+      "text": "rule_overrides is a bounded map of rule ids to add or remove and promoted_seat describes an absent-unless-shadow-or-promoted seat.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "agent schema rejected",
+    "genesis parents not empty",
+    "cross needs two parents",
+    "unknown agent property"
+  ],
+  "decision": {
+    "rule": "Change here when agent identity fields, seat bounds, reference pins, status values or born-conditioned rules need to change.",
+    "failure": "A genesis agent carries parents, a cross agent lacks two parents, or a single-parent operator gets the wrong parent count."
+  },
+  "questions": [
+    {
+      "q": "Where is the agent record shape defined and which fields are required?"
+    },
+    {
+      "q": "Where should I change allowed seats, references or born-conditioned parent rules?"
+    },
+    {
+      "q": "Where can I debug a schema rejection for rule_overrides or promoted_seat?"
+    }
+  ],
+  "aliases": [
+    "agent schema",
+    "agent_id",
+    "allowed seats",
+    "references pins",
+    "born operator"
+  ],
+  "edges": [],
+  "source_sha256": "5f6042b7367a4e7d3f8107c8ad4702fd809af54b23a52ff16bd4dfbea6fb3405"
+}

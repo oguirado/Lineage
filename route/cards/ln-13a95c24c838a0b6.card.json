@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Volatile native editors for agent forms",
+  "claims": [
+    {"id": "C1", "text": "openForm maps each form kind through labels to a tool and caches volatile drafts in Drafts under an agent plus kind plus runId cache key.", "type": "behavior"},
+    {"id": "C2", "text": "submit assembles payloads with getBody and validate against unitSchema, including the canonical 6000-byte budget check on memory units.", "type": "failure"},
+    {"id": "C3", "text": "bindEpisode freezes episode run_id, task_id, seat and parents_context read from the opened run via run_get before submission.", "type": "invariant"}
+  ],
+  "triggers": ["duplicate collection item", "invalid evidence path or hash", "unsupported memory body shape", "invalid episode run binding"],
+  "decision": {
+    "rule": "Change here when volatile form fields, schema-driven serialization, episode binding or derive selection needs to change.",
+    "failure": "Drafts are lost on reload, submissions fail validation, or an episode is bound to a closed or mismatched run."
+  },
+  "questions": [
+    {"q": "Where does openForm build memory, run, close, resume and derive form fields?"},
+    {"q": "Where should I change how submit validates the canonical byte budget and unit schema?"},
+    {"q": "Where can I debug why episode fields are frozen by the opened run?"}
+  ],
+  "aliases": ["volatile editors", "derive form", "memory form", "episode binding"],
+  "edges": [],
+  "source_sha256": "f557d60d0f38ed91299c6f8853af73e10b71de972c51653c2a828b4f3ef20129"
+}

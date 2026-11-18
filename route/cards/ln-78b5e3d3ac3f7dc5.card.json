@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "UI operability lint checks",
+  "claims": [
+    {"id": "C1", "text": "lintOperability requires exactly one banner, primary nav, main and application-updates status landmark plus kind screen skip control, and exactly one exposed H1.", "type": "failure"},
+    {"id": "C2", "text": "The lint flags clickable_non_native, bad_state for positive tabindex and unknown ARIA attributes, and bad_selector for unknown data-lin attributes, duplicate entity tuples and identity collisions.", "type": "failure"},
+    {"id": "C3", "text": "Controls must expose unique normalized names within the 64-byte budget, registered data-lin-action values and unambiguous action scopes.", "type": "invariant"}
+  ],
+  "triggers": ["missing_landmark", "heading_count", "duplicate_name", "missing_name", "name_too_long", "bad_selector collision"],
+  "decision": {
+    "rule": "Change here when operability lint rules, landmark expectations or control naming budgets need to change.",
+    "failure": "Screens ship without landmarks or accessible names, duplicate control names appear, or actions become unavailable from identity collisions."
+  },
+  "questions": [
+    {"q": "Where does lintOperability check landmarks and heading counts?"},
+    {"q": "Where should I change the ARIA, selector and entity-tuple lint rules?"},
+    {"q": "Where can I debug duplicate_name or bad_selector while linting a screen?"}
+  ],
+  "aliases": ["operability lint", "landmark checks", "control names", "entity tuples"],
+  "edges": [],
+  "source_sha256": "9f0c0a54aacd6cc60d9915117e6781d79874cfa5e3cc57badcc842748f431f99"
+}

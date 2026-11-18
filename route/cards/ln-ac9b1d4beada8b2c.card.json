@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Agent screen layout styles",
+  "claims": [
+    {"id": "C1", "text": "The main agent-screen rules lay out the identity header, definition grid, panels and actions, records and tables.", "type": "behavior"},
+    {"id": "C2", "text": "Form controls, fieldset, dialog sizing, focus outline and alert color are styled within the agent screen scope.", "type": "interface"},
+    {"id": "C3", "text": "Narrow screens collapse the definition grid to one column and the reduced-motion rule disables animation and transition.", "type": "invariant"}
+  ],
+  "triggers": ["agent record wrapping", "filter layout", "dialog width", "alert color"],
+  "decision": {
+    "rule": "Change here when agent screen layout, record tables or dialog sizing needs to change.",
+    "failure": "Agent records overflow, filters wrap badly, or alerts become unreadable."
+  },
+  "questions": [
+    {"q": "Where are the agent identity, record and table layout rules defined?"},
+    {"q": "Where should I change the agent dialog sizing and focus styling?"},
+    {"q": "Where can I debug why the agent definition grid breaks on narrow screens?"}
+  ],
+  "aliases": ["agent screen", "record table", "agent filters", "agent dialog"],
+  "edges": [],
+  "source_sha256": "1a61efa597ecdfaaca791bd6574e3843f0df19e92cdb03bfa1d14e9baf4e1a75"
+}

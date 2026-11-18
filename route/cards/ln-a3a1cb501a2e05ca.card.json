@@ -1,0 +1,23 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Ordered sequential probability ratio testing",
+  "claims": [
+    {"id": "C1", "text": "evaluate_sprt validates p0, p1, alpha, beta and cap, requiring p0 < p1, alpha + beta < 1, probabilities strictly between zero and one, and cap at least 1.", "type": "failure"},
+    {"id": "C2", "text": "evaluate_sprt validates every observation row with task_id, seed and outcome, rejects non win, loss or tie outcomes, and rejects redeliveries before any scoring.", "type": "behavior"},
+    {"id": "C3", "text": "The scorer accumulates the log likelihood ratio from win and loss steps, counts distinct tasks only, and counts repeated task deliveries in ignored_repeats without scoring them.", "type": "invariant"},
+    {"id": "C4", "text": "The decision stops at superior when llr reaches upper, not_superior at lower, or inconclusive when n_tasks reaches cap, recording stopped_at both by task id and index.", "type": "interface"}
+  ],
+  "triggers": ["invalid SPRT parameters", "observation outcome enum failure", "duplicate task deliveries miscounted", "SPRT never decides by cap"],
+  "decision": {
+    "rule": "Change here when SPRT parameter validation, llr stepping, repeat handling or decision thresholds need to change.",
+    "failure": "A repeated task is scored twice, a boundary crossing is missed, or invalid probabilities are accepted."
+  },
+  "questions": [
+    {"q": "Where does evaluate_sprt validate p0, p1, alpha, beta and cap?"},
+    {"q": "Where should I check why repeated task deliveries are counted as ignored_repeats?"},
+    {"q": "Where can I debug why the SPRT stopped at a specific task?"}
+  ],
+  "aliases": ["SPRT", "sequential probability ratio", "log likelihood ratio", "arena decision", "benchmark verdict"],
+  "edges": [],
+  "source_sha256": "7b8164ede49b98e5e753893f8ae95a637d51ab49f370447c8203c87b9e222b7e"
+}

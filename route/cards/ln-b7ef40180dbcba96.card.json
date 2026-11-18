@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Read-only reference tool adapters",
+  "claims": [
+    {"id": "C1", "text": "_call validates args against the _INPUT ref_id and agent shapes, mapping SchemaError to bad_args with invalid_reference_arguments.", "type": "failure"},
+    {"id": "C2", "text": "handle_reference_get and handle_reference_verify delegate to references.get and references.verify and rethrow ReferenceError codes as LineageError.", "type": "behavior"},
+    {"id": "C3", "text": "TOOLS declares the reference_get and reference_verify read-only specs with empty VALIDATORS and FOLDS maps.", "type": "interface"}
+  ],
+  "triggers": ["invalid_reference_arguments", "reference lookup failures", "read-only intent"],
+  "decision": {
+    "rule": "Change here when reference tool arguments, delegation or read-only registration needs to change.",
+    "failure": "Invalid reference arguments reach domain reads or reference errors lose their codes."
+  },
+  "questions": [
+    {"q": "Where does _call validate reference tool arguments?"},
+    {"q": "Where should I change the reference_get and reference_verify delegation?"},
+    {"q": "Where can I debug why a reference tool returns invalid_reference_arguments?"}
+  ],
+  "aliases": ["reference get", "reference verify", "read-only tools", "founding references"],
+  "edges": [],
+  "source_sha256": "fac72854cc067ce7f37f1b1dd78d07caa55c45f1896c8f680d1ec93ba70aa107"
+}

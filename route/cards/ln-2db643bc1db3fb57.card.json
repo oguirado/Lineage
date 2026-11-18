@@ -1,0 +1,38 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Plan error type",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "PlanError stores a code attribute and forwards the message to Exception via super().__init__.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "PlanError raised",
+    "plan code missing",
+    "plan error message empty"
+  ],
+  "decision": {
+    "rule": "Change here when the plan subsystem error contract (code or message) needs to change.",
+    "failure": "A plan failure is raised without a code, or the message is lost instead of reaching str(exc)."
+  },
+  "questions": [
+    {
+      "q": "Where is the plan error type defined and what does it store?"
+    },
+    {
+      "q": "Where should I change how PlanError carries its code to callers?"
+    },
+    {
+      "q": "Where can I debug a plan error with an empty message?"
+    }
+  ],
+  "aliases": [
+    "plan error",
+    "PlanError code",
+    "exception message"
+  ],
+  "edges": [],
+  "source_sha256": "85fb5b271ceabd552276d65e7e7078c63dbb93208a0e19b5229502d3861c7150"
+}

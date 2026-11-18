@@ -1,0 +1,50 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Headless CLI, MCP and JSON-lane guide",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The verb table documents tools, call, mcp, run, hook, snapshot, json, drain, serve, export, verify, operator ruling, doctor and mcp-config, each with its behavior, and the exit table fixes 0 for success, 2 for argument/schema/discovery refusal and 3 for domain, memory, concurrency, integrity, I/O or doctor failure.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "Writes require a stable op_id: an exact retry replays the original result and commit prefix, reuse with changed content returns bad_op, and a stale expected_head returns stale_rev with nothing appended; replay lookup precedes the revision check.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "Successful tool data is exactly {untrusted:DATA} and errors are {ok:false,code:CODE,detail?:DETAIL} to be used by code, while unknown costs stay null and Services.token_count remains None, so entries beyond 4000 bytes without a verified counter are refused with memory_debt.",
+      "type": "behavior"
+    }
+  ],
+  "triggers": [
+    "bad_op on operation retry",
+    "stale_rev with expected_head mismatch",
+    "memory_debt on long memory entry",
+    "cursor resync=true on ledger_events"
+  ],
+  "decision": {
+    "rule": "Change here when headless verb behavior, exit codes, operation identity, or the headless guide example needs to change.",
+    "failure": "An agent assumes an absent tool exists, reuses an op_id with new content, or estimates token cost instead of cutting memory."
+  },
+  "questions": [
+    {
+      "q": "Which headless verbs map to which exit codes on refusal?"
+    },
+    {
+      "q": "Where should I change the op_id retry versus bad_op rule for writes?"
+    },
+    {
+      "q": "Where can I debug why a memory entry is refused with memory_debt instead of estimated?"
+    }
+  ],
+  "aliases": [
+    "headless CLI",
+    "operation identity",
+    "exit codes",
+    "untrusted envelope"
+  ],
+  "edges": [],
+  "source_sha256": "ec0e5ba6acf02111f57e77f08cc3435cca2d3a7a53f3b3db962c5a1323a85cfb"
+}

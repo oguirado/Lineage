@@ -182,6 +182,26 @@ class OperableTests(unittest.TestCase):
             bad['payload']['dry_run'] = invalid
             self.assertEqual(self.deliver(bad, expected=2)['code'], 'bad_args')
 
+    def test_repeated_preview_clears_marker_before_dispatch(self):
+        from lineage.core import family
+        request = self.envelope('preview01', dry_run=True)
+        first = self.deliver(request)
+        box = self.open_mailbox()
+        marker = self.base / 'state' / 'preview01.done'
+        self.assertEqual(box.completed(request['id'])['result'], first)
+        dispatch = family.lane._dispatch
+
+        def observe(*args):
+            self.assertFalse(marker.exists())
+            self.assertIsNone(box.completed(request['id']))
+            return dispatch(*args)
+
+        with patch.object(family.lane, '_dispatch', side_effect=observe) as observed:
+            self.assertEqual(box._receive(request), first)
+        observed.assert_called_once()
+        self.assertEqual(box.completed(request['id'])['result'], first)
+        self.assertFalse((self.base / 'dedup' / 'preview01.json').exists())
+
     def test_external_dry_run_never_publishes_or_runs_a_program(self):
         commands = self.home / 'commands'
         commands.mkdir(mode=0o700)
@@ -233,6 +253,101 @@ class OperableTests(unittest.TestCase):
         self.assertEqual(first, self.deliver(request))
         self.assertEqual(self.call('ledger_events', {})['untrusted']['head'], 1)
 
+    def open_mailbox(self):
+        from lineage.core import app, family, registry
+        box = family.Mailbox('test-main', ctx=app.create_context(self.home, registry=registry.load()))
+        box.open()
+        self.addCleanup(box.release)
+        return box
+
+    def test_terminal_receipt_survives_replay_and_rejected_drain_deliveries(self):
+        from lineage.core import envelope, family, journal
+        request = self.envelope('terminal1')
+        first = self.deliver(request)
+        box = self.open_mailbox()
+        spool = self.base / 'spool' / 'terminal1.json'
+        receipt = self.base / 'state' / 'terminal1.result.json'
+        marker = self.base / 'state' / 'terminal1.done'
+        retained = self.base / 'dedup' / spool.name
+        original = receipt.read_bytes()
+        digest = hashlib.sha256(original).hexdigest()
+        marker_inode = marker.stat().st_ino
+        retention = retained.read_bytes()
+        history = journal.snapshot(self.home)
+        self.assertEqual(len(history), 1)
+        self.assertEqual(json.loads(original)['result'], first)
+        self.assertEqual(json.loads(retention), {
+            'identity': {key: request[key] for key in ('source', 'target', 'id')},
+            'digest': envelope.digest(request), 'op_id': envelope.operation_id(request),
+            'phase': 'complete', 'result': first,
+        })
+
+        deliveries = {
+            'exact': envelope.canonical(request),
+            'changed': envelope.canonical(self.envelope('terminal1', args=self.package('changed-skill'))),
+            'malformed': b'{',
+        }
+        write = family._atomic_write
+        for delivery, raw in deliveries.items():
+            with self.subTest(delivery=delivery):
+                spool.write_bytes(raw)
+                spool.chmod(0o600)
+                publications = []
+
+                def observe(directory, name, *args, **kwargs):
+                    if directory == box.state:
+                        publications.append((name, marker.exists()))
+                    return write(directory, name, *args, **kwargs)
+
+                with patch.object(family, '_atomic_write', observe):
+                    self.assertEqual(box.sweep(), 1)
+                self.assertFalse(spool.exists())
+                self.assertEqual(journal.snapshot(self.home), history)
+                self.assertEqual(retained.read_bytes(), retention)
+                self.assertEqual(marker.read_bytes(), b'<!-- terminal1_DONE -->\n')
+                actual = receipt.read_bytes()
+                self.assertEqual(
+                    (publications, marker.stat().st_ino == marker_inode,
+                     actual == original, hashlib.sha256(actual).hexdigest() == digest),
+                    ([], True, True, True),
+                )
+
+    def test_dry_run_cannot_reuse_a_retained_identity(self):
+        from lineage.core import journal
+        request = self.envelope('drybound1')
+        self.deliver(request)
+        before = self.files()
+        history = journal.snapshot(self.home)
+        self.assertEqual(len(history), 1)
+        preview = self.envelope('drybound1', args=self.package('preview-skill'), dry_run=True)
+        self.assertEqual(self.deliver(preview, expected=3), {'ok': False, 'code': 'bad_op'})
+        self.assertEqual(self.files(), before)
+        box = self.open_mailbox()
+        spool = self.base / 'spool' / 'drybound1.json'
+        self.publish(spool, preview)
+        self.assertEqual(box.sweep(), 1)
+        box.release()
+        self.assertEqual(self.files(), before)
+        self.assertEqual(journal.snapshot(self.home), history)
+
+    def test_capabilities_replay_rechecks_current_grants(self):
+        identity = 'capreplay1'
+        caps = {**self.envelope(identity), 'kind': 'capabilities', 'payload': {}}
+        first = self.deliver(caps)
+        self.assertIn('skill_publish', {tool['name'] for tool in first['untrusted']['tools']})
+        retained = self.base / 'dedup' / (identity + '.json')
+        before = retained.read_bytes()
+        config = self.base / 'config.json'
+        grants = json.loads(config.read_bytes())
+        grants['tools'].remove('skill_publish')
+        self.publish(config, grants)
+        replay = self.deliver(caps)
+        self.assertEqual(replay['untrusted']['tools'],
+                         [tool for tool in first['untrusted']['tools'] if tool['name'] != 'skill_publish'])
+        receipt = self.base / 'state' / (identity + '.result.json')
+        self.assertEqual(json.loads(receipt.read_bytes())['result'], replay)
+        self.assertEqual(retained.read_bytes(), before)
+
     def test_unsafe_abort_is_quarantined_without_following_or_dispatch(self):
         request = self.envelope('unsafe001')
         (self.base / 'spool' / 'unsafe001.abort').symlink_to(self.base / 'config.json')
@@ -241,6 +356,90 @@ class OperableTests(unittest.TestCase):
         self.assertEqual(before, (self.base / 'config.json').read_bytes())
         self.assertEqual(self.call('ledger_events', {})['untrusted']['head'], 0)
         self.assertTrue(any(path.is_symlink() for path in (self.base / 'state').glob('quarantine-*')))
+
+    def test_unsafe_abort_refusal_is_immutable_on_replay(self):
+        from lineage.core import envelope, journal
+        request = {**self.envelope('unsafe002'), 'correlation_id': 'abortcorr'}
+        (self.base / 'spool' / 'unsafe002.abort').symlink_to(self.base / 'config.json')
+        refusal = {'ok': False, 'code': 'bad_args'}
+        self.assertEqual(self.deliver(request, expected=2), refusal)
+        receipt = self.base / 'state' / 'unsafe002.result.json'
+        marker = self.base / 'state' / 'unsafe002.done'
+        retained = self.base / 'dedup' / 'unsafe002.json'
+        original = receipt.read_bytes(), marker.stat().st_ino
+        self.assertEqual(self.deliver(request, expected=2), refusal)
+        self.assertEqual((receipt.read_bytes(), marker.stat().st_ino), original)
+        self.assertEqual(json.loads(retained.read_bytes()), {
+            'identity': {key: request[key] for key in ('source', 'target', 'id')},
+            'digest': envelope.digest(request), 'op_id': envelope.operation_id(request),
+            'phase': 'complete', 'result': refusal,
+        })
+        self.assertEqual(journal.snapshot(self.home), ())
+
+    def test_unsafe_abort_dispatch_clears_preview_before_interrupted_retention(self):
+        from lineage.core import family, journal
+        request = self.envelope('unsafe003')
+        self.assertTrue(self.deliver(self.envelope('unsafe003', dry_run=True))['untrusted']['dry_run'])
+        box = self.open_mailbox()
+        abort = self.base / 'spool' / 'unsafe003.abort'
+        abort.symlink_to(self.base / 'config.json')
+        retained = self.base / 'dedup' / 'unsafe003.json'
+        write = family._atomic_write
+
+        def interrupt(directory, name, value, *args, **kwargs):
+            if directory == box.dedup and value['phase'] == 'complete':
+                self.assertTrue(abort.is_symlink())
+                self.assertIsNone(box.completed(request['id']))
+                raise OSError('interrupted completion')
+            return write(directory, name, value, *args, **kwargs)
+
+        with patch.object(family, '_atomic_write', interrupt):
+            self.assertEqual(box.dispatch(request), {'ok': False, 'code': 'internal'})
+        self.assertTrue(abort.is_symlink())
+        self.assertIsNone(box.completed(request['id']))
+        self.assertEqual(json.loads(retained.read_bytes())['phase'], 'pending')
+        refusal = {'ok': False, 'code': 'bad_args'}
+        self.assertEqual(box._receive(request), refusal)
+        self.assertEqual(box.completed(request['id'])['result'], refusal)
+        self.assertEqual(journal.snapshot(self.home), ())
+
+    def test_late_unsafe_abort_survives_interrupted_completion(self):
+        from lineage.core import family, journal
+        box = self.open_mailbox()
+        request = self.envelope('latebad01')
+        spool = self.base / 'spool' / 'latebad01.json'
+        self.publish(spool, request)
+        abort = spool.with_suffix('.abort')
+        config = self.base / 'config.json'
+        config_bytes = config.read_bytes()
+        callback = journal._callback
+        write = family._atomic_write
+
+        def insert_abort(function, history, event):
+            result = callback(function, history, event)
+            if event['kind'] == 'skill.published' and 'sha256' in event:
+                abort.symlink_to(config)
+            return result
+
+        def interrupt(directory, name, value, *args, **kwargs):
+            if directory == box.dedup and value['phase'] == 'complete':
+                raise OSError('interrupted completion')
+            return write(directory, name, value, *args, **kwargs)
+
+        with patch.object(journal, '_callback', insert_abort), patch.object(family, '_atomic_write', interrupt):
+            with self.assertRaisesRegex(OSError, 'interrupted completion'):
+                box.sweep()
+        self.assertEqual(journal.snapshot(self.home), ())
+        self.assertTrue(abort.is_symlink())
+        self.assertEqual(config.read_bytes(), config_bytes)
+        self.assertIsNone(box.completed(request['id']))
+        self.assertTrue(spool.is_file())
+        self.assertEqual(box.sweep(), 1)
+        refusal = {'ok': False, 'code': 'bad_args'}
+        self.assertEqual(box.completed(request['id'])['result'], refusal)
+        self.assertEqual(box._receive(request), refusal)
+        self.assertFalse(abort.is_symlink())
+        self.assertEqual(journal.snapshot(self.home), ())
 
     @contextmanager
     def paused_delivery(self, request, injection):
@@ -315,6 +514,43 @@ family.Mailbox._witness = witness
         from lineage.core.envelope import operation_id
         self.assertEqual(after['events'][0]['op_id'], operation_id(request))
 
+    def test_preview_marker_stays_cleared_after_execution_is_killed(self):
+        from lineage.core import envelope, journal
+        preview = self.envelope('preview01', dry_run=True)
+        self.assertTrue(self.deliver(preview)['untrusted']['dry_run'])
+        marker = self.base / 'state' / 'preview01.done'
+        self.assertEqual(marker.read_bytes(), b'<!-- preview01_DONE -->\n')
+        request = self.envelope('preview01')
+        with self.paused_delivery(request, """
+original = family.Mailbox._witness
+def witness(self, value, result, name):
+    original(self, value, result, name)
+    os.write(int(sys.argv[1]), b'ready')
+    os.read(int(sys.argv[2]), 1)
+family.Mailbox._witness = witness
+""") as (process, _):
+            marker_in_flight = marker.exists()
+            self.assertGreater(process.pid, 1)
+            process.kill()
+            process.wait(timeout=5)
+        lock = self.base / 'consumer.lock'
+        self.assertEqual(lock.read_bytes(), b'owned\n')
+        lock.unlink()  # This isolated endpoint's child has exited.
+        box = self.open_mailbox()
+        retained = self.base / 'dedup' / 'preview01.json'
+        self.assertEqual(json.loads(retained.read_bytes())['phase'], 'pending')
+        events = journal.snapshot(self.home)
+        event, = events
+        self.assertEqual(event['op_id'], envelope.operation_id(request))
+        self.assertEqual((marker_in_flight, marker.exists(), box.completed(request['id'])),
+                         (False, False, None))
+        self.assertEqual(box.sweep(), 1)
+        self.assertEqual(box.completed(request['id'])['result']['untrusted']['commit'], {
+            'head': event['lamport'], 'sha256': event['sha256'], 'event_ids': [event['id']],
+        })
+        self.assertEqual(marker.read_bytes(), b'<!-- preview01_DONE -->\n')
+        self.assertEqual(journal.snapshot(self.home), events)
+
     def test_cancelled_preview_does_not_create_a_retained_result(self):
         request = self.envelope('dryabort1', dry_run=True)
         (self.base / 'spool' / 'dryabort1.abort').touch(mode=0o600)
@@ -379,6 +615,241 @@ family.Mailbox._witness = witness
             with self.assertRaises(OSError):
                 box.publish('sentinel1', {'ok': False, 'code': 'internal'})
         self.assertIsNone(box.completed('sentinel1'))
+
+    def test_busy_drain_keeps_request_pending_until_one_commit(self):
+        from lineage.core import envelope, family, journal
+        request = self.envelope('retryreq1')
+        box = self.open_mailbox()
+        spool = self.base / 'spool' / 'retryreq1.json'
+        receipt = self.base / 'state' / 'retryreq1.result.json'
+        marker = self.base / 'state' / 'retryreq1.done'
+        retained = self.base / 'dedup' / spool.name
+        self.publish(spool, request)
+        original = spool.read_bytes()
+        operation = envelope.operation_id(request)
+        pending = {'identity': {key: request[key] for key in ('source', 'target', 'id')},
+                   'digest': envelope.digest(request), 'op_id': operation, 'phase': 'pending'}
+        attempts = []
+        transact = journal.transact
+
+        def contend_once(home, **kwargs):
+            attempts.append(kwargs['op_id'])
+            if len(attempts) == 1:
+                with journal._authority(home, True, 0):
+                    return transact(home, **kwargs, lock_timeout_s=0)
+            return transact(home, **kwargs)
+
+        publication = []
+        write = family._atomic_write
+
+        def observe(directory, name, *args, **kwargs):
+            if directory == box.state and name == marker.name:
+                publication.append((marker.exists(), spool.read_bytes(), json.loads(retained.read_bytes()),
+                                    json.loads(receipt.read_bytes())['result'], journal.snapshot(self.home)))
+            return write(directory, name, *args, **kwargs)
+
+        with patch.object(journal, 'transact', contend_once), patch.object(family, '_atomic_write', observe):
+            self.assertEqual(box._consume(spool.name), ({'ok': False, 'code': 'busy'}, False))
+            self.assertEqual(spool.read_bytes(), original)
+            self.assertEqual(json.loads(retained.read_bytes()), pending)
+            self.assertEqual(journal.snapshot(self.home), ())
+            self.assertEqual(attempts, [operation])
+            with self.subTest(boundary='retry'):
+                self.assertEqual((marker.exists(), box.completed(request['id']), len(publication)),
+                                 (False, None, 0))
+            retry_at = box._retry[spool.name][1]
+            with patch.object(family.time, 'monotonic', return_value=retry_at - 0.5):
+                self.assertEqual(box.sweep(), 0)
+            self.assertEqual(attempts, [operation])
+            monotonic = time.monotonic
+            offset = retry_at - monotonic()
+            with patch.object(family.time, 'monotonic', side_effect=lambda: monotonic() + offset):
+                self.assertEqual(box.sweep(), 1)
+
+        result = box.completed(request['id'])['result']
+        events = journal.snapshot(self.home)
+        self.assertEqual(len(events), 1)
+        self.assertEqual(attempts, [operation, operation])
+        event, = events
+        self.assertEqual(event['op_id'], operation)
+        self.assertEqual(result['untrusted']['commit'], {
+            'head': event['lamport'], 'sha256': event['sha256'], 'event_ids': [event['id']],
+        })
+        complete = {**pending, 'phase': 'complete', 'result': result}
+        self.assertEqual(publication[-1:], [(False, original, complete, result, events)])
+        self.assertEqual(json.loads(retained.read_bytes()), complete)
+        self.assertEqual(marker.read_bytes(), b'<!-- retryreq1_DONE -->\n')
+        self.assertFalse(spool.exists())
+
+    def test_unsafe_abort_after_busy_has_a_terminal_replay(self):
+        from lineage.core import family, journal
+        request = self.envelope('retryreq1')
+        box = self.open_mailbox()
+        spool = self.base / 'spool' / 'retryreq1.json'
+        self.publish(spool, request)
+        retained = self.base / 'dedup' / spool.name
+        transact = journal.transact
+
+        def contend(home, **kwargs):
+            with journal._authority(home, True, 0):
+                return transact(home, **kwargs, lock_timeout_s=0)
+
+        with patch.object(journal, 'transact', contend):
+            self.assertEqual(box._consume(spool.name), ({'ok': False, 'code': 'busy'}, False))
+        pending = json.loads(retained.read_bytes())
+        self.assertEqual(pending['phase'], 'pending')
+        abort = spool.with_suffix('.abort')
+        config = self.base / 'config.json'
+        config_bytes = config.read_bytes()
+        abort.symlink_to(config)
+        retry_at = box._retry[spool.name][1]
+        with patch.object(family.time, 'monotonic', return_value=retry_at):
+            consumed = box.sweep()
+        self.assertEqual(consumed, 1)
+        self.assertEqual(config.read_bytes(), config_bytes)
+        self.assertFalse(abort.is_symlink())
+        self.assertTrue(any(path.is_symlink() for path in (self.base / 'state').glob('quarantine-*')))
+        refusal = {'ok': False, 'code': 'bad_args'}
+        self.assertEqual(json.loads(retained.read_bytes()), {**pending, 'phase': 'complete', 'result': refusal})
+        self.assertEqual(box.completed(request['id'])['result'], refusal)
+        self.assertFalse(spool.exists())
+        marker = self.base / 'state' / 'retryreq1.done'
+        marker_inode = marker.stat().st_ino
+        self.assertEqual(box._receive(request), refusal)
+        self.assertEqual(marker.stat().st_ino, marker_inode)
+        self.assertEqual(journal.snapshot(self.home), ())
+
+    def test_admission_refusals_preserve_a_committed_pending_request(self):
+        from lineage.core import family, journal
+        box = self.open_mailbox()
+        config = self.base / 'config.json'
+        granted = json.loads(config.read_bytes())
+        witness = box._witness
+        process = box._process
+
+        def interrupt(*args):
+            witness(*args)
+            raise family.RecoveryError('injected interruption after witness')
+
+        def invalidate_config(value):
+            config.write_bytes(b'{')
+            return process(value)
+
+        for identity, refusal in [('crashreq1', 'revoked grant'), ('crashreq2', 'unsafe config')]:
+            with self.subTest(refusal=refusal):
+                request = self.envelope(identity, args=self.package(identity))
+                spool = self.base / 'spool' / (identity + '.json')
+                retained = self.base / 'dedup' / spool.name
+                self.publish(spool, request)
+                with patch.object(box, '_witness', side_effect=interrupt):
+                    with self.assertRaises(family.RecoveryError):
+                        box.sweep()
+                original = spool.read_bytes()
+                pending = retained.read_bytes()
+                self.assertEqual(json.loads(pending)['phase'], 'pending')
+                events = journal.snapshot(self.home)
+                try:
+                    if refusal == 'revoked grant':
+                        self.publish(config, {**granted, 'tools': []})
+                        self.assertEqual(box._consume(spool.name), ({'ok': False, 'code': 'bad_args'}, False))
+                    else:
+                        with patch.object(box, '_process', side_effect=invalidate_config):
+                            with self.assertRaises(family.Refusal):
+                                box.sweep()
+                finally:
+                    self.publish(config, granted)
+                    box._configuration()
+                self.assertEqual(spool.read_bytes(), original)
+                self.assertEqual(retained.read_bytes(), pending)
+                self.assertIsNone(box.completed(identity))
+                self.assertFalse((self.base / 'state' / (identity + '.result.json')).exists())
+                self.assertEqual(journal.snapshot(self.home), events)
+                self.assertEqual(box.sweep(), 1)
+                self.assertEqual(box.completed(identity)['result']['untrusted']['commit']['event_ids'],
+                                 [events[-1]['id']])
+                self.assertEqual(journal.snapshot(self.home), events)
+                self.assertFalse(spool.exists())
+
+    def test_config_refusal_during_unbound_consumption_preserves_request(self):
+        from lineage.core import family, journal
+        box = self.open_mailbox()
+        request = self.envelope('fresh001')
+        spool = self.base / 'spool' / 'fresh001.json'
+        self.publish(spool, request)
+        config = self.base / 'config.json'
+        granted = json.loads(config.read_bytes())
+        original = spool.read_bytes()
+        process = box._process
+
+        def invalidate(value):
+            self.publish(config, {**granted, 'endpoint': 'wrong-end'})
+            return process(value)
+
+        with patch.object(box, '_process', side_effect=invalidate):
+            with self.assertRaisesRegex(family.Refusal, 'invalid configuration'):
+                box.sweep()
+        self.assertEqual(spool.read_bytes(), original)
+        self.assertFalse((self.base / 'dedup' / spool.name).exists())
+        self.assertFalse((self.base / 'state' / 'fresh001.result.json').exists())
+        self.assertEqual(journal.snapshot(self.home), ())
+        self.publish(config, granted)
+        self.assertEqual(box.sweep(), 1)
+        self.assertEqual(box.completed(request['id'])['result']['untrusted']['commit']['head'], 1)
+
+    def test_interrupted_terminal_publication_requires_admitted_original_delivery(self):
+        from lineage.core import envelope, family, journal
+        box = self.open_mailbox()
+        write = family._atomic_write
+        config = self.base / 'config.json'
+        granted = json.loads(config.read_bytes())
+
+        def fail_done(directory, name, *args, **kwargs):
+            if directory == box.state and name.endswith('.done'):
+                raise OSError('interrupted marker')
+            return write(directory, name, *args, **kwargs)
+
+        for identity, malformed in [('crashdone1', True), ('crashdone2', False)]:
+            with self.subTest(malformed=malformed):
+                request = {**self.envelope(identity, args=self.package(identity)), 'correlation_id': 'donecorr'}
+                spool = self.base / 'spool' / (identity + '.json')
+                retained = self.base / 'dedup' / spool.name
+                receipt = self.base / 'state' / (identity + '.result.json')
+                marker = self.base / 'state' / (identity + '.done')
+                self.publish(spool, request)
+                with patch.object(family, '_atomic_write', fail_done):
+                    with self.assertRaisesRegex(OSError, 'interrupted marker'):
+                        box.sweep()
+                bound = retained.read_bytes()
+                result_bytes = receipt.read_bytes()
+                result = json.loads(result_bytes)['result']
+                self.assertEqual(json.loads(bound)['phase'], 'complete')
+                history = journal.snapshot(self.home)
+                if malformed:
+                    spool.write_bytes(b'{')
+                else:
+                    self.publish(spool, self.envelope(identity, args=self.package('changed-skill')))
+                    receipt.unlink()
+                rejected = spool.read_bytes()
+                self.assertIsNone(box.completed(identity))
+                self.assertEqual(box.sweep(), 0)
+                self.assertEqual(spool.read_bytes(), rejected)
+                self.assertEqual(retained.read_bytes(), bound)
+                self.assertFalse(marker.exists())
+
+                self.publish(config, {**granted, 'tools': []})
+                box.release()
+                self.assertEqual(self.deliver(request, expected=2), {'ok': False, 'code': 'bad_args'})
+                self.assertEqual(spool.read_bytes(), rejected)
+                self.assertFalse(marker.exists())
+                self.publish(config, granted)
+                self.assertEqual(self.deliver(request), result)
+                box.open()
+                self.assertFalse(spool.exists())
+                self.assertEqual(retained.read_bytes(), bound)
+                self.assertEqual(receipt.read_bytes(), result_bytes)
+                self.assertEqual(box.completed(identity), envelope._parse(result_bytes, bounded=False))
+                self.assertEqual(marker.read_bytes(), ('<!-- ' + identity + '_DONE -->\n').encode())
+                self.assertEqual(journal.snapshot(self.home), history)
 
     def test_verification_and_doctor_declare_unmeasured_agent_fitness(self):
         agent = self.create_agent()

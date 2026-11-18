@@ -1,0 +1,51 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "UI transport validation, live HTTP and fixture transports",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "validateJson rejects non-finite numbers, unpaired surrogates, non-plain objects, cycles, depth beyond 128, and any forbidden key, raising TransportError invalid_response.",
+      "type": "failure"
+    },
+    {
+      "id": "C2",
+      "text": "checkCall refuses fixture mutations (fixture_readonly), mutations on read tools and reads on protected tools (bad_args), and memory_put with the operator actor or level-1 unit (forbidden_level).",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "createHttpTransport enforces a positive integer timeout, sends requests with an abort controller over fetch, and decodes the shared {untrusted} reply envelope; createFixtureTransport validates the whole fixture up front and serves only recorded read results from clones.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "invalid_response on transport payload",
+    "fixture_readonly mutation attempt",
+    "forbidden_level on memory_put",
+    "timeout on HTTP call",
+    "session_required on mutation without session"
+  ],
+  "decision": {
+    "rule": "Change here when UI transport payload validation, read/protected tool gating, or the live and fixture transports need to change.",
+    "failure": "A valid tool reply is rejected as invalid_response, a fixture accepts a mutation, or a level-1 memory_put slips through."
+  },
+  "questions": [
+    {
+      "q": "Where does validateJson reject cycles, deep nesting, or forbidden keys in a transport payload?"
+    },
+    {
+      "q": "Where should I change which tools count as reads versus protected mutations?"
+    },
+    {
+      "q": "Where can I debug why a mutation fails with session_required over HTTP?"
+    }
+  ],
+  "aliases": [
+    "UI transport",
+    "fixture transport",
+    "reply validation",
+    "protected tools"
+  ],
+  "edges": [],
+  "source_sha256": "b75085b3a45cf75d67d37d95850769b1eb5b97601d2b5c9c986b3379fab2cbd0"
+}

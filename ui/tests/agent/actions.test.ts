@@ -6,7 +6,27 @@ isolate();
 it.each(['lesson','negative','workflow','episode','decision','open_item'])('A23 A24 %s native memory form serializes exact closed unit and owner provenance',async(kind)=>{
  const s=new Service();if(kind==='episode')s.addRun();s.overrides.set('memory_put',args=>{const c=s.commit('memory_put',args,{agent_id:OWNER,unit:args.unit,...(args.run_id?{run_id:args.run_id}:{})},'memory.put');s.units=[args.unit];s.history.push(c.event);return {unit:args.unit,memory_gen:s.record.memory_gen,commit:c.commit};});const v=await mount(s,{panel:'memory'});await ready(v);const d=await completeMemory(v,kind);
  expect(d.querySelector('textarea')).toBeNull();for(const f of d.querySelectorAll('[data-lin-action="edit-field"]')){expect(['INPUT','SELECT']).toContain(f.tagName);expect(f.getAttribute('name')).toBeTruthy();}
- expect(d.querySelector('[name="unit.provenance.actor"]')).toBeNull();await submit(v);expect(writes(v,'memory_put')).toHaveLength(1);const args=writes(v,'memory_put')[0][1];expect(args).toMatchObject({agent:OWNER,agent_id:OWNER,unit:{schema:'lineage.mem.unit/v1',kind,level:2,provenance:{actor:OWNER},receipts:[evidence]}});expect(args.op_id).toMatch(/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/);if(kind==='episode'){expect(args.run_id).toBe(RUN);expect(args.unit.body.parents_context).toEqual([]);expect(args.unit.body.seat).toEqual(seat);}expect(s.calls('memory_get').length).toBeGreaterThan(0);
+ if(kind==='open_item')set(d,'unit.body.order',7);
+ expect(d.querySelector('[name="unit.provenance.actor"]')).toBeNull();await submit(v);expect(writes(v,'memory_put')).toHaveLength(1);const args=writes(v,'memory_put')[0][1];expect(args).toMatchObject({agent:OWNER,agent_id:OWNER,unit:{schema:'lineage.mem.unit/v1',kind,level:2,provenance:{actor:OWNER},receipts:[evidence]}});expect(args.op_id).toMatch(/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/);if(kind==='episode'){expect(args.run_id).toBe(RUN);expect(args.unit.body.parents_context).toEqual([]);expect(args.unit.body.seat).toEqual(seat);}if(kind==='open_item')expect(args.unit.body.order).toBe(7);expect(s.calls('memory_get').length).toBeGreaterThan(0);
+});
+it('R49-WITNESS-3 lesson editors have distinct accessible names and serialize to their own arrays',async()=>{
+ const s=new Service();
+ s.overrides.set('memory_put',()=>refuse('hash_mismatch','Synthetic evidence unavailable'));
+ const v=await mount(s,{panel:'memory'});await ready(v);
+ const d=await completeMemory(v,'lesson');
+ const editors=Array.from(d.querySelectorAll<HTMLInputElement>('input')).filter(input=>['supersedes.new','blocked uses.new'].includes(input.name));
+ expect(editors.map(name)).toEqual(['Memory Supersedes ID','Memory Blocked use']);
+ const add=async(label:string,value:string)=>{
+  const inputs=editors.filter(input=>name(input)===label);
+  expect(inputs).toHaveLength(1);
+  set(d,inputs[0].name,value);
+  await click(inputs[0].closest('fieldset')!,'add-item');
+ };
+ await add('Memory Supersedes ID','prior-unit');
+ await add('Memory Blocked use','Guess the outcome');
+ await submit(v);
+ const calls=writes(v,'memory_put');expect(calls).toHaveLength(1);
+ expect(calls[0][1].unit).toMatchObject({supersedes:['prior-unit'],body:{blocked_use:['Guess the outcome']}});
 });
 it('A23 ruling and level one have no writable option; validation retains draft and focuses invalid field',async()=>{
  const v=await mount(new Service(),{panel:'memory'});await ready(v);await click(v.host,'write-memory');const d=dialog(v),kind=d.querySelector('[name="unit.kind"]') as HTMLSelectElement;expect(kind).toBeInstanceOf(HTMLSelectElement);expect(Array.from(kind.options).some(o=>o.value==='ruling')).toBe(false);const lev=d.querySelector('[name="unit.level"]') as HTMLSelectElement;expect(Array.from(lev.options).some(o=>o.value==='1')).toBe(false);
@@ -27,6 +47,21 @@ it.each(['clone','distill','cross','mutate','specialize'])('A29 derive %s fixes 
 });
 it.each(['I20','I21','I22'])('A29 authority rule %s cannot dispatch a mutation',async(rule)=>{
  const v=await mount();await ready(v);await click(v.host,'derive-agent');const d=dialog(v);set(d,'operation','mutate');await flush();set(d,'child_id',CHILD);set(d,'change.kind','rule');await flush();const field=d.querySelector('[name="change.rule_id"]');if(field instanceof HTMLSelectElement)expect(Array.from(field.options).filter(o=>o.value===rule).every(o=>o.disabled)).toBe(true);else if(field instanceof HTMLInputElement)set(d,'change.rule_id',rule);set(d,'change.text','add');await submit(v);expect(writes(v)).toHaveLength(0);expect(d.textContent).toMatch(/unavailable|authority|invalid|permitted/iu);
+});
+it('R49-WITNESS-4 rule mutation submits add and remove as actions',async()=>{
+ const s=new Service();s.overrides.set('agent_mutate',()=>refuse('conflict'));
+ const v=await mount(s);await ready(v);await click(v.host,'derive-agent');
+ const d=dialog(v);set(d,'operation','mutate');await flush();set(d,'child_id',CHILD);
+ set(d,'change.kind','rule');await flush();set(d,'change.rule_id','I1');
+ for(const ruleAction of ['add','remove']){
+  set(d,'change.text',ruleAction);
+  await submit(v);
+ }
+ const calls:[string,{change:unknown}][]=writes(v,'agent_mutate');
+ expect(calls.map(([,args])=>args.change)).toEqual([
+  {kind:'rule',rule_id:'I1',text:'add'},
+  {kind:'rule',rule_id:'I1',text:'remove'},
+ ]);
 });
 it('A29 missing derive descriptor and incompatible cross parent cannot be enabled',async()=>{
  const s=new Service();s.descriptors=s.descriptors.filter(d=>d.name!=='agent_specialize');s.overrides.set('agent_list',()=>({agents:[s.record,agent({agent_id:'other-parent',language:'rust'})],next_after:null,head:s.head}));const v=await mount(s);await ready(v);await click(v.host,'derive-agent');const d=dialog(v),ops=d.querySelector('[name="operation"]') as HTMLSelectElement;expect(Array.from(ops.options).filter(o=>o.value==='specialize').every(o=>o.disabled)).toBe(true);set(d,'operation','cross');await flush();const parents=Array.from(d.querySelectorAll<HTMLInputElement>('[data-lin-action="select-parent"]')).filter(e=>e.closest('[data-lin-id]')?.getAttribute('data-lin-id')==='other-parent');expect(parents.every(e=>e.disabled)).toBe(true);set(d,'child_id',CHILD);await submit(v);expect(writes(v)).toHaveLength(0);

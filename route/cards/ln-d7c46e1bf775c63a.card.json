@@ -1,0 +1,55 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Pure deterministic plan conformance checks",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "check_conformance is pure and deterministic, builds findings with error severity, and returns ok only when no findings were produced, without mutating projection or template inputs.",
+      "type": "invariant"
+    },
+    {
+      "id": "C2",
+      "text": "For a missing plan it reports missing_plan plus a missing_brief finding per required brief field; otherwise it checks the plan phase, required brief values, and each task phase and type, plus missing_accept and missing_evidence for done tasks whose type requires them.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "It enforces integer-only micro granularity bounds (micro_min/micro_max) and tasks_max, and checks every required memory section for presence, non-empty text and max_chars, including the max_chars bound for optional sections already present.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "missing_plan",
+    "missing_brief",
+    "invalid_phase",
+    "invalid_type",
+    "missing_accept",
+    "missing_evidence",
+    "micro_below_min",
+    "tasks_above_max",
+    "missing_memory",
+    "memory_above_max"
+  ],
+  "decision": {
+    "rule": "Change here when plan conformance codes, required-field checks, or granularity and memory bounds need to change.",
+    "failure": "A plan missing a required brief field passes, or a done task without required evidence is accepted."
+  },
+  "questions": [
+    {
+      "q": "Where does check_conformance report missing_evidence for done microtasks?"
+    },
+    {
+      "q": "Where should I change the required brief field check?"
+    },
+    {
+      "q": "Where can I debug why a memory section exceeds max_chars?"
+    }
+  ],
+  "aliases": [
+    "plan conformance",
+    "granularity bounds",
+    "memory sections"
+  ],
+  "edges": [],
+  "source_sha256": "f8ae2d7dd49552f36f093fca2fd6067886b05c294ffbdfe4f90ca0f1abe7bc5d"
+}

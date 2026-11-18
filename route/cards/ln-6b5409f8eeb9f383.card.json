@@ -1,0 +1,40 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "U55 public planning interface re-exports",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The module re-exports PlanError plus the template helpers canonical_template_json, template_hash, validate_template, load_template and resolve_template.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "The module re-exports the op shape helpers validate_op_shape and is_valid_op_shape, the fold functions empty_projection, apply_op_event and fold_plan, check_conformance, and the renderers render_plan_md and render_memory_md.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "plan template helper missing from planning imports",
+    "plan conformance checker missing"
+  ],
+  "decision": {
+    "rule": "Change here when the public U55 planning interface surface needs to change.",
+    "failure": "A planning consumer imports a helper that this module no longer re-exports."
+  },
+  "questions": [
+    {
+      "q": "Which planning helpers does this module re-export as the U55 public interface?"
+    },
+    {
+      "q": "Where should I change the public planning interface after a helper is renamed?"
+    }
+  ],
+  "aliases": [
+    "U55 planning",
+    "fail-first stubs",
+    "template hash",
+    "conformance check"
+  ],
+  "edges": [],
+  "source_sha256": "5baae1317e01673b5e2a45b544d4b7d8d7aec72c90c365e2a663601ff684684b"
+}

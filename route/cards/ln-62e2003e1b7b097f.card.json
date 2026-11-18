@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Arena readiness and refusal tests",
+  "claims": [
+    {"id": "C1", "text": "settled asserts the named ready output is visible, the document linReady flag is true, aria-busy is false, and no progressbar is shown.", "type": "interface"},
+    {"id": "C2", "text": "Refusal tests keep the real alert and settled status: no_benchmark and internal read failures show the actual error with a retry-panel action and zero mutation calls, and a malformed bench_status becomes invalid_response.", "type": "failure"},
+    {"id": "C3", "text": "The Run action test requires a real bench_run tool and explicit actor, navigates to the detail route without dispatch, and the wire-shape test accepts declared, result and verdict payloads while rejecting tampered results.", "type": "behavior"}
+  ],
+  "triggers": ["arena screen stuck busy", "real refusal alert replaced by render_error", "launch offered without bench_run tool"],
+  "decision": {
+    "rule": "Change here when the arena readiness assertions, refusal behavior, or Run-action gating tests need to change.",
+    "failure": "A ready screen never settles, a failed read hides its real error, or Run is offered without the tool or actor."
+  },
+  "questions": [
+    {"q": "Where does settled verify the arena screen readiness state?"},
+    {"q": "Where should I change the expected refusal alert content for failed reads?"},
+    {"q": "Where can I debug why the Run action appears without a real bench_run tool?"}
+  ],
+  "aliases": ["arena readiness", "refusal alert", "retry panel", "launch gating", "wire shapes"],
+  "edges": [],
+  "source_sha256": "4055ed6aced7c0491366b292a029166ec90a9dcb29af2ef0056fe6f2c966acf5"
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "MCP communication protocol and resources",
+  "claims": [
+    {"id": "C1", "text": "The document specifies one UTF-8 JSON-RPC object per LF line with protocol 2024-11-05, no response for notifications, and stdout reserved for protocol replies only.", "type": "behavior"},
+    {"id": "C2", "text": "The JSON-RPC error table maps invalid JSON, invalid request shape, unknown method, invalid params and internal failures to codes -32700, -32600, -32601, -32602 and -32603.", "type": "invariant"},
+    {"id": "C3", "text": "Live resources are served through the shared dispatcher as complete untrusted wrappers, reading verified ledger state and never cached agent or memory files.", "type": "interface"},
+    {"id": "C4", "text": "Resume from memory requires independently retained observations for memory_bootcheck and a failed bootcheck stops action until reconciled, never synthesized from current state.", "type": "failure"}
+  ],
+  "triggers": ["tools/call returns isError", "unknown agent resource", "bootcheck failed", "capabilities list missing tool"],
+  "decision": {
+    "rule": "Change here when the MCP framing, error mapping, resource list or prompt set needs to change.",
+    "failure": "A domain failure returns a JSON-RPC error instead of isError, a live resource reads cached files, or a resume pass synthesizes bootcheck observations."
+  },
+  "questions": [
+    {"q": "Where are the MCP error codes and their meanings documented?"},
+    {"q": "Where should I check which resources are live versus bundled documents?"},
+    {"q": "Where can I debug why a tool call isError on the MCP surface?"},
+    {"q": "What observations must be retained before calling memory_bootcheck?"}
+  ],
+  "aliases": ["MCP server", "JSON-RPC", "tools call", "live resources", "prompts"],
+  "edges": [],
+  "source_sha256": "cb8dd3a87a581a5e281598a1472ad286551eaa6a42f6cd7b07fb03402a53e30d"
+}

@@ -382,18 +382,23 @@ class Mailbox:
             receipt = lane._receipt(identity, result, envelope)
         except wire.InvalidEnvelope:
             raise RecoveryError("invalid result") from None
-        marker = identity + '.done'
-        if _stat(self.state, marker) is not None:
-            existing, info = _read_regular(self.state, marker, 128)
-            if existing != ('<!-- ' + identity + '_DONE -->\n').encode():
-                raise RecoveryError('invalid completion marker')
-            self._guard()
-            _same_entry(self.state, marker, info)
-            os.unlink(marker, dir_fd=self.state)
-            os.fsync(self.state)
+        self._clear_marker(identity)
         _atomic_write(self.state, identity + ".result.json", receipt, self._guard)
-        _atomic_write(self.state, marker, None, self._guard,
+        _atomic_write(self.state, identity + '.done', None, self._guard,
                       raw=('<!-- ' + identity + '_DONE -->\n').encode())
+
+    def _clear_marker(self, identity):
+        marker = identity + '.done'
+        try:
+            existing, info = _read_regular(self.state, marker, 128)
+        except FileNotFoundError:
+            return
+        if existing != ('<!-- ' + identity + '_DONE -->\n').encode():
+            raise RecoveryError('invalid completion marker')
+        self._guard()
+        _same_entry(self.state, marker, info)
+        os.unlink(marker, dir_fd=self.state)
+        os.fsync(self.state)
 
     def completed(self, identity):
         """A visible receipt without its exact completion marker is in progress."""
@@ -417,20 +422,21 @@ class Mailbox:
             return None
         return result
 
-    def _aborted(self, value):
+    def _aborted(self, value, *, quarantine_unsafe=True):
         name = value['id'] + '.abort'
         try:
             raw, _ = _read_regular(self.spool, name, wire.MAX_REQUEST_BYTES)
-            if len(raw) > wire.MAX_REQUEST_BYTES:
-                self.quarantine(name)
-                raise LineageError('bad_args')
         except FileNotFoundError:
             return False
         except UnsafeEntry:
+            pass
+        else:
+            if len(raw) <= wire.MAX_REQUEST_BYTES:
+                self._guard()
+                return True
+        if quarantine_unsafe:
             self.quarantine(name)
-            raise LineageError('bad_args') from None
-        self._guard()
-        return True
+        raise LineageError('bad_args')
 
     def _committed(self, value, name):
         if name is None or lane._effect(name, self.runtime) != 'journal':
@@ -448,11 +454,9 @@ class Mailbox:
         self._guard()
         return value, config, name, args
 
-    def retained(self, envelope: wire.JSONObject) -> wire.JSONObject | None:
-        value, _, tool, _ = self._admitted(envelope)
-        name = value["id"] + ".json"
+    def _read_retention(self, stem):
         try:
-            raw, _ = _read_regular(self.dedup, name)
+            raw, _ = _read_regular(self.dedup, stem + ".json")
         except FileNotFoundError:
             return None
         except (OSError, UnsafeEntry):
@@ -465,7 +469,7 @@ class Mailbox:
             identity = record["identity"]
             if type(identity) is not dict or set(identity) != {"source", "target", "id"}:
                 raise ValueError
-            if (identity["id"] != value["id"] or identity["target"] != self.endpoint
+            if (identity["id"] != stem or identity["target"] != self.endpoint
                     or type(identity["source"]) is not str
                     or wire.ENDPOINT_RE.fullmatch(identity["source"]) is None):
                 raise ValueError
@@ -484,6 +488,13 @@ class Mailbox:
                 raise ValueError
         except (ValueError, TypeError, KeyError):
             raise RecoveryError("corrupt retention") from None
+        return record
+
+    def retained(self, envelope: wire.JSONObject) -> wire.JSONObject | None:
+        value, _, tool, _ = self._admitted(envelope)
+        record = self._read_retention(value["id"])
+        if record is None:
+            return None
         expected = {key: value[key] for key in ("source", "target", "id")}
         if record["identity"] != expected or record["digest"] != wire.digest(value):
             raise LineageError("bad_op")
@@ -525,14 +536,15 @@ class Mailbox:
         destination = _stat(self.state, value["id"] + ".result.json")
         if destination is not None:
             _regular(destination)
+        record = self.retained(value)  # Admission always precedes this lookup.
         if value['kind'] == 'call' and value['payload'].get('dry_run', False):
+            self._clear_marker(value["id"])
             if self._aborted(value):
                 return {'ok': False, 'code': 'bad_op', 'detail': 'cancelled by order'}
             result = lane._dispatch(value, config, self.runtime)
             if self._aborted(value):
                 return {'ok': False, 'code': 'bad_op', 'detail': 'cancelled by order'}
             return result
-        record = self.retained(value)  # Admission always precedes this lookup.
         if record is not None and record["phase"] == "complete":
             value, config, name, _ = self._admitted(value)
             self._witness(value, record["result"], name)
@@ -540,17 +552,29 @@ class Mailbox:
             if value["kind"] == "capabilities":
                 return lane._dispatch(value, config, self.runtime)
             return record["result"]
+        self._clear_marker(value["id"])
         committed = self._committed(value, name)
+
+        def abort_result():
+            if committed:
+                return None
+            try:
+                aborted = self._aborted(value, quarantine_unsafe=False)
+            except LineageError as exc:
+                return lane._exception(exc)
+            if aborted:
+                return lane._exception(LineageError('bad_op', 'cancelled by order'))
+            return None
+
+        refusal = abort_result()
+
         def cancel_before_commit():
-            if not committed and self._aborted(value):
-                raise LineageError('bad_op', 'cancelled by order')
-        cancelled = False
-        try:
-            cancel_before_commit()
-        except LineageError as exc:
-            if exc.code != 'bad_op':
-                raise
-            cancelled = True
+            nonlocal refusal
+            refusal = abort_result()
+            if refusal is not None:
+                # Carry the refusal past the dispatcher's error sanitization.
+                raise lane.app._Cancelled
+
         pending = {"identity": {key: value[key] for key in ("source", "target", "id")},
                    "digest": wire.digest(value), "op_id": wire.operation_id(value),
                    "phase": "pending"}
@@ -561,13 +585,15 @@ class Mailbox:
         value, config, name, _ = self._admitted(value)
         self._guard()
         try:
-            if cancelled:
-                result = {'ok': False, 'code': 'bad_op', 'detail': 'cancelled by order'}
+            if refusal is not None:
+                result = refusal
             else:
                 with lane.app.before_commit(cancel_before_commit):
                     result = lane._dispatch(value, config, self.runtime)
         except lane.app._Cancelled:
-            result = {'ok': False, 'code': 'bad_op', 'detail': 'cancelled by order'}
+            result = refusal
+        except (Refusal, UnsafeEntry):
+            raise
         except Exception as exc:
             result = lane._exception(exc)
         effect = "read" if name is None else lane._effect(name, self.runtime)
@@ -576,6 +602,9 @@ class Mailbox:
         self._witness(value, result, name)
         complete = {**pending, "phase": "complete", "result": result}
         _atomic_write(self.dedup, value["id"] + ".json", complete, self._guard)
+        if refusal is not None and refusal["code"] == "bad_args":
+            # Keep an unsafe abort in place until its refusal is durable.
+            self.quarantine(value["id"] + ".abort")
         return result
 
     def dispatch(self, envelope: wire.JSONObject) -> wire.JSONObject:
@@ -612,30 +641,55 @@ class Mailbox:
             return None, False
         self._request = (name, info)
         value = None
+        rejected = True
         try:
             try:
                 value = lane.validate_request(raw, self.endpoint, stem)
                 result = self._process(value)
             except wire.InvalidEnvelope:
                 result = lane._error("bad_args")
-            except Refusal:
-                result = lane._error("bad_args")
             except LineageError as exc:
                 result = lane._exception(exc)
+            else:
+                rejected = False
             # Uncertain I/O or corrupt recovery propagates, preserving the
             # request and original retention rather than caching completion.
-            self.publish(stem, result, value)
             name_effect = (None if value is None or value["kind"] == "capabilities" else
                            "ledger_events" if value["kind"] == "events.read" else value["payload"]["tool"])
             effect = (lane._effect(name_effect, self.runtime)
                       if name_effect in self.runtime.registry.tools else "read")
             if _transient(result, effect):
+                record = self._read_retention(stem)
+                if record is None or record["phase"] == "pending":
+                    # An earlier preview or legacy transient may have left a marker.
+                    self._clear_marker(stem)
                 previous = self._retry.get(name)
                 attempt = 1 if previous is None else min(previous[2] + 1, 6)
                 self._retry[name] = (_stamp(info), time.monotonic() + 2 ** (attempt - 1), attempt)
                 return result, False
+            bound = self._read_retention(stem) if rejected else None
+            terminal = True
+            if bound is not None:
+                if (value is not None
+                        and bound["identity"] == {key: value[key] for key in bound["identity"]}
+                        and bound["digest"] == wire.digest(value)):
+                    # Admission can recover later. Keep the original request
+                    # without publishing a rejection over its retained result.
+                    return result, False
+                terminal = bound["phase"] == "complete"
+                if terminal and self.completed(stem) is None:
+                    # An admitted exact delivery is needed to verify the
+                    # original tool grant, witness and receipt correlation.
+                    return result, False
+            else:
+                completed = None if rejected else self.completed(stem)
+                if completed is not None and completed == lane._receipt(stem, result, value):
+                    # A prior marker rename may have survived a failed directory fsync.
+                    os.fsync(self.state)
+                else:
+                    self.publish(stem, result, value)
             self._remove_request(name, info)
-            return result, True
+            return result, terminal
         finally:
             self._request = None
 
@@ -644,17 +698,28 @@ class Mailbox:
 
     def _receive(self, value):
         value, _, _, _ = self._admitted(value)
-        if not (value['kind'] == 'call' and value['payload'].get('dry_run', False)):
-            self.retained(value)  # Refuse a collision before touching a request file.
+        record = self.retained(value)  # Refuse a collision before touching a request file.
         name = value["id"] + ".json"
         try:
-            raw, _ = _read_regular(self.spool, name, wire.MAX_REQUEST_BYTES)
+            raw, info = _read_regular(self.spool, name, wire.MAX_REQUEST_BYTES)
         except FileNotFoundError:
             _atomic_write(self.spool, name, value, self._guard)
         else:
-            old = lane.validate_request(raw, self.endpoint, value["id"])
-            if wire.digest(old) != wire.digest(value):
-                raise LineageError("bad_op")
+            try:
+                old = lane.validate_request(raw, self.endpoint, value["id"])
+                if wire.digest(old) != wire.digest(value):
+                    raise LineageError("bad_op")
+            except (wire.InvalidEnvelope, LineageError):
+                if (record is None or record["phase"] != "complete"
+                        or self.completed(value["id"]) is not None):
+                    raise
+                # This delivery matches durable retention. Replace only the
+                # regular spool entry we inspected, then verify through _process.
+                self._request = (name, info)
+                try:
+                    _atomic_write(self.spool, name, value, self._guard)
+                finally:
+                    self._request = None
         result, _ = self._consume(name)
         if result is None:
             raise RecoveryError("delivery did not produce a result")

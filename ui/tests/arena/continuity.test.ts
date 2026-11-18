@@ -72,7 +72,8 @@ it('A11 a lost already-committed launch replays its exact operation without dupl
   let recorded: any, original: any;
   script.queue('bench_run', async (args: any) => { original = copy(args); recorded = await record(args); throw new Error('Committed reply lost'); },
     (args: any) => { expect(args).toEqual(original); return copy(recorded); });
-  script.queue('ledger_events', refusal('busy'));
+  // Empty detail no longer reads ledger evidence. The lost reply keeps the first submit
+  // uncertain; the replay uses the journal to verify the original commit.
   const h = mount(script); await ready(h); const modal = await launchForm(h); await submit(modal, 'Launch benchmark');
   expect(script.journal).toHaveLength(3); const ids = script.journal.map(e => e.id); noRecorded(h);
   await submit(dialog(h.root, 'Launch benchmark'), 'Launch benchmark');

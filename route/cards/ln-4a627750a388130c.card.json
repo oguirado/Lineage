@@ -1,0 +1,59 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "UI operability contract with acceptance gates",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The Acceptance requirements table defines gates O1 through O14 with headless verification and rejecting contrasts.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "The Routes table fixes data-lin-screen values, visible h1 text and subordinate headings for agents, agent, lineage, arena, bench and ledger routes.",
+      "type": "invariant"
+    },
+    {
+      "id": "C3",
+      "text": "The Accessible identity keys section defines key derivation from full identity or truncated hash and the Identity key collision stop rule.",
+      "type": "behavior"
+    },
+    {
+      "id": "C4",
+      "text": "The Complete action registry lists shell, agents, agent-detail, lineage, arena, benchmark and ledger actions with elements and accessible names.",
+      "type": "interface"
+    }
+  ],
+  "triggers": [
+    "selector resolves to wrong agent",
+    "accessible name collision",
+    "h1 duplicate or missing",
+    "status region replaced"
+  ],
+  "decision": {
+    "rule": "Change here when operability gates, routes, selector vocabulary, identity keys or the action registry needs to change.",
+    "failure": "A screen violates a gate (missing heading, non-native control, colliding names) or a selector activates another record."
+  },
+  "questions": [
+    {
+      "q": "Where does the operability contract define the acceptance gate for keyboard-complete dialogs?"
+    },
+    {
+      "q": "Where should I change the accessible name budget or identity key derivation?"
+    },
+    {
+      "q": "Where can I debug why a data-lin-action selector resolves to no control or many controls?"
+    },
+    {
+      "q": "Where does the contract specify the Lineage screen heading and actions?"
+    }
+  ],
+  "aliases": [
+    "operability gates",
+    "selector vocabulary",
+    "identity keys",
+    "action registry",
+    "data-lin-screen"
+  ],
+  "edges": [],
+  "source_sha256": "b1c9c29eb7ee88a3cade30278d2b71345d5e1eca4687b86d71fea80443ce80c3"
+}

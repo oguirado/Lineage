@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Cross-birth context composition and admission",
+  "claims": [
+    {"id": "C1", "text": "cross rejects non-sequence parent collections, builds an agent_cross command with canonical argument equality through _command, and admits via _transact with the _birth_payload preparation.", "type": "behavior"},
+    {"id": "C2", "text": "_birth_payload verifies each parent constitution against its verified compilation, configures the child with shared seats and language for cross, selects inherited units capped at 256, and binds the brief digest and agent version.", "type": "invariant"},
+    {"id": "C3", "text": "_claims rejects overlapping same-kind units whose normalized statement or kind subject matches while their canonical behavior differs, raising conflict with the incompatible source identities.", "type": "failure"}
+  ],
+  "triggers": ["no shared complete seat", "incompatible claims conflict", "birth differs from authoritative admission", "authority rule cannot be overridden"],
+  "decision": {
+    "rule": "Change here when cross-birth configuration, inherited unit selection, claim compatibility, or birth validation needs to change.",
+    "failure": "A compatible cross is refused, an incompatible claim pair is inherited, or a reconstructed birth differs from the committed payload."
+  },
+  "questions": [
+    {"q": "Where does _birth_payload verify parent constitutions and configure the cross child?"},
+    {"q": "Where should I change how _claims detects incompatible claims across parents?"},
+    {"q": "Where can I debug why a cross birth fails with not_inheritable during validation?"}
+  ],
+  "aliases": ["agent cross", "context composition", "claim compatibility", "birth payload", "shared seat"],
+  "edges": [],
+  "source_sha256": "78e03324b1028ed83606cf43af956dae93fec3aca75efd7d8eea24c16f17b51e"
+}

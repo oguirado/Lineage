@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Plan template validation and hashing",
+  "claims": [
+    {"id": "C1", "text": "validate_template enforces top-level shape, v equals 1, string safety, collection caps, duplicate id rejection and numeric bounds, raising bad_template on violations.", "type": "failure"},
+    {"id": "C2", "text": "canonical_template_json emits sorted compact UTF-8 JSON without hash, and template_hash returns its SHA-256 digest.", "type": "invariant"},
+    {"id": "C3", "text": "load_template reads UTF-8 JSON and returns a normalized copy carrying hash, while resolve_template raises unknown_template for missing ids.", "type": "interface"}
+  ],
+  "triggers": ["bad_template validation error", "dangerous key or cyclic template", "micro bounds reversed", "duplicate phase or task type id"],
+  "decision": {
+    "rule": "Change here when plan template shape, caps, bounds or canonical hashing needs to change.",
+    "failure": "Valid templates are rejected, dangerous or cyclic structures are accepted, or normalized hashes mismatch."
+  },
+  "questions": [
+    {"q": "Where does validate_template enforce template shape and collection caps?"},
+    {"q": "Where should I change the canonical template JSON and hash computation?"},
+    {"q": "Where can I debug why a template fails with bad_template or unknown_template?"}
+  ],
+  "aliases": ["template validation", "canonical template hash", "bad_template", "unknown_template"],
+  "edges": [],
+  "source_sha256": "eaaa4c07e116fddab1b5d890a63efc584376eebe8beaf8345fa2c1b9c2a7328d"
+}

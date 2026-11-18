@@ -1,0 +1,24 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Mutation witness and execution flow for agent actions",
+  "claims": [
+    {"id": "C1", "text": "execute reuses a confirmed draft when the fingerprint matches, blocks a second pending submission, and otherwise stamps agent, op_id and expected_head before calling the tool.", "type": "behavior"},
+    {"id": "C2", "text": "witness re-reads the ledger pages for each committed event id and verifies lamport ordering, kind, agent and op_id identity plus the head hash pin.", "type": "invariant"},
+    {"id": "C3", "text": "witness requires run_close payloads to carry gate.passed with every check passed and nonempty memory_receipts, and memory_put payloads to match the submitted unit canonically.", "type": "failure"},
+    {"id": "C4", "text": "A domain refusal of run_close with memory_required or memory_debt is verified by re-reading the run record, and transport uncertainty leaves the submission in the uncertain phase for replay.", "type": "interface"}
+  ],
+  "triggers": ["unconfirmed mutation witness", "witness identity mismatch", "close run refused memory_required", "transport uncertainty after mutation call"],
+  "decision": {
+    "rule": "Change here when mutation submission identity, commit witness verification or refusal handling needs to change.",
+    "failure": "A mutation confirms without a ledger witness, a close gate passes without memory receipts, or a retry mints a new op_id."
+  },
+  "questions": [
+    {"q": "Where does execute prevent a duplicate pending submission?"},
+    {"q": "Where should I change witness verification of event identity and hash pin?"},
+    {"q": "Where can I debug an unconfirmed mutation witness failure?"},
+    {"q": "How does the flow distinguish refused from uncertain submissions?"}
+  ],
+  "aliases": ["mutation witness", "op_id replay", "commit verification", "run close gate", "submission phases"],
+  "edges": [],
+  "source_sha256": "1da4b813abbb90f1679b21813abef4cb2b82914757fac6431d97ac037c4812d6"
+}

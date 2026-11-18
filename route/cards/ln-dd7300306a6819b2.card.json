@@ -1,0 +1,22 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Lineage tree validation and inheritance eligibility",
+  "claims": [
+    {"id": "C1", "text": "validateTree requires parent counts by birth op (zero for genesis, two for cross, one otherwise), unique known parents, and generation equal to max parent generation plus one, which proves acyclicity, returning nodes sorted by order.", "type": "invariant"},
+    {"id": "C2", "text": "coherent rejects stale or non-ready app state and requires events with lamport exactly 1..head and unique ids, while birthIndex maps agent_id to its agent.born event and drops duplicated agents.", "type": "behavior"},
+    {"id": "C3", "text": "eligible admits only level 2, active, public or internal lesson, negative or promoted workflow units whose scope matches the record, whose inherited_from matches the source triple, and whose receipts carry valid path and sha256.", "type": "failure"}
+  ],
+  "triggers": ["invalid lineage tree response", "generation does not match parents", "inheritable unit rejected", "duplicate agent.born"],
+  "decision": {
+    "rule": "Change here when lineage tree validation, app state coherence, or inheritance eligibility needs to change.",
+    "failure": "A cyclic or generation-inconsistent tree is accepted, a duplicated birth is kept, or an ineligible unit is inherited."
+  },
+  "questions": [
+    {"q": "Where does validateTree prove acyclicity from parent generations?"},
+    {"q": "Where should I change which memory units are eligible for inheritance?"},
+    {"q": "Where can I debug why a lineage tree response is rejected as invalid?"}
+  ],
+  "aliases": ["tree validation", "generation ordering", "birth index", "inheritance eligibility", "receipt check"],
+  "edges": [],
+  "source_sha256": "ebd2ba89305cc9923561713e316a02ac89adb077d48c372b86e38093aa308077"
+}

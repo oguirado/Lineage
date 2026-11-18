@@ -1,0 +1,56 @@
+{
+  "schema": "lineage.route-card.v1",
+  "title": "Arena benchmark tool descriptors and handlers",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "TOOLS exposes bench_list, bench_declare, bench_run, bench_status and bench_verdict with read or journal effects.",
+      "type": "interface"
+    },
+    {
+      "id": "C2",
+      "text": "_handler routes bench_list to bench.list_benches, bench_status to bench.status, and mutations through bench.declare, bench.run and bench.verdict with a registry Command.",
+      "type": "behavior"
+    },
+    {
+      "id": "C3",
+      "text": "VALIDATORS maps bench.declared, bench.result and bench.verdict to bench domain validators and FOLDS maps arena to _ArenaFold.",
+      "type": "invariant"
+    },
+    {
+      "id": "C4",
+      "text": "_validate delegates arena schema definitions to bank._check and _preflight lowers oneOf and exclusive bounds for compatibility.",
+      "type": "failure"
+    }
+  ],
+  "triggers": [
+    "bench_run rejected",
+    "duplicate bench tool",
+    "arena fold missing",
+    "bench schema invalid"
+  ],
+  "decision": {
+    "rule": "Change here when arena tool schemas, bench routing, validators or arena fold ownership needs to change.",
+    "failure": "A bench tool dispatches with a missing agent default, a validator is absent for a bench kind, or arena schema checks silently pass."
+  },
+  "questions": [
+    {
+      "q": "Where are the bench tool schemas and handlers registered for discovery?"
+    },
+    {
+      "q": "Where should I change how bench handlers build the registry Command and context?"
+    },
+    {
+      "q": "Where can I debug a bench validator or arena fold that fails to load?"
+    }
+  ],
+  "aliases": [
+    "bench tools",
+    "arena fold",
+    "bench declare",
+    "bench verdict",
+    "bench schema"
+  ],
+  "edges": [],
+  "source_sha256": "37f56f4d7479cf8d8b4b26afd160b5ce5336d71637aa673abc5894a9f1801036"
+}
